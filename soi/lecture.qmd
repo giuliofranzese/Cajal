@@ -1,0 +1,146 @@
+---
+title: "SOI: Shared/Synergistic-Only Information"
+author: "Giulio Franzese"
+format:
+  html:
+    toc: true
+    code-fold: true
+    embed-resources: true
+jupyter: python3
+---
+
+## Overview
+
+SOI (Shared/Synergistic-Only Information) provides a decomposition framework that separates information shared across sources from information that only arises synergistically. This lecture covers the theoretical foundations and applications to biological multivariate systems.
+
+## Theory
+
+### Motivation
+
+In many biological systems, multiple measurements collectively encode information that no single measurement contains alone (synergy), while other information is redundantly encoded across measurements (redundancy/shared information). SOI provides tools to distinguish these regimes.
+
+### Shared Information
+
+The **shared information** between sources $X_1, X_2, \ldots, X_k$ with respect to a target $Y$ captures what is redundantly conveyed:
+
+$$\text{SI}(X_1, \ldots, X_k; Y) = \min_i I(X_i; Y | X_1, \ldots, X_{i-1}, X_{i+1}, \ldots, X_k)$$
+
+### Synergistic-Only Information
+
+The **synergistic component** is information about $Y$ that requires observing all sources jointly but is absent in any individual or proper subset:
+
+$$\text{Syn}(X_1, \ldots, X_k; Y) = I(X_1, \ldots, X_k; Y) - \sum_i I(X_i; Y)$$
+
+### Relationship to PID
+
+SOI connects to the broader Partial Information Decomposition (PID) framework:
+- Shared information relates to the redundancy atom in the PID lattice
+- Synergistic-only information isolates the synergy atom
+
+### Estimation Strategy
+
+Neural estimators for SOI components use:
+1. Estimate $I(X_i; Y)$ for each source independently (e.g., via MINDE)
+2. Estimate $I(X_1, \ldots, X_k; Y)$ jointly
+3. Compute synergy as the difference
+
+## Implementation
+
+```{python}
+import torch
+import torch.nn as nn
+import numpy as np
+import matplotlib.pyplot as plt
+```
+
+### Joint and Marginal MI Estimators
+
+```{python}
+class MarginalMIEstimator(nn.Module):
+    """Estimate I(X_i; Y) for a single source."""
+
+    def __init__(self, dim_xi, dim_y, hidden_dim=128):
+        super().__init__()
+        self.critic = nn.Sequential(
+            nn.Linear(dim_xi + dim_y, hidden_dim),
+            nn.ReLU(),
+            nn.Linear(hidden_dim, hidden_dim),
+            nn.ReLU(),
+            nn.Linear(hidden_dim, 1),
+        )
+
+    def forward(self, xi, y):
+        return self.critic(torch.cat([xi, y], dim=-1)).squeeze(-1)
+
+
+class JointMIEstimator(nn.Module):
+    """Estimate I(X_1, ..., X_k; Y) jointly."""
+
+    def __init__(self, dims_x, dim_y, hidden_dim=256):
+        super().__init__()
+        total_dim = sum(dims_x) + dim_y
+        self.critic = nn.Sequential(
+            nn.Linear(total_dim, hidden_dim),
+            nn.ReLU(),
+            nn.Linear(hidden_dim, hidden_dim),
+            nn.ReLU(),
+            nn.Linear(hidden_dim, 1),
+        )
+
+    def forward(self, xs, y):
+        return self.critic(torch.cat([*xs, y], dim=-1)).squeeze(-1)
+```
+
+### SOI Decomposition
+
+```{python}
+def compute_soi(joint_mi, marginal_mis):
+    """
+    Compute synergistic-only information.
+
+    Args:
+        joint_mi: I(X_1, ..., X_k; Y)
+        marginal_mis: list of I(X_i; Y) for each source
+
+    Returns:
+        synergy: synergistic component
+        shared: shared/redundant component (min of marginals)
+    """
+    synergy = joint_mi - sum(marginal_mis)
+    shared = min(marginal_mis)
+    return synergy, shared
+```
+
+## Experiments
+
+### Gaussian Copula Model
+
+```{python}
+def sample_gaussian_soi(n=1000, synergy_level=0.5):
+    """
+    Sample from a model with controllable synergy level.
+    Higher synergy_level -> more synergistic structure.
+    """
+    # TODO: implement Gaussian copula with tunable synergy
+    pass
+```
+
+### Benchmark Against PID
+
+```{python}
+# TODO: verify SOI estimates match PID decomposition on known models
+pass
+```
+
+### Single-Cell Application
+
+```{python}
+# TODO: decompose information between RNA/ATAC modalities and cell state
+pass
+```
+
+## References
+
+- Harder et al. (2013). Bivariate measure of redundant information.
+- Griffith & Koch (2014). Quantifying synergistic mutual information.
+- Timme et al. (2014). Synergy, redundancy, and multivariate information.

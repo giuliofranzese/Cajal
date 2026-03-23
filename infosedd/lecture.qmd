@@ -1,0 +1,84 @@
+---
+title: "InfoSEDD: Information-theoretic Synergy/Redundancy Decomposition"
+author: "Giulio Franzese"
+format:
+  html:
+    toc: true
+    code-fold: true
+    embed-resources: true
+jupyter: python3
+---
+
+## Overview
+
+InfoSEDD provides a framework for decomposing the mutual information between a set of sources and a target into **unique**, **redundant**, and **synergistic** contributions. This lecture introduces the theoretical foundations and practical implementation using neural estimators.
+
+## Theory
+
+### Partial Information Decomposition (PID)
+
+Given two sources $X_1, X_2$ and a target $Y$, the total mutual information $I(X_1, X_2; Y)$ decomposes as:
+
+$$I(X_1, X_2; Y) = \text{Unq}(X_1; Y) + \text{Unq}(X_2; Y) + \text{Red}(X_1, X_2; Y) + \text{Syn}(X_1, X_2; Y)$$
+
+where:
+
+- $\text{Unq}(X_i; Y)$: information about $Y$ carried **only** by $X_i$
+- $\text{Red}(X_1, X_2; Y)$: information about $Y$ carried **redundantly** by both sources
+- $\text{Syn}(X_1, X_2; Y)$: information about $Y$ that requires **both** sources jointly
+
+### The Redundancy Lattice
+
+The redundancy lattice defines a partial order over collections of sources. The key challenge is defining a self-consistent measure of redundancy $\text{Red}$.
+
+### InfoSEDD Estimator
+
+InfoSEDD uses neural networks to estimate the components of the PID directly from data, bypassing explicit density estimation.
+
+## Implementation
+
+```{python}
+import torch
+import torch.nn as nn
+import numpy as np
+import matplotlib.pyplot as plt
+```
+
+### Model Architecture
+
+```{python}
+class InfoSEDDEstimator(nn.Module):
+    def __init__(self, dim_x1, dim_x2, dim_y, hidden_dim=128):
+        super().__init__()
+        # TODO: implement encoder networks for each source and the target
+        pass
+
+    def forward(self, x1, x2, y):
+        # TODO: compute decomposed information components
+        pass
+```
+
+## Experiments
+
+### Synthetic Benchmarks
+
+```{python}
+# TODO: generate synthetic data with known PID ground truth
+# e.g., AND/OR/XOR gates for discrete variables,
+# Gaussian models for continuous variables
+pass
+```
+
+### Biological Application
+
+```{python}
+# TODO: apply to single-cell multimodal data
+# e.g., decompose information between two omics modalities and a cell-type label
+pass
+```
+
+## References
+
+- Williams & Beer (2010). Nonnegative decomposition of multivariate information.
+- Bertschinger et al. (2014). Quantifying unique information.
+- Venkatesh et al. (2024). InfoSEDD.

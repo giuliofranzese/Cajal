@@ -1,0 +1,182 @@
+---
+title: "DD-mec: Data-Driven Mechanistic Approach"
+author: "Giulio Franzese"
+format:
+  html:
+    toc: true
+    code-fold: true
+    embed-resources: true
+jupyter: python3
+---
+
+## Overview
+
+DD-mec combines data-driven information-theoretic tools with mechanistic modeling to analyze biological systems. This lecture covers how mutual information estimation can be integrated with mechanistic (ODE/SDE-based) models to yield interpretable, causal descriptions of biological processes.
+
+## Theory
+
+### Motivation: Beyond Correlation
+
+Standard statistical associations (correlation, MI) do not distinguish direct from indirect effects, or correlation from causation. DD-mec addresses this by combining:
+
+1. **Data-driven MI estimation** (MINDE, TENDE) to identify informative relationships
+2. **Mechanistic constraints** (ODEs/SDEs) to prune spurious associations and identify causal structure
+
+### Mechanistic Models in Biology
+
+A general mechanistic model for a biological system with state $\mathbf{x}(t) \in \mathbb{R}^d$:
+
+$$\frac{d\mathbf{x}}{dt} = f(\mathbf{x}, \boldsymbol{\theta}, u(t)) + \sigma \boldsymbol{\xi}(t)$$
+
+where:
+- $f$: known or partially known dynamics
+- $\boldsymbol{\theta}$: unknown parameters
+- $u(t)$: external inputs/perturbations
+- $\boldsymbol{\xi}(t)$: stochastic noise
+
+### Data-Driven Parameter Inference
+
+Given observations $\{x(t_i)\}_{i=1}^N$, we infer $\boldsymbol{\theta}$ via:
+
+$$\hat{\boldsymbol{\theta}} = \arg\min_\theta \sum_i \|x(t_i) - \hat{x}_\theta(t_i)\|^2 + \lambda R(\theta)$$
+
+where $\hat{x}_\theta$ is the mechanistic model prediction and $R(\theta)$ is a regularizer.
+
+### Information Flow in Mechanistic Models
+
+Once parameters are estimated, we can compute information-theoretic quantities analytically (for linear models) or via simulation (for nonlinear models):
+
+$$I(x_i(t); x_j(t+\tau) \mid x_{-j}(t)) \approx \text{TENDE}(\hat{x})$$
+
+### DD-mec Pipeline
+
+1. **Identify candidate interactions** using MINDE/TENDE on raw data
+2. **Fit mechanistic model** constrained by inferred network topology
+3. **Validate** by checking if the fitted model reproduces observed MI/TE patterns
+4. **Refine** by iterating between steps 1-3
+
+## Implementation
+
+```{python}
+import torch
+import torch.nn as nn
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.integrate import solve_ivp
+```
+
+### ODE Parameter Inference
+
+```{python}
+def simulate_ode(theta, t_span, y0, t_eval):
+    """
+    Simulate a parameterized ODE system.
+
+    Args:
+        theta: parameter vector
+        t_span: (t_start, t_end)
+        y0: initial conditions
+        t_eval: time points to evaluate at
+
+    Returns:
+        solution array of shape (len(t_eval), len(y0))
+    """
+    def dynamics(t, y):
+        # TODO: implement the specific ODE system
+        # Example: simple gene regulatory network
+        dydt = np.zeros_like(y)
+        return dydt
+
+    sol = solve_ivp(dynamics, t_span, y0, t_eval=t_eval, method="RK45")
+    return sol.y.T
+```
+
+### Neural ODE for Unknown Dynamics
+
+```{python}
+class NeuralODE(nn.Module):
+    """
+    Neural network parameterization of ODE dynamics.
+    Useful when the functional form of f(x) is unknown.
+    """
+
+    def __init__(self, state_dim, hidden_dim=64):
+        super().__init__()
+        self.f = nn.Sequential(
+            nn.Linear(state_dim, hidden_dim), nn.Tanh(),
+            nn.Linear(hidden_dim, hidden_dim), nn.Tanh(),
+            nn.Linear(hidden_dim, state_dim),
+        )
+
+    def forward(self, t, x):
+        return self.f(x)
+```
+
+### DD-mec Information Analysis
+
+```{python}
+class DDmecAnalyzer:
+    """
+    Wrapper combining mechanistic model with information-theoretic analysis.
+    """
+
+    def __init__(self, model, mi_estimator, te_estimator):
+        self.model = model
+        self.mi_estimator = mi_estimator
+        self.te_estimator = te_estimator
+
+    def fit_model(self, observations, t_eval):
+        # TODO: fit mechanistic model to observations
+        pass
+
+    def analyze_information_flow(self, simulated_trajectories):
+        # TODO: compute MI and TE on simulated data
+        pass
+
+    def validate(self, observed_mi, simulated_mi, tolerance=0.1):
+        # TODO: check agreement between observed and model-predicted MI
+        return np.abs(observed_mi - simulated_mi) < tolerance
+```
+
+## Experiments
+
+### Gene Regulatory Network
+
+```{python}
+def simulate_grn(n_genes=5, T=500, dt=0.1, connectivity=None):
+    """
+    Simulate a small gene regulatory network.
+
+    Dynamics: dx_i/dt = sum_j W_ij * sigma(x_j) - gamma * x_i + noise
+    """
+    if connectivity is None:
+        connectivity = np.random.randn(n_genes, n_genes) * 0.3
+
+    trajectory = np.zeros((T, n_genes))
+    trajectory[0] = np.random.randn(n_genes)
+
+    for t in range(1, T):
+        x = trajectory[t - 1]
+        dx = connectivity @ (1 / (1 + np.exp(-x))) - 0.5 * x
+        trajectory[t] = x + dt * dx + 0.1 * np.sqrt(dt) * np.random.randn(n_genes)
+
+    return trajectory
+
+traj = simulate_grn(n_genes=5, T=1000)
+# TODO: run DD-mec pipeline on this simulated GRN
+pass
+```
+
+### Perturbation Studies
+
+```{python}
+# TODO: compare information flow under control vs. perturbation conditions
+# e.g., gene knockouts, drug treatment
+pass
+```
+
+## References
+
+- Rackauckas et al. (2020). Universal Differential Equations for Scientific Machine Learning.
+- Lotka-Volterra, repressilator, and other classic biological ODE systems.
+- Schreiber (2000). Transfer entropy for directed information flow.

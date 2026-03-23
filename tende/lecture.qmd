@@ -1,0 +1,194 @@
+---
+title: "TENDE: Transfer Entropy Neural Data Estimator"
+author: "Giulio Franzese"
+format:
+  html:
+    toc: true
+    code-fold: true
+    embed-resources: true
+jupyter: python3
+---
+
+## Overview
+
+TENDE (Transfer Entropy Neural Data Estimator) provides a neural network-based framework for estimating transfer entropy — a measure of directed information flow between time series. This lecture covers the theory of transfer entropy, its connection to conditional mutual information, and practical neural estimation strategies for biological time series.
+
+## Theory
+
+### Transfer Entropy
+
+Transfer entropy from process $Y$ to process $X$ quantifies the reduction in uncertainty about the future of $X$ given knowledge of $Y$'s past, beyond what $X$'s own past already provides:
+
+$$TE_{Y \to X}(\tau) = I(X_{t+\tau}; Y_{t}^{(k)} \mid X_{t}^{(l)})$$
+
+where:
+- $X_{t+\tau}$: future state of $X$ at lag $\tau$
+- $Y_{t}^{(k)} = (Y_t, Y_{t-1}, \ldots, Y_{t-k+1})$: $k$-step history of $Y$
+- $X_{t}^{(l)} = (X_t, X_{t-1}, \ldots, X_{t-l+1})$: $l$-step history of $X$
+
+### Connection to Conditional MI
+
+Transfer entropy is a conditional mutual information:
+
+$$TE_{Y \to X} = I(X_{t+1}; Y_{\leq t} \mid X_{\leq t})$$
+
+This makes it estimable via neural conditional MI estimators.
+
+### Asymmetry and Directionality
+
+Unlike mutual information, transfer entropy is asymmetric:
+$$TE_{Y \to X} \neq TE_{X \to Y}$$
+
+The difference $TE_{Y \to X} - TE_{X \to Y}$ characterizes the net direction of information flow.
+
+### Neural Estimation via TENDE
+
+TENDE parameterizes the conditional distribution $p(X_{t+\tau} \mid X_{t}^{(l)}, Y_{t}^{(k)})$ and $p(X_{t+\tau} \mid X_{t}^{(l)})$ using neural networks, and estimates TE as:
+
+$$TE_{Y \to X} = \mathbb{E}\left[\log \frac{p_\theta(X_{t+\tau} \mid X_{t}^{(l)}, Y_{t}^{(k)})}{p_\phi(X_{t+\tau} \mid X_{t}^{(l)})}\right]$$
+
+### Practical Considerations
+
+- **Lag selection**: choosing $\tau$, $k$, $l$ requires domain knowledge or cross-validation
+- **Non-stationarity**: biological time series are often non-stationary; windowed estimation helps
+- **Sample size**: conditional estimators require more samples than marginal ones
+
+## Implementation
+
+```{python}
+import torch
+import torch.nn as nn
+import numpy as np
+import matplotlib.pyplot as plt
+```
+
+### Time Series Embedding
+
+```{python}
+def embed_time_series(x, history_len):
+    """
+    Create history embeddings from a time series.
+
+    Args:
+        x: time series, shape (T,) or (T, d)
+        history_len: number of past steps to include
+
+    Returns:
+        embeddings: shape (T - history_len, history_len * d)
+    """
+    if x.ndim == 1:
+        x = x[:, None]
+    T, d = x.shape
+    embeddings = np.stack(
+        [x[t : t + history_len].flatten() for t in range(T - history_len)],
+        axis=0,
+    )
+    return embeddings
+```
+
+### Conditional Density Estimator
+
+```{python}
+class ConditionalDensityNetwork(nn.Module):
+    """
+    Estimates log p(x_future | context) via a Gaussian head.
+
+    Args:
+        context_dim: dimension of conditioning context
+        target_dim: dimension of the future target variable
+        hidden_dim: hidden layer size
+    """
+
+    def __init__(self, context_dim, target_dim, hidden_dim=128):
+        super().__init__()
+        self.encoder = nn.Sequential(
+            nn.Linear(context_dim, hidden_dim), nn.ReLU(),
+            nn.Linear(hidden_dim, hidden_dim), nn.ReLU(),
+        )
+        self.mu_head = nn.Linear(hidden_dim, target_dim)
+        self.log_sigma_head = nn.Linear(hidden_dim, target_dim)
+
+    def log_prob(self, context, target):
+        h = self.encoder(context)
+        mu = self.mu_head(h)
+        log_sigma = self.log_sigma_head(h).clamp(-5, 2)
+        sigma = torch.exp(log_sigma)
+        dist = torch.distributions.Normal(mu, sigma)
+        return dist.log_prob(target).sum(-1)
+
+    def forward(self, context, target):
+        return self.log_prob(context, target)
+```
+
+### TENDE Estimator
+
+```{python}
+class TENDEEstimator:
+    """
+    Transfer Entropy Neural Data Estimator.
+
+    Estimates TE_{Y->X}(tau) = I(X_{t+tau}; Y_history | X_history)
+    """
+
+    def __init__(self, x_history_dim, y_history_dim, target_dim, hidden_dim=128, lr=1e-3):
+        full_context_dim = x_history_dim + y_history_dim
+        self.full_model = ConditionalDensityNetwork(full_context_dim, target_dim, hidden_dim)
+        self.reduced_model = ConditionalDensityNetwork(x_history_dim, target_dim, hidden_dim)
+        self.optimizer = torch.optim.Adam(
+            list(self.full_model.parameters()) + list(self.reduced_model.parameters()),
+            lr=lr,
+        )
+
+    def estimate(self, x_history, y_history, x_future):
+        context_full = torch.cat([x_history, y_history], dim=-1)
+        log_p_full = self.full_model.log_prob(context_full, x_future)
+        log_p_reduced = self.reduced_model.log_prob(x_history, x_future)
+        return (log_p_full - log_p_reduced).mean()
+
+    def train_step(self, x_history, y_history, x_future):
+        self.optimizer.zero_grad()
+        context_full = torch.cat([x_history, y_history], dim=-1)
+        loss = (
+            -self.full_model.log_prob(context_full, x_future).mean()
+            - self.reduced_model.log_prob(x_history, x_future).mean()
+        )
+        loss.backward()
+        self.optimizer.step()
+```
+
+## Experiments
+
+### Coupled Ornstein-Uhlenbeck Process
+
+```{python}
+def simulate_coupled_ou(T=1000, coupling=0.3, dt=0.01, noise=0.1):
+    """
+    Simulate coupled OU processes with unidirectional coupling Y -> X.
+
+    dX = -X dt + coupling * Y dt + noise * dW_X
+    dY = -Y dt + noise * dW_Y
+    """
+    X = np.zeros(T)
+    Y = np.zeros(T)
+    for t in range(1, T):
+        X[t] = X[t-1] + dt * (-X[t-1] + coupling * Y[t-1]) + noise * np.sqrt(dt) * np.random.randn()
+        Y[t] = Y[t-1] + dt * (-Y[t-1]) + noise * np.sqrt(dt) * np.random.randn()
+    return X, Y
+
+X, Y = simulate_coupled_ou(coupling=0.5)
+# TODO: estimate TE_{Y->X} and TE_{X->Y}, verify asymmetry
+```
+
+### Biological Time Series
+
+```{python}
+# TODO: apply TENDE to calcium imaging or gene expression time series
+# to infer directed functional connectivity
+pass
+```
+
+## References
+
+- Schreiber (2000). Measuring Information Transfer.
+- Bossomaier et al. (2016). An Introduction to Transfer Entropy.
+- Franzese et al. (2024). TENDE.
