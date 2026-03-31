@@ -1,0 +1,64 @@
+################################################################################
+# GM gauss experiments — base config 
+################################################################################
+data_params:
+  general:
+    M: 128
+    D: 1
+    amp_way: None
+    x0source: 'gt'
+
+  X0_GP_matern:
+    noise_type: 'matern'
+    n_empirical: 32
+    eps_decay: 1.0
+    nu_K: 0.5
+    ell_K: 0.1
+    sigma2_K: 1.0
+    white_noise: False
+
+  X1:
+    A_path:
+      128: "path to data A"
+    B_path:
+      128: "path to data B"
+
+trainer_params:
+  n_samples_train: 50000
+  n_samples_gen: 150
+  t_train_sampling_scheme: "logit_normal"
+  prediction: "vt_from_substraction"
+  loss_lam_time: 1.0
+  batch_size: 1024
+  num_iterations: 30000
+  ema_opti: True
+  sfolder: "log/GM"
+  upsample_gen: [1]
+  epochs_selected: -1
+  lr: 0.001
+  lr_sch_step: 50
+  lr_gamma: 1.0
+
+nn_params:
+  model_type: mino_t
+  modes: 32
+  width: 256
+  mlp_width: 128
+  x_dim: 1
+  mino_params:
+    num_classes: 2
+    radius: 0.005
+    enc_dim: 64
+    enc_depth: 2
+    enc_num_heads: 4
+    dec_dim: 64
+    dec_depth: 2
+    dec_num_heads: 4
+
+kl_params:
+  n_t: 100
+  t_kl_sampling_scheme: "importance_sampling_t/(1-t)"
+  n_samples_kl: 500
+  upsample_kl: [1]
+  vdiff_source: 'sample'
+  v_source: 'neural_network'

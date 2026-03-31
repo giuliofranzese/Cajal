@@ -1,0 +1,55 @@
+name: fkl
+channels:
+  - pyg
+  - pytorch
+  - nvidia
+  - conda-forge
+  - defaults
+
+dependencies:
+  # ── Core ────────────────────────────────────────────────────────────────
+  - python=3.10
+  - pytorch>=2.9.0            # torch.optim.Muon requires >= 2.9
+  - torchvision
+  - torchaudio
+  - pytorch-cuda=12.4
+
+  # ── PyG (pre-built for matching PyTorch + CUDA) ────────────────────────
+  - pytorch-cluster
+  - pytorch-scatter
+
+  # ── Scientific ─────────────────────────────────────────────────────────
+  - numpy
+  - scipy
+  - matplotlib
+  - pyyaml
+
+  # ── Notebook / dev ─────────────────────────────────────────────────────
+  - ipykernel
+  - jupyter
+  - pip
+
+  - pip:
+      # ── Flow matching & ODE integration ────────────────────────────────
+      - torchdiffeq
+      - torchcfm
+
+      # ── Neural operators & MINO-T architecture ────────────────────────
+      - neuraloperator
+      - kappamodules
+      - torch-geometric
+
+      # ── Gaussian processes ─────────────────────────────────────────────
+      - gpytorch
+
+      # ── Training utilities ─────────────────────────────────────────────
+      - pytorch-lightning
+      - einops
+      - wandb
+      - tqdm
+      - setproctitle
+
+      # ── Analysis (for notebook) ────────────────────────────────────────
+      - seaborn
+      - pandas
+      - scikit-learn
