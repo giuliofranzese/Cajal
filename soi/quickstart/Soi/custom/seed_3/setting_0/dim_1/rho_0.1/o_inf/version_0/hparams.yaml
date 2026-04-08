@@ -1,0 +1,27 @@
+args: !!python/object:argparse.Namespace
+  N: 100000
+  N_test: 100000
+  accelerator: cpu
+  arch: tx
+  benchmark: custom
+  bs: 512
+  check_val_every_n_epoch: 50
+  debug: true
+  devices: 1
+  dim: 1
+  importance_sampling: true
+  lr: 0.001
+  max_epochs: 50
+  mc_iter: 10
+  nb_workers: 8
+  o_inf_order: 1
+  out_dir: quickstart/
+  results_dir: results/
+  rho: 0.1
+  seed: 3
+  setting: 0
+  test_epoch: 5
+  transformation: ''
+  use_ema: true
+  warmup_epochs: 30
+  weight_s_functions: true
