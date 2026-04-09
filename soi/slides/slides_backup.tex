@@ -1,0 +1,468 @@
+% TU Eindhoven beamer template
+% Author: Jens d'Hondt
+% Eindhoven University of Technology
+
+\documentclass{beamer}
+
+\usepackage[english]{babel}
+\usepackage{calc}
+\usepackage[absolute,overlay]{textpos}
+\usepackage{graphicx}
+
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{mathtools}
+\usepackage{comment}
+\usepackage{MnSymbol,wasysym}
+\usepackage{tikz}
+\usepackage{subcaption}
+%\usepackage{yhmath}
+\usepackage{cancel}
+\usepackage{color}
+\usepackage{siunitx}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{amssymb}
+\usepackage{gensymb}
+\usepackage{tabularx}
+\usepackage{extarrows}
+\usepackage{booktabs}
+\usepackage{svg}
+\usepackage[ruled,vlined]{algorithm2e}
+%\setbeamertemplate{caption}[numbered]
+\newcommand\mycommfont[1]{\footnotesize\ttfamily\textcolor{blue}{#1}}
+\SetCommentSty{mycommfont}
+
+\usepackage{physics}
+
+
+
+
+
+\usetikzlibrary{fadings}
+\usetikzlibrary{patterns}
+\usetikzlibrary{shadows.blur}
+\usetikzlibrary{shapes}
+
+
+
+\input{content/math}
+
+
+
+
+\setbeamertemplate{navigation symbols}{} % remove navigation symbols
+\mode<presentation>{\usetheme{tue}}
+
+% BIB SETTINGS
+\usepackage[backend=bibtex,firstinits=true,maxnames=30,maxcitenames=20,url=false,style=authoryear]{biblatex}
+\bibliography{bibfile}
+\setlength\bibitemsep{0.3cm} % space between entries in the reference list
+\renewcommand{\bibfont}{\normalfont\scriptsize}
+\setbeamerfont{footnote}{size=\tiny}
+\renewcommand{\cite}[1]{\footnote<.->[frame]{\fullcite{#1}}}
+
+
+\title{S$\Omega$I: Score-based O-Information Estimation }
+\institute{ \inst{1} EURECOM \inst{2} Ampere Software Technology , France}
+
+\author{Mustapha Bounoua \inst{1}\inst{2} \and Giulio Franzese \inst{1} \and Pietro Michiardi \inst{1}}
+%\date{}
+
+\begin{document}
+
+
+
+{
+\setbeamertemplate{footline}{\usebeamertemplate*{minimal footline}}
+\frame{\titlepage}
+}
+
+{\setbeamertemplate{footline}{\usebeamertemplate*{minimal footline}}
+
+}
+
+\begin{frame}{Introduction}
+
+\begin{itemize}
+    \item Complex systems are often described by \textbf{multivariate} information.
+    \item Understanding the \textbf{relationships} among multiple random variables is crucial to analyse these systems.
+    %\item Shannon Mutual information is not interpretable for $N>3$.
+\end{itemize}
+
+\begin{figure}
+\begin{subfigure}{0.25\textwidth}
+    %\centering
+    \include{assets/cars}
+    \caption*{Sensors}
+\end{subfigure}
+\begin{subfigure}{0.3\textwidth}
+    %\centering
+    %\include{assets/cars}
+    \hspace{1cm}
+\end{subfigure}
+\begin{subfigure}{0.25\textwidth}
+    %\centering
+    \input{assets/brain}
+    \caption*{\newline Brain regions}
+\end{subfigure}
+\caption*{Is the sensors information redundant or complementary ? How different brain regions interact during a specific task ?}
+\end{figure}
+\end{frame}
+
+%% Speech: In complex systems, multivariate information plays a crucial role in describing the interactions among its components. For instance, how do sensors in a robotic sytem share or complement information? Or, how do different brain regions interact during specific tasks? Answering these questions requires a deep understanding of multivariate relationships. We'll explore these dynamics and introduce our method for analyzing them
+
+
+
+
+\begin{frame}{Extensions of Shannon Mutual information}
+
+Shannon Mutual information is not interpretable for $N>3$. Some alternatives:
+\newline
+\begin{columns}
+\begin{column}{.45\textwidth}
+\textbf{PID}\cite{williams2010nonnegative}:
+\begin{itemize}
+    \item Requires a partition into sources and target.
+    \item No common definition.
+    \item Not scalable.
+\end{itemize}
+\end{column}
+\begin{column}{.45\textwidth}
+\textbf{O-information}\cite{Rosas2019QuantifyingHI}:
+\begin{itemize}
+    \item No partition needed.
+    \item Derived from traditional\textit{ Information Theory} measures.
+    \item Scalable.
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+
+%% Speech: Shannon Mutual Information is well-known, but its interpretability diminishes with more than three variables. Alternatives like Partial Information Decomposition (PID) and O-Information have been proposed. PID, while insightful, faces scalability issues and lacks a consensus definition. On the other hand, O-Information, derived from traditional Information Theory measures, offers a scalable solution without needing a partition into sources and targets.
+
+\begin{frame}{Introduction}
+\begin{columns}
+\begin{column}{.45\textwidth}
+\textit{\textbf{Redundancy }}: The \textbf{shared} information between subsets of the partition of variables.
+\newline
+\end{column}
+\begin{column}{.45\textwidth}
+\textit{\textbf{Synergy }}: The information observed by the \textbf{jointly} presence of variables but not available from individual alone.
+\newline
+\end{column}
+\end{columns}
+\begin{figure}
+    \centering
+    \input{assets/ven}
+\end{figure}
+\end{frame}
+
+
+
+%% Speech : To understand complex interactions, it's essential to distinguish between redundancy and synergy. Redundancy refers to the shared information between variable subsets, while synergy captures the information that emerges only when variables are considered together. For example, consider how different sensors or brain regions might display these properties during specific tasks
+
+
+\begin{frame}{High dimensional interaction measures}
+
+$X = \{ \underbrace{ X^1,\dots,X^{i-1}}_{X^{<i} } ,X^i,\underbrace{X^{i+1},\dots,X^N}_{X^{>i}}  \} $ and $X^{\setminus i}=\{X^{<i},X^{>i}\}$.
+
+
+
+\begin{itemize}
+
+\item S-information: $   \cS(X) \defeq \sum\limits_{i=1}^N \cI(X^i;X^{\setminus i})$.
+
+The total mutual information between one variable and the rest of the system. It accepts the following decomposition : $\cS(X)=\sum\limits_{i=1}^N \cI(X^i;X^{>i})+\sum\limits_{i=1}^N \cI(X^i;X^{<i} \g X^{>i})$.
+
+\end{itemize}
+\end{frame}
+
+% speech :  Introducing S-Information, which sums up the mutual information between each variable and the rest of the system. This measure helps us understand how much information a single variable holds about the entire system. The decomposition of S-Information into total correlation and dual total correlation further refines this understanding.
+
+
+\begin{frame}{High dimensional interaction measures}
+\begin{itemize}
+
+\item Total correlation: $\cT(X) = \sum\limits_{i=1}^N \cI(X^i;X^{>i})$. 
+    
+    How much information each variable $X^i$, \textbf{shares} with $ X^{>i}$ which suggests \textit{redundancy} markers.
+\item Dual total correlation: $\cD( X) = \sum\limits_{i=1}^N \cI(X^i;X^{<i} \g X^{>i})$.
+
+How much \textbf{additional} information the variables $X^{<i}$ carry about $X^i$ if  $ X^{>i}$ is also available suggests a \textit{synergistic} scenario.
+\end{itemize}
+\end{frame}
+
+%% speech : Total correlation and dual total correlation offer two perspectives. Total correlation measures how much each variable shares information with the rest, indicating redundancy. Dual total correlation, however, shows the additional information a subset of variables holds about a particular variable, suggesting synergy. These measures help identify redundancy and synergy markers in complex systems."
+
+
+
+\begin{frame}{O-information}
+
+
+
+
+\begin{equation*}
+  \Omega(X)=\cT(X)-\cD(X)
+\end{equation*}
+
+\begin{columns}
+\begin{column}{.45\textwidth}
+\begin{itemize}
+    \item $\Omega(X)> 0 $ Redundancy dominance.
+    \item $\Omega(X)< 0 $ Synergy dominance.
+\end{itemize}
+\end{column}
+\begin{column}{.45\textwidth}
+
+\begin{figure}
+    \centering
+    \input{assets/brain_gray}
+\end{figure}
+
+\end{column}
+\end{columns}
+\end{frame}
+
+%% O-Information is calculated as the difference between total correlation and dual total correlation. A positive O-Information indicates redundancy dominance, while a negative value suggests synergy dominance. This measure gives us a clearer picture of the interaction dynamics within a system."
+
+
+\begin{frame}{Gradient of O-information}
+\begin{columns}
+\begin{column}{.45\textwidth}
+The individual influence of each variable to the overall structure can be captured via the gradient of O-information:
+
+\begin{equation*}
+    \partial_i \Omega( X) =  \Omega( X) - \Omega( X^{\setminus i})
+\end{equation*}
+\end{column}
+\begin{column}{.45\textwidth}
+\begin{figure}
+    \centering
+    \input{assets/brain_o_inf}
+\end{figure}
+
+\end{column}
+\end{columns}
+\end{frame}
+
+
+%% speech The gradient of O-Information reveals the influence of individual variables on the overall structure. By examining the change in O-Information when a specific variable is removed, we can understand its contribution to redundancy or synergy within the system
+
+\begin{frame}{Score-based KL Divergence estimation}
+
+Let $X$ a random variable and $X_t= X + \sqrt{2t} W$ its noised version with an intensity indexed by $t\in[0,\infty)$. Using results from \cite{minde}:
+
+\begin{align*}
+    \KL{p(x)}{q(x)} &= \int p(x)\log\left(\frac{p(x)}{q(x)}\right) \dd x. \\
+   &= \int p_{t}(x)\norm{\nabla \log p_{t}(x) - \nabla \log q_{t}(x) }^2\dd x\dd t
+\end{align*}
+
+\begin{itemize}
+    \item All what we need is the time-varying score functions $\nabla \log(p_t)$ and $\nabla \log(q_t)$.
+    \item Learning the score function by learning to denoise $X_t$ : $\nabla \log{p_{t}(x)}=\frac{\E[X\g X_t=x]-x}{2t} $. \textit{Any score based model\cite{song2021a} can be used. }
+    
+\end{itemize}
+\end{frame}
+
+%% By considering a noising process X_t illustrated here. A nice result form fransese 2024, the KL Divergence can be computed using difference of time-varying score function. To learn the score function, one can adopt the parameterization of learning a denoiser that denoise X_t back to X.
+
+\begin{frame}{Score-based O-information estimation}
+Let a multivariate random variable $X=\{X^{1},\dots,X^{N}\} \sim p(x^1,\dots,x^N)$:
+
+\begin{align*} 
+\cT(X)&=  \KL{p(x)}{\prod\limits_{i=1}^N p(x^i)} \\
+&= \int \frac{1}{4t^2}\E\norm{\E[X\g X_t]-
+      \begin{bmatrix}
+          \E[X^i\g X^i_t]
+      \end{bmatrix}_{i=1}^{N}}^2\dd t.   
+\end{align*}
+
+\begin{itemize}
+\item Comparing the denoiser output when all the variables are denoised \textbf{together} (\textit{Joint}) or \textbf{separately} (\textit{Marginals}).
+\end{itemize}
+\end{frame}
+
+%% Lets now use this results to estimate our measure of interest : TC can be written in terms of KL, by plug in the denoiser instead of the score we can obtain the following formulation which make a lot of sense. As TC is the difference between he denoiser outputs when variables are denoised together versus separately. So if the variables are not correlated the output is the same so KL is null.
+
+
+\begin{frame}{Score-based O-information estimation}
+%Dual total correlation can be also computed with the help of the denoising score functions . 
+\begin{equation*}
+\cD(X)  = \int \frac{1}{4t^2}\E\norm{\E[X\g X_t]-
+        \begin{bmatrix}
+            \E[X^i\g X^i_t, X^{\setminus i}]
+        \end{bmatrix}_{i=1}^{N}}^2\dd t 
+ \end{equation*}
+
+\begin{itemize}
+    \item Comparing the denoiser output when all the variables are denoised \textbf{together} (\textit{Joint}) or the individual denoising \textbf{conditioned} on the remaining clean variable (\textit{Conditionals}).
+\end{itemize}
+
+%% Similarly we can obtain a DTC formulation : we compare the denoiser output together (Joint) or the individual denoising conditioned on clean variables.
+
+\begin{equation*}
+  \Omega(X)=\cT(X)-\cD(X)
+\end{equation*}
+%% Now that we have TC and DTC, please recall that o-inf = T-D.
+
+
+\begin{itemize}
+    \item Gradient of O-information can be computed equivalently by computing $\Omega(X^{\setminus i})$.
+\end{itemize}
+\end{frame}
+
+%% Gradient of O-information computation can be done equivalently by learning to compute.
+
+
+\begin{frame}{Amortized approach using a unique network}
+
+
+\begin{figure}
+    \centering
+    \input{assets/gloabal_fig}
+\end{figure}
+
+\begin{algorithm}[H]
+\small
+\caption{S$\Omega$I test-time}
+\DontPrintSemicolon
+\textbf{Input:} $ X = \{X^i\}_{i=1}^N, t \sim \mathcal{U}[0,T], \quad X_t \sim p_t $  \\
+$ s_t(X_t) \gets \epsilon_\theta([X_t^1,\dots, X_t^N ], \tau = [t,\dots,t] ) $ \tcp{The joint}
+\For{i = 1 \textbf{to} $N$ }{
+
+$ s_t(X^i_t | X^{\setminus i} ) \gets \epsilon_\theta \left([X^1,..,X^i_t,..,X^N ],\tau = [0,..,t,..,0]\right) $ \tcp{ Conditional}
+$ s_t(X^i_t) \gets \epsilon_\theta([X_T^1,\dots,X_t^i,\dots, X_T^N ], \tau = [T,..,t,..,T] ) $ \tcp{Marginal}%\footnote[]{The non marginal variables can be replaced with a Null vector adhering to a transformer based approach.}}
+}
+% $ \hat{\cT}(X) \gets \frac{g^2_t}{2} \norm{ s_t(X_t) - \left[ s_t(X^i_t) \right]_{i=1}^{N} }^2  $  \\
+% $ \hat{\cD}(X) \gets \frac{g^2_t}{2} \norm{ s_t(X_t) - \left[ s_t(X^i_t | X^{\setminus i} ) \right]_{i=1}^{N} }^2  $  \\
+% \textbf{Return} $ \hat{\Omega}(X) \gets \hat{\cT}(X)  - \hat{\cD}(X) $
+
+\textbf{Return} $ \underbrace{ \frac{g^2_t}{2} \norm{ s_t(X_t) - \left[ s_t(X^i_t) \right]_{i=1}^{N} }^2 }_{\cT(X)}- \underbrace{\frac{g^2_t}{2} \norm{ s_t(X_t) - \left[ s_t(X^i_t | X^{\setminus i} ) \right]_{i=1}^{N} }^2 }_{\cD(X)}$
+
+\end{algorithm}
+
+%% We use a single score network for both joint and conditional and marginal denoising. We can use a multitime vector as well as maskin mechanisme to parmaetrize the model to render all the modes.
+
+
+
+\end{frame}
+
+
+
+% \begin{frame}{Synthetic benchmarks - $\Omega(X)$}
+
+% \begin{columns}
+
+% \begin{column}{.40\textwidth}
+%     \begin{itemize}
+%     \item \textbf{Redundancy}
+%     $R \sim \mathcal{N}(0,\mathbb{I})$ is the \textit{redundant} information. $X = \{R + \epsilon_i,\dots, R + \epsilon_N\}$, where $\epsilon_i \sim \mathcal{N}(0,\sigma \mathbb{I})$ 
+    
+%  \item \textbf{Synergy:} let $ S \sim \mathcal{N}(0,\mathbb{I})$ be the \textit{synergistic} information. $ X^1 \sim \mathcal{N}(0, \mathbb{I})$,  $ X^2 = X^1 +  S $  ,$  X^3 =  S + \epsilon ,$ with $  \epsilon \sim \mathcal{N}(0,\sigma) $ and $ X^1 \indep X^3 
+%     $
+%        \end{itemize}
+%     \end{column}
+%     \begin{column}{.5\textwidth}
+%     \begin{figure}
+%     \centering
+%         \begin{subfigure}[]{0.6\textwidth}
+%                 \includegraphics[width=\textwidth]{assets/figures/exp_red/legend.PNG}
+%             \end{subfigure}
+            
+%             \begin{subfigure}[]{0.6\textwidth}
+%                 \includegraphics[width=\textwidth]{assets/figures/exp_red/plot_red_0_dim_20.jpg}
+%             \end{subfigure}
+            
+%             \begin{subfigure}[]{0.6\textwidth}
+%                 \includegraphics[width=\textwidth]{assets/figures/exp_red/plot_syn_0_dim_20.jpg}
+%             \end{subfigure}
+% \caption*{System of \textbf{10} variables of $Dim=20$ each: \textbf{Top}: Redundancy, \textbf{Bottom:} Synergy.}
+% \end{figure}
+
+%     \end{column}
+% \end{columns}
+% %% We tested our method on synthetic data. For redundancy, we generated variables with shared noise components. For synergy, we created variables that interact only when considered together. We considered here as baseline the bruteforce approach where each MI term in TC and DTC is estimated using a neural estimator. Our results, visualized here, show the outperformance of SOI.
+
+
+
+
+% \end{frame}
+
+% \begin{frame}{Synthetic benchmarks- $\partial \Omega(X)$}
+
+%  \begin{figure}
+%     \centering
+%         \begin{subfigure}[]{0.45\textwidth}
+%                 \includegraphics[width=\textwidth]{assets/figures/grad/grad_tx_setting_0_dim_20.png}
+%             \end{subfigure}
+%             \begin{subfigure}[]{0.45\textwidth}
+%                 \includegraphics[width=\textwidth]{assets/figures/grad/grad_tx_setting_1_dim_20.png}
+%             \end{subfigure}
+            
+%             \begin{subfigure}[]{0.45\textwidth}
+%                \centering
+%                \input{assets/6var_mix}
+%             \end{subfigure}
+%                 \begin{subfigure}[]{0.45\textwidth}
+%                \centering
+%                \input{assets/10var_mix}
+%             \end{subfigure}
+% \end{figure}
+% \footnotetext{Results with transformer based architecture.}
+
+% %By applying our method to a synthetic system with ten variables with mixed interaction, for instance a system of two 6 variables , 3 redundancy dominant and 3 synergistic. This gradient provides insights into the individual contributions of each variable, helping us understand the overall interaction structure within the system."
+
+
+%\end{frame}
+
+\begin{frame}{O-information in the mice brain}
+\begin{columns}
+\begin{column}{.4\textwidth}
+    \begin{figure}
+        \input{assets/mouse}
+        
+        \caption*{ S$\Omega$I is used for  to estimate O-information for each $50 ms$ bin  of spikes recording intervals after the stimulus flash\cite{allen-inst}.}
+    \end{figure}
+\end{column}
+\begin{column}{.5\textwidth}
+\begin{figure}
+\centering
+    % \begin{subfigure}[]{0.4\textwidth}
+    %     \includegraphics[width=\textwidth]{assets/figures/vbn/new_vbn_setting_3_dim_25.png}
+    %     \caption*{3 brain regions}
+    % \end{subfigure}
+    \begin{subfigure}[]{0.8\textwidth}
+        \includegraphics[width=\textwidth]{assets/figures/vbn/new_vbn_setting_6_dim_25.png}
+        \caption*{6 brain regions}
+    \end{subfigure}
+\caption*{ Higher \textbf{redundant} information in the visual cortex regions is transmitted in case of a flash with new scene.}
+
+\end{figure}
+\end{column}
+\end{columns}
+%% We applied our method to neural data from mice. The results showed higher redundancy in the visual cortex regions during specific stimuli, indicating the method's potential in neurobiological studies. This application demonstrates how SΩI can uncover intricate information dynamics in real biological systems.
+
+\end{frame}
+
+\begin{frame}{Conclusion}
+\begin{itemize}
+    \item S$\Omega$I captures high interaction information within multivariate information without restriction on the data distribution.
+    \item S$\Omega$I opens the door for many scientific applications interested in analysing complex systems.
+    \item Score based models for estimating information measures is a promising endeavour. 
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}{Thank you !}
+
+ See you at the poster session number \textbf{..}.
+
+
+\end{frame}
+
+
+
+\end{document}
