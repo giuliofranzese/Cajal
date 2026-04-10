@@ -123,7 +123,6 @@ def train(model, optimizer, trainloader, testloader, device='cpu', eval=True):
         print(f'tr @ epoch {epoch+1}/{n_epochs} | {total_time:.2f} (s)')
         print(f'--- | Sim: {total_sim/total_time:.4f} | Cond: {total_cond/total_time:.4f} | Cuda: {total_cuda/total_time:.4f} | Model: {total_model/total_time:.4f} | Grad: {total_grad/total_time:.4f}')
 
-        # eval loop.... I remember seeing someone did this really nicely, but I forget where... maybe Karpathy's videos?
         if eval:
             model.eval()
             if epoch % eval_interval == 0:
