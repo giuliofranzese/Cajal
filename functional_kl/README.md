@@ -41,7 +41,7 @@ Tutorial notebooks are in `code/notebooks/`. Each one runs a full experiment end
 **GM** compares two Gaussian Measures (A vs B).
 **EB and hESC** compare a reference method (`sbirr`) against five alternatives (`vsb`, `msbm`, `mfl`, `am`, `tigon`).
 
-To tun them, open VSC and create the conda environment as specified above. You need to have access to GPUs to run end to end the method.
+To run them, open VSC and create the conda environment as specified above. You need to have access to GPUs to run end to end the method.
 
 ### Running a notebook
 
