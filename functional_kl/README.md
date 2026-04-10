@@ -6,14 +6,14 @@ Contributors: WANG Chao, NEPOTE Luca, FRANZESE Giulio, MICHIARDI Pietro
 
 ## Setup
 
-### Create the conda environment
+### Create the conda environment (skip if you run the notebooks in colab)
 
 ```bash
 conda env create -f requirement.yaml
 conda activate fkl_muon
 ```
 
-## Notebooks
+## Notebooks (Colab)
 
 Tutorial notebooks with pretrained checkpoints are in `code/notebooks/`. Each one loads the checkpoint, compute the FKL estimation, and analyize the results.
 
@@ -25,6 +25,8 @@ Tutorial notebooks with pretrained checkpoints are in `code/notebooks/`. Each on
 
 **GM** compares two Gaussian Measures (A vs B).
 **EB and hESC** compare a reference method (`sbirr`) against five alternatives (`vsb`, `msbm`, `mfl`, `am`, `tigon`).
+
+To run them, open the corresponding noteboook in google colab, activate runtime with T4 gpu and follow the instructions.
 
 ## Notebooks (end to end training)
 
@@ -38,6 +40,8 @@ Tutorial notebooks are in `code/notebooks/`. Each one runs a full experiment end
 
 **GM** compares two Gaussian Measures (A vs B).
 **EB and hESC** compare a reference method (`sbirr`) against five alternatives (`vsb`, `msbm`, `mfl`, `am`, `tigon`).
+
+To tun them, open VSC and create the conda environment as specified above. You need to have access to GPUs to run end to end the method.
 
 ### Running a notebook
 
