@@ -2,6 +2,8 @@
 
 Estimate KL divergence between trajectory distributions using Functional Flow Matching (FFM) with the MINO-T architecture.
 
+Contributors: WANG Chao, NEPOTE Luca, FRANZESE Giulio, MICHIARDI Pietro
+
 ## Setup
 
 ### Create the conda environment

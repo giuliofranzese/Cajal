@@ -708,7 +708,7 @@ class FKLModel:
                 if kl_domain == 'freq': 
                     kl_nocoeft = v_diff_2 
                     
-                    kl_nocoeft = kl_nocoeft[:, :, : ]   # TODO #64
+                    kl_nocoeft = kl_nocoeft[:, :16, : ]   # TODO #64
 
 
                 elif kl_domain == 'time': 
