@@ -126,7 +126,7 @@ include-in-header:
     </script>
 ---
 
-## Before Starting: a collaborative effort!
+## A Collaborative Effort
 
 ::: {.columns}
 
@@ -134,18 +134,21 @@ include-in-header:
 ![](pics/franzese.jpg){width=80%}
 
 **Giulio Franzese**
+<br><small>Eurecom</small>
 :::
 
 ::: {.column width="33%"}
 ![](pics/michiardi-pietro_1.jpg){width=70%}
 
 **Pietro Michiardi**
+<br><small>Eurecom</small>
 :::
 
 ::: {.column width="33%"}
 ![](pics/bounoua-mustapha.jpg){width=80%}
 
-**Bounoua Mustapha**
+**Mustapha Bounoua**
+<br><small>Eurecom</small>
 :::
 
 :::
@@ -156,61 +159,24 @@ include-in-header:
 ![](pics/headshot_chao%20(1).jpg){width=80%}
 
 **Chao Wang**
+<br><small>Eurecom</small>
 :::
 
 ::: {.column width="33%"}
 ![](pics/foresti-alberto.jpg){width=70%}
 
 **Alberto Foresti**
+<br><small>Eurecom / Politecnico di Torino</small>
 :::
 
 ::: {.column width="33%"}
 ![](pics/nepote-luca.jpg){width=70%}
 
 **Luca Nepote**
+<br><small>Eurecom</small>
 :::
 
 :::
-
----
-
-## Information Theory Is Reshaping Biology
-
-Think of MI, TE and O-Information as **software-defined measurement instruments**: just as a microscope reveals spatial structure, they reveal *statistical structure* hidden in any data — continuous, discrete, mixed.
-
-**Already in use across the organoid and single-cell field:**
-
-<table style="font-size:0.78em; width:100%; border-collapse:collapse;">
-<tr style="background:#f0f4ff;"><th style="text-align:left; padding:4px 8px;">Paper</th><th style="text-align:left; padding:4px 8px;">What they measured</th><th style="text-align:left; padding:4px 8px;">Tool</th></tr>
-<tr><td style="padding:3px 8px;">Muccitri et al. 2024</td><td style="padding:3px 8px;">Functional connectivity in organoid HD-MEA</td><td style="padding:3px 8px;"><b>MI</b> as network edge weight</td></tr>
-<tr style="background:#f9f9f9;"><td style="padding:3px 8px;">Weinreb et al. 2020</td><td style="padding:3px 8px;">Hidden epigenetic fate determinants in sister cells</td><td style="padding:3px 8px;"><b>MI</b> between clonal pairs</td></tr>
-<tr><td style="padding:3px 8px;">Teschendorff 2017 (SCENT)</td><td style="padding:3px 8px;">Stem cell differentiation potency</td><td style="padding:3px 8px;">Signaling <b>entropy</b> rate</td></tr>
-<tr style="background:#f9f9f9;"><td style="padding:3px 8px;">Uthamacumaran et al. 2024</td><td style="padding:3px 8px;">Information integration in Xenobot morphogenesis</td><td style="padding:3px 8px;"><b>MI</b> functional connectivity</td></tr>
-<tr><td style="padding:3px 8px;">DeepTracing 2024</td><td style="padding:3px 8px;">Lineage vs cell-state disentanglement in scRNA-seq</td><td style="padding:3px 8px;"><b>Total Correlation</b> regulariser</td></tr>
-<tr style="background:#f9f9f9;"><td style="padding:3px 8px;">Clonotrace 2025</td><td style="padding:3px 8px;">Shared programs across independent lineages</td><td style="padding:3px 8px;"><b>MI</b> between clonal and transcriptomic identity</td></tr>
-</table>
-
-**The bottleneck**: existing estimators assume Gaussian data, low dimensions, or continuous variables. None of these hold for high-dimensional neural recordings, zero-inflated scRNA-seq counts, unpaired multi-omics, or nonlinear physiological time series.
-
-::: {.callout-important appearance="minimal"}
-The field has the **questions** and the **data** — it is missing scalable, nonparametric **estimators**. That is what this talk is about.
-:::
-
----
-
-## A Sneak Peek: What We Will Show
-
-**Five new estimation tools — same diffusion framework, all validated:**
-
-| Method | Quantity | Data type | Validated on |
-|---|---|---|---|
-| **MINDE** | $I(A;B)$ | Continuous | SotA benchmark across distribution families |
-| **INFO-SEDD** | $I(A;B)$ | **Discrete** | DNA promoter motif discovery (*Arabidopsis*) |
-| **DDMEC** | $\max_\pi I(X;Y)$ | Unpaired multimodal | PBMC ATAC-seq ↔ RNA-seq alignment |
-| **SOI** | $\Omega(X_1,\ldots,X_N)$ | Multivariate | VBN visual cortex (6 areas, Neuropixels) |
-| **TENDE** | $\mathrm{TE}_{X\to Y}(k,\ell)$ | Time series | Respiratory sinus arrhythmia in physiological signals |
-
-Each is a **new software instrument**: you hand it data, it returns an information-theoretic quantity that was previously inaccessible at this scale or data type.
 
 ---
 
@@ -218,7 +184,7 @@ Each is a **new software instrument**: you hand it data, it returns an informati
 
 **Shannon's answer** (1948): use **Mutual Information** — the unique measure that quantifies statistical dependence in bits, regardless of the shape of the distribution.
 
-The same tool answers interconnected questions at every scale of neuroscience:
+The same framework answers interconnected questions at every scale of neuroscience and organoid biology:
 
 |  | Question | Scale | Tool |
 |--|---|---|---|
@@ -232,36 +198,43 @@ The challenge: these quantities are **hard to estimate** from real data — nonl
 
 ---
 
-## Summary of the Talk
+## Information Theory Is Reshaping Biology
 
-**Five software instruments for information theory — one diffusion framework:**
+These tools are not just theoretical — they are already the **primary measurement language** in several active research lines. Think of them as **software-defined instruments**: just as a microscope reveals spatial structure, MI/TE/O-Information reveal *statistical structure* inaccessible to classical statistics.
 
-::: {.columns}
-::: {.column width="50%"}
-**1. MINDE** *(Franzese et al., ICLR 2024)*
-<br>MI between *continuous* signals via diffusion score functions
-<br>→ **The foundational building block** — all methods below are extensions of this core idea
+**Already in use across the organoid and single-cell field:**
 
-**2. INFO-SEDD** *(Foresti et al., ICLR 2025)*
-<br>MI for *discrete* data via Continuous Time Markov Chains
-<br>→ *DNA regulatory elements; scRNA-seq count data*
+<table style="font-size:0.78em; width:100%; border-collapse:collapse;">
+<tr style="background:#f0f4ff;"><th style="text-align:left; padding:4px 8px;">Paper</th><th style="text-align:left; padding:4px 8px;">What they measured</th><th style="text-align:left; padding:4px 8px;">Tool</th></tr>
+<tr><td style="padding:3px 8px;">Muccitri et al. 2024</td><td style="padding:3px 8px;">Functional connectivity in organoid HD-MEA</td><td style="padding:3px 8px;"><b>MI</b> as network edge weight</td></tr>
+<tr style="background:#f9f9f9;"><td style="padding:3px 8px;">Weinreb et al. 2020</td><td style="padding:3px 8px;">Hidden epigenetic fate determinants in sister cells</td><td style="padding:3px 8px;"><b>MI</b> between clonal pairs</td></tr>
+<tr><td style="padding:3px 8px;">Teschendorff 2017 (SCENT)</td><td style="padding:3px 8px;">Stem cell differentiation potency</td><td style="padding:3px 8px;">Signaling <b>entropy</b> rate</td></tr>
+<tr style="background:#f9f9f9;"><td style="padding:3px 8px;">Uthamacumaran et al. 2024</td><td style="padding:3px 8px;">Information integration in Xenobot morphogenesis</td><td style="padding:3px 8px;"><b>MI</b> functional connectivity</td></tr>
+<tr><td style="padding:3px 8px;">DeepTracing 2024</td><td style="padding:3px 8px;">Lineage vs cell-state disentanglement in scRNA-seq</td><td style="padding:3px 8px;"><b>Total Correlation</b> regulariser</td></tr>
+<tr style="background:#f9f9f9;"><td style="padding:3px 8px;">Clonotrace 2025</td><td style="padding:3px 8px;">Shared programs across independent lineages</td><td style="padding:3px 8px;"><b>MI</b> between clonal and transcriptomic identity</td></tr>
+</table>
 
-**3. DDMEC** *(Bounoua et al., ICML 2025)*
-<br>Maximum-MI matching of unpaired multimodal data
-<br>→ *ATAC-seq / RNA-seq alignment without paired cells*
+**The bottleneck**: existing estimators assume Gaussian data, low dimensions, or continuous variables — none of which hold for high-dimensional neural recordings, zero-inflated scRNA-seq, or nonlinear physiological signals.
+
+::: {.callout-important appearance="minimal"}
+The field has the **questions** and the **data** — it is missing scalable, nonparametric **estimators**. That is what this talk is about.
 :::
-::: {.column width="50%"}
-**4. SOI** *(Bounoua et al., ICML 2024)*
-<br>O-Information — synergy & redundancy across populations
-<br>→ *Visual cortex coding in mice; lineage disentanglement*
 
-**5. TENDE** *(Munoz et al., preprint)*
-<br>Transfer Entropy — directed information flow
-<br>→ *Organoid circuit formation; causal gene networks*
+---
 
-**The unifying insight**: replace intractable measure-theoretic integrals with learnable *score functions* trained via self-supervised denoising.
-:::
-:::
+## What We Will Show
+
+**Five software instruments — one diffusion framework, all with running code:**
+
+| Method | Quantity | Data type | Validated on |
+|---|---|---|---|
+| **MINDE** *(ICLR 2024)* | $I(A;B)$ | Continuous | SotA benchmark across distribution families |
+| **INFO-SEDD** *(ICLR 2025)* | $I(A;B)$ | **Discrete** | DNA promoter motif discovery (*Arabidopsis*) |
+| **DDMEC** *(ICML 2025)* | $\max_\pi I(X;Y)$ | Unpaired multimodal | PBMC ATAC-seq ↔ RNA-seq alignment |
+| **SOI** *(ICML 2024)* | $\Omega(X_1,\ldots,X_N)$ | Multivariate | VBN visual cortex (6 areas, Neuropixels) |
+| **TENDE** *(preprint)* | $\mathrm{TE}_{X\to Y}(k,\ell)$ | Time series | Respiratory sinus arrhythmia recovery |
+
+**The unifying insight**: replace intractable measure-theoretic integrals with learnable *score functions* trained via self-supervised denoising — the same machinery behind Stable Diffusion, repurposed for information theory.
 
 # Introduction
 
@@ -302,33 +275,33 @@ The same definition holds when $X$ and $Y$ are stochastic processes.
 
 ---
 
-## Some Examples
-
-$$\textsc{I}(A;B)=\int_{\mathbb{R}^{N\times M}} p(x,y)\log\frac{p(x,y)}{p(x)p(y)}\,dx\,dy, \quad \mu^{A,B}(dx,dy)=p(x,y)\,dx\,dy$$
-
-$$\textsc{I}(A;B)=\sum_{x,y\in \mathcal{X}\times \mathcal{Y}} p(x,y)\log\frac{p(x,y)}{p(x)p(y)}, \quad \mu^{A,B}(x,y)=p(x,y)$$
-
-Critically we rely on i) knowledge of the measures ii) capability of computing integral/sums in closed form. Examples: AWGN Channel, Discrete RVs with known distribution...
-
----
-
 ## Why Not Just Use Correlation?
 
 Pearson correlation $\rho(X,Y) = \frac{\operatorname{Cov}(X,Y)}{\sigma_X \sigma_Y}$ is ubiquitous — but it fundamentally fails in neural data settings:
 
+::: {.fragment}
 - **Nonlinearities**: neurons have sigmoidal transfer functions, threshold and saturation effects. A neuron can be maximally informative about a stimulus yet have *zero* linear correlation with it.
+:::
 
+::: {.fragment}
 - **The XOR problem**: let $X, Y$ be independent fair coin flips, $Z = X \oplus Y$ (XOR). Then $\rho(X,Z)=\rho(Y,Z)=0$ — yet $I(X;Z) > 0$. This is precisely *synergistic coding*: the pair $(X,Y)$ jointly encodes $Z$, but neither alone does. This arises naturally in multi-neuron recordings.
+:::
 
+::: {.fragment}
 - **Mixed data types**: neural recordings mix spike counts (discrete, Poisson-like), local field potentials (continuous), and behavioural variables (categorical). Correlation requires a common scale; MI is defined uniformly for *any* pair of measures.
+:::
 
-- **Reparametrisation invariance**: MI is unchanged under any invertible transformation. Correlation depends on preprocessing choices (z-scoring, log-transform of firing rates) — MI does not.
+::: {.fragment}
+- **scRNA-seq count data**: gene expression counts are discrete, zero-inflated, and heavily skewed. Pearson correlation on raw or log-normalised counts systematically misses nonlinear co-regulation. MI is defined directly on the count distribution, no normalisation required.
+:::
 
-- **scRNA-seq count data**: gene expression counts are discrete, zero-inflated, and heavily skewed (negative binomial). Pearson correlation on raw or log-normalised counts systematically misses nonlinear co-regulation between genes. MI is defined directly on the count distribution, no normalisation required.
+::: {.fragment}
+- **Organoid evidence — hidden states**: Weinreb et al. (*Science*, 2020) showed that sister cells' transcriptomes had *zero* useful linear correlation for predicting differential fate — yet MI between sisters grew steadily, revealing hidden epigenetic states invisible to sequencing. Only MI detected this.
+:::
 
-- **Organoid evidence — hidden states**: Weinreb et al. (*Science*, 2020) showed that sister cells' transcriptomes had *zero* useful linear correlation for predicting differential fate outcomes — yet MI between sisters grew steadily, revealing that hidden epigenetic states (invisible to sequencing) were the true fate determinants. Only MI detected this.
-
-- **Beyond neurons**: Uthamacumaran et al. (2024) applied MI-based functional connectivity to *aneural* morphogenetic tissue (Xenopus epidermis), revealing organised information structures invisible to pairwise correlation — showing these tools generalise across all developing biological systems.
+::: {.fragment}
+- **Beyond neurons**: Uthamacumaran et al. (2024) applied MI-based connectivity to *aneural* morphogenetic tissue (Xenopus epidermis), revealing organised information structures invisible to correlation — these tools generalise across all developing biological systems.
+:::
 
 ---
 
@@ -381,7 +354,11 @@ $$\sup_{T:\Omega\rightarrow\mathbb{R}}(\E_\mu[T]-\log \E_\chi [\exp(T)])\geq \su
 
 - **Big problems**: i) Good luck with MC estimation of $\log \E [\exp(T^\theta)]$; ii) For tail events, estimation is unreliable.
 
-# Estimation via Diffusion
+# Estimation via Diffusion {.center}
+
+::: {style="font-size:0.75em; color:#666; margin-top:0.5em;"}
+**MINDE** → INFO-SEDD → DDMEC → SOI → TENDE
+:::
 
 ## The Diffusion Idea — An Intuition
 
@@ -544,27 +521,16 @@ First family, **MINDE-C**:
 
 ::: {.columns}
 ::: {.column width="50%"}
-![](figures/pitfalls.jpg){width=100%}
+![**Left**: score functions $\nabla \log p_t(x)$ are *smooth fields* defined everywhere — even in the tails. Learning them via denoising is stable and well-conditioned.](figures/pitfalls.jpg){width=100%}
 :::
 ::: {.column width="50%"}
-![](figures/multi_scale.jpg){width=100%}
+![**Right**: the same score function at multiple noise levels forms a hierarchy of "zoom levels". Coarse levels capture global structure; fine levels capture local detail — together they tile all of density space reliably.](figures/multi_scale.jpg){width=100%}
 :::
 :::
 
-Credit: [https://yang-song.net/blog/2021/score/](https://yang-song.net/blog/2021/score/)
+In contrast, discriminative estimators (MINE, InfoNCE) must compute $\log \mathbb{E}[\exp(T)]$ — a log-sum-exp that is dominated by rare tail events, making variance explode in high dimensions or heavy-tailed settings. Score-based estimation sidesteps this entirely.
 
----
-
-## A Different Perspective
-
-A *simpler* derivation of the estimator is based on the Feynman integration trick (a.k.a. in statistics as thermodynamic integration). Consider $p_t=\exp(t\mathcal{L})p_0,\;q_t=\exp(t\mathcal{L})q_0$, where $\mathcal{L}$ is the Fokker-Planck operator of a "nice" diffusion $\mathcal{L}=\nabla^\top(f\cdot)+\Delta(\cdot)$.
-
-Then:
-$$\KL{p_0}{q_0}=\int_0^\infty \frac{d}{dt}\KL{p_t}{q_t}\,dt$$
-where
-$$\frac{d}{dt}\KL{p_t}{q_t}=\int \frac{d}{dt}p_t\log\frac{p_t}{q_t} +p_t \frac{d}{dt}\log\frac{p_t}{q_t}\,dx$$
-
-The idea of the proof: $\mathcal{L}^\dagger$ is known, integrate by parts, simplify, and obtain an expected difference of scores.
+*Credit: Yang Song, [yang-song.net/blog/2021/score](https://yang-song.net/blog/2021/score/)*
 
 ---
 
@@ -700,7 +666,11 @@ The same principle applies to **organoid multi-omics**: aligning **ATAC-seq** (c
 *DDMEC applied to PBMC single-cell data. This methodology could directly enable joint chromatin + transcriptome analysis of differentiating organoids without the experimental cost of paired profiling.*
 :::
 
-# Multivariate Information Theory
+# Multivariate Information Theory {.center}
+
+::: {style="font-size:0.75em; color:#666; margin-top:0.5em;"}
+MINDE → INFO-SEDD → DDMEC → **SOI** → **TENDE**
+:::
 
 ## Multimodal Information Theory
 
@@ -755,11 +725,16 @@ Nice properties, but out of reach unless data are Gaussian (or "*simple*") and/o
 
 ## O-Information (cont.)
 
-Multiple brain regions: is assuming anything a-priori really safe?
+::: {.columns}
+::: {.column width="55%"}
+Real neural data — including organoid MEA recordings — does not follow a known parametric distribution. The marginal density of a single visual cortex area (right) is multimodal, skewed, and heavy-tailed.
 
-![](figures/brain_pdf.png){width=65%}
-
-We don't need it!!
+**Gaussian O-information estimators would be wrong by construction.** A nonparametric, score-based approach is the only option that does not require assuming a distribution family.
+:::
+::: {.column width="45%"}
+![Empirical density of a visual cortex population response — clearly non-Gaussian. Score-based SOI makes no distributional assumption.](figures/brain_pdf.png){width=100%}
+:::
+:::
 
 ---
 
@@ -834,8 +809,9 @@ The gradient decomposition is the key novel tool: applied to organoid recordings
 :::
 :::
 
-- This suggests that higher amount of redundant information in the visual cortex regions is transmitted in case of a flash with new scene.
-- Interestingly, when considering six areas of the visual cortex, our observations remain valid, suggesting that the measured behaviour is common to these other brain areas as well.
+::: {.callout-note appearance="minimal"}
+**Key finding**: novel stimuli elicit a broadcast, redundant response across all visual areas — reliability through independent copies. The effect holds consistently from 3 to 6 areas, suggesting it reflects a general property of the visual hierarchy rather than a local circuit artifact.
+:::
 
 ---
 
@@ -852,10 +828,10 @@ $$\mathrm{TE}_{X\to Y} = I(Y_t;\, \mathbf{X}_{\text{past}} \mid \mathbf{Y}_{\tex
 - Captures nonlinear, asymmetric information flow — critical for neural circuits where signalling is inherently nonlinear.
 :::
 ::: {.column width="40%"}
-<div style="text-align:center; padding-top:1em;">
-<div style="font-size:1.8em;">🧠 → 🧠</div>
-<div style="font-size:0.85em; margin-top:0.5em;">$\mathrm{TE}_{V1\to V2} \neq \mathrm{TE}_{V2\to V1}$</div>
-<div style="font-size:0.8em; margin-top:1em; color:#555;">Transfer entropy is asymmetric by construction — it captures the *direction* of information flow.</div>
+<div style="text-align:center; padding-top:2em; font-size:0.9em;">
+<div style="font-size:1.4em; font-family:monospace; letter-spacing:0.1em;">V1 &nbsp;⟶&nbsp; V2</div>
+<div style="font-size:0.9em; margin-top:0.8em;">$\mathrm{TE}_{V1\to V2} \neq \mathrm{TE}_{V2\to V1}$</div>
+<div style="font-size:0.82em; margin-top:1em; color:#555; font-style:italic;">Transfer entropy is asymmetric by construction — it captures the <em>direction</em> of information flow, not just its presence.</div>
 </div>
 :::
 :::
@@ -932,11 +908,17 @@ $$\mathrm{TE}_{X\to Y}(k,\ell) = I\!\left(Y_t;\,\mathbf{X}_{t-k}\mid\mathbf{Y}_{
 ![TE vs lag $k$ (s): $\mathrm{TE}_{\text{resp}\to\text{HR}}$ (black ★) > $\mathrm{TE}_{\text{HR}\to\text{resp}}$ (red ★) at all lags $k \in \{2,4,6,8,10\}$. Both decay with lag, but the asymmetry is stable — respiration is the driver.](figures/tende_te_lags.png){width=100%}
 :::
 ::: {.column width="50%"}
-**What is recovered**: **respiratory sinus arrhythmia (RSA)** — the well-known phenomenon that breathing modulates heart rate more than the reverse. Respiration pacemaking in the brainstem overrides cardiac autonomic control, a nonlinear effect invisible to linear Granger causality.
+::: {.fragment}
+**What is recovered**: **respiratory sinus arrhythmia (RSA)** — breathing modulates heart rate more than the reverse. Respiration pacemaking in the brainstem overrides cardiac autonomic control, a nonlinear effect invisible to linear Granger causality.
+:::
 
+::: {.fragment}
 **Why previous methods failed**: Granger requires Gaussian residuals; KNN estimators need $O(n^2)$ computation in high dimensions. TENDE — score-based, sample-efficient — gives stable estimates at 6000 samples with 1000 MC iterations.
+:::
 
-**Organoid application**: applied to organoid MEA recordings, TENDE would quantify $\mathrm{TE}_{A\to B}$ between any neuron pair or region pair — mapping the *causal wiring diagram* of emerging circuits and how it evolves over weeks of maturation.
+::: {.fragment}
+**Organoid application**: applied to organoid MEA recordings, TENDE quantifies $\mathrm{TE}_{A\to B}$ between any electrode pair — mapping the *causal wiring diagram* of emerging circuits and tracking how it evolves over weeks of maturation.
+:::
 :::
 :::
 
@@ -961,12 +943,43 @@ $$\mathrm{TE}_{X\to Y}(k,\ell) = I\!\left(Y_t;\,\mathbf{X}_{t-k}\mid\mathbf{Y}_{
 - DeepTracing (2024): Total Correlation → disentangling lineage from cell state
 - Clonotrace (2025): MI → joint lineage + transcriptomic analysis
 
-**What we left out** (we have some backup slides):
+**Going deeper** (backup slides available):
 
-- We made it *look* simple ("just adapt these formulas and you get an estimator")
-- A more formal discussion of the results
-- Actual extensive numerical validation of the proposed methods
-- Careful discussion of the convergence properties in terms of sample sizes, model complexity...
+- Formal measure-theoretic derivations and proof sketches
+- Convergence analysis: sample complexity, model capacity requirements
+- Extended numerical validation across additional benchmark families
+- Thermodynamic integration / Feynman-Kac alternative derivation
+
+---
+
+## Try It Yourself
+
+All results shown in this talk were produced by Colab notebooks — **runnable in your browser, no installation required**.
+
+::: {.columns}
+::: {.column width="50%"}
+**Available notebooks:**
+
+| Method | What you can run |
+|---|---|
+| **INFO-SEDD** | TATA-box discovery on *Arabidopsis* promoters |
+| **SOI** | Synthetic redundancy/synergy benchmarks |
+| **SOI** | VBN visual cortex O-information |
+| **TENDE** | TE on coupled OU + heart rate/respiration |
+
+All notebooks load pretrained checkpoints — results in minutes, not hours.
+:::
+::: {.column width="50%"}
+**Repository**: [github.com/giuliofranzese/Cajal](https://github.com/giuliofranzese/Cajal)
+
+::: {.callout-tip appearance="minimal"}
+The same notebooks can serve as **templates** for your own data:
+substitute the data-loading cell, adjust dimensions, run. The estimators make no assumption about your distribution.
+:::
+
+*Questions, issues, collaborations: [giulio.franzese@eurecom.fr](mailto:giulio.franzese@eurecom.fr)*
+:::
+:::
 
 ---
 

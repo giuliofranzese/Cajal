@@ -242,34 +242,88 @@
 </div>
 
 </section>
-<section id="before-starting-a-collaborative-effort" class="slide level2">
-<h2>Before Starting: a collaborative effort!</h2>
+<section id="a-collaborative-effort" class="slide level2">
+<h2>A Collaborative Effort</h2>
 <div class="columns">
 <div class="column" style="width:33%;">
 <p><img data-src="pics/franzese.jpg" style="width:80.0%"></p>
-<p><strong>Giulio Franzese</strong></p>
+<p><strong>Giulio Franzese</strong> <br><small>Eurecom</small></p>
 </div><div class="column" style="width:33%;">
 <p><img data-src="pics/michiardi-pietro_1.jpg" style="width:70.0%"></p>
-<p><strong>Pietro Michiardi</strong></p>
+<p><strong>Pietro Michiardi</strong> <br><small>Eurecom</small></p>
 </div><div class="column" style="width:33%;">
 <p><img data-src="pics/bounoua-mustapha.jpg" style="width:80.0%"></p>
-<p><strong>Bounoua Mustapha</strong></p>
+<p><strong>Mustapha Bounoua</strong> <br><small>Eurecom</small></p>
 </div></div>
 <div class="columns">
 <div class="column" style="width:33%;">
 <p><img data-src="pics/headshot_chao%20(1).jpg" style="width:80.0%"></p>
-<p><strong>Chao Wang</strong></p>
+<p><strong>Chao Wang</strong> <br><small>Eurecom</small></p>
 </div><div class="column" style="width:33%;">
 <p><img data-src="pics/foresti-alberto.jpg" style="width:70.0%"></p>
-<p><strong>Alberto Foresti</strong></p>
+<p><strong>Alberto Foresti</strong> <br><small>Eurecom / Politecnico di Torino</small></p>
 </div><div class="column" style="width:33%;">
 <p><img data-src="pics/nepote-luca.jpg" style="width:70.0%"></p>
-<p><strong>Luca Nepote</strong></p>
+<p><strong>Luca Nepote</strong> <br><small>Eurecom</small></p>
 </div></div>
+</section>
+<section id="information-theory-across-scales-of-brain-biology" class="slide level2">
+<h2>Information Theory Across Scales of Brain Biology</h2>
+<p><strong>Shannon’s answer</strong> (1948): use <strong>Mutual Information</strong> — the unique measure that quantifies statistical dependence in bits, regardless of the shape of the distribution.</p>
+<p>The same framework answers interconnected questions at every scale of neuroscience and organoid biology:</p>
+<table class="caption-top">
+<colgroup>
+<col style="width: 18%">
+<col style="width: 27%">
+<col style="width: 27%">
+<col style="width: 27%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th>Question</th>
+<th>Scale</th>
+<th>Tool</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>1</strong></td>
+<td>How much does a neuron’s firing tell us about a stimulus?</td>
+<td>Systems</td>
+<td>MI</td>
+</tr>
+<tr class="even">
+<td><strong>2</strong></td>
+<td>Which brain area is <em>driving</em> which?</td>
+<td>Circuits</td>
+<td>Transfer Entropy</td>
+</tr>
+<tr class="odd">
+<td><strong>3</strong></td>
+<td>Do populations code <em>redundantly</em> or <em>synergistically</em>?</td>
+<td>Networks</td>
+<td>O-Information</td>
+</tr>
+<tr class="even">
+<td><strong>4</strong></td>
+<td>How much does gene expression predict cell fate? <em>(Weinreb et al.&nbsp;2020)</em></td>
+<td>Organoid / single-cell</td>
+<td>MI</td>
+</tr>
+<tr class="odd">
+<td><strong>5</strong></td>
+<td>What causal structure governs gene regulatory networks? <em>(Clonotrace 2025)</em></td>
+<td>Organoid / genomics</td>
+<td>Transfer Entropy</td>
+</tr>
+</tbody>
+</table>
+<p>The challenge: these quantities are <strong>hard to estimate</strong> from real data — nonlinear distributions, high dimensions, mixed data types. We’ll show how <strong>diffusion processes</strong> provide a unified solution.</p>
 </section>
 <section id="information-theory-is-reshaping-biology" class="slide level2">
 <h2>Information Theory Is Reshaping Biology</h2>
-<p>Think of MI, TE and O-Information as <strong>software-defined measurement instruments</strong>: just as a microscope reveals spatial structure, they reveal <em>statistical structure</em> hidden in any data — continuous, discrete, mixed.</p>
+<p>These tools are not just theoretical — they are already the <strong>primary measurement language</strong> in several active research lines. Think of them as <strong>software-defined instruments</strong>: just as a microscope reveals spatial structure, MI/TE/O-Information reveal <em>statistical structure</em> inaccessible to classical statistics.</p>
 <p><strong>Already in use across the organoid and single-cell field:</strong></p>
 <table style="font-size:0.78em; width:100%; border-collapse:collapse;">
 <tbody><tr style="background:#f0f4ff;">
@@ -350,7 +404,7 @@ Shared programs across independent lineages
 </td>
 </tr>
 </tbody></table>
-<p><strong>The bottleneck</strong>: existing estimators assume Gaussian data, low dimensions, or continuous variables. None of these hold for high-dimensional neural recordings, zero-inflated scRNA-seq counts, unpaired multi-omics, or nonlinear physiological time series.</p>
+<p><strong>The bottleneck</strong>: existing estimators assume Gaussian data, low dimensions, or continuous variables — none of which hold for high-dimensional neural recordings, zero-inflated scRNA-seq, or nonlinear physiological signals.</p>
 <div class="callout callout-important no-icon callout-style-simple">
 <div class="callout-body">
 <div class="callout-content">
@@ -359,9 +413,9 @@ Shared programs across independent lineages
 </div>
 </div>
 </section>
-<section id="a-sneak-peek-what-we-will-show" class="slide level2">
-<h2>A Sneak Peek: What We Will Show</h2>
-<p><strong>Five new estimation tools — same diffusion framework, all validated:</strong></p>
+<section id="what-we-will-show" class="slide level2">
+<h2>What We Will Show</h2>
+<p><strong>Five software instruments — one diffusion framework, all with running code:</strong></p>
 <table class="caption-top">
 <colgroup>
 <col style="width: 25%">
@@ -379,106 +433,38 @@ Shared programs across independent lineages
 </thead>
 <tbody>
 <tr class="odd">
-<td><strong>MINDE</strong></td>
+<td><strong>MINDE</strong> <em>(ICLR 2024)</em></td>
 <td><span class="math inline">\(I(A;B)\)</span></td>
 <td>Continuous</td>
 <td>SotA benchmark across distribution families</td>
 </tr>
 <tr class="even">
-<td><strong>INFO-SEDD</strong></td>
+<td><strong>INFO-SEDD</strong> <em>(ICLR 2025)</em></td>
 <td><span class="math inline">\(I(A;B)\)</span></td>
 <td><strong>Discrete</strong></td>
 <td>DNA promoter motif discovery (<em>Arabidopsis</em>)</td>
 </tr>
 <tr class="odd">
-<td><strong>DDMEC</strong></td>
+<td><strong>DDMEC</strong> <em>(ICML 2025)</em></td>
 <td><span class="math inline">\(\max_\pi I(X;Y)\)</span></td>
 <td>Unpaired multimodal</td>
 <td>PBMC ATAC-seq ↔︎ RNA-seq alignment</td>
 </tr>
 <tr class="even">
-<td><strong>SOI</strong></td>
+<td><strong>SOI</strong> <em>(ICML 2024)</em></td>
 <td><span class="math inline">\(\Omega(X_1,\ldots,X_N)\)</span></td>
 <td>Multivariate</td>
 <td>VBN visual cortex (6 areas, Neuropixels)</td>
 </tr>
 <tr class="odd">
-<td><strong>TENDE</strong></td>
+<td><strong>TENDE</strong> <em>(preprint)</em></td>
 <td><span class="math inline">\(\mathrm{TE}_{X\to Y}(k,\ell)\)</span></td>
 <td>Time series</td>
-<td>Respiratory sinus arrhythmia in physiological signals</td>
+<td>Respiratory sinus arrhythmia recovery</td>
 </tr>
 </tbody>
 </table>
-<p>Each is a <strong>new software instrument</strong>: you hand it data, it returns an information-theoretic quantity that was previously inaccessible at this scale or data type.</p>
-</section>
-<section id="information-theory-across-scales-of-brain-biology" class="slide level2">
-<h2>Information Theory Across Scales of Brain Biology</h2>
-<p><strong>Shannon’s answer</strong> (1948): use <strong>Mutual Information</strong> — the unique measure that quantifies statistical dependence in bits, regardless of the shape of the distribution.</p>
-<p>The same tool answers interconnected questions at every scale of neuroscience:</p>
-<table class="caption-top">
-<colgroup>
-<col style="width: 18%">
-<col style="width: 27%">
-<col style="width: 27%">
-<col style="width: 27%">
-</colgroup>
-<thead>
-<tr class="header">
-<th></th>
-<th>Question</th>
-<th>Scale</th>
-<th>Tool</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><strong>1</strong></td>
-<td>How much does a neuron’s firing tell us about a stimulus?</td>
-<td>Systems</td>
-<td>MI</td>
-</tr>
-<tr class="even">
-<td><strong>2</strong></td>
-<td>Which brain area is <em>driving</em> which?</td>
-<td>Circuits</td>
-<td>Transfer Entropy</td>
-</tr>
-<tr class="odd">
-<td><strong>3</strong></td>
-<td>Do populations code <em>redundantly</em> or <em>synergistically</em>?</td>
-<td>Networks</td>
-<td>O-Information</td>
-</tr>
-<tr class="even">
-<td><strong>4</strong></td>
-<td>How much does gene expression predict cell fate? <em>(Weinreb et al.&nbsp;2020)</em></td>
-<td>Organoid / single-cell</td>
-<td>MI</td>
-</tr>
-<tr class="odd">
-<td><strong>5</strong></td>
-<td>What causal structure governs gene regulatory networks? <em>(Clonotrace 2025)</em></td>
-<td>Organoid / genomics</td>
-<td>Transfer Entropy</td>
-</tr>
-</tbody>
-</table>
-<p>The challenge: these quantities are <strong>hard to estimate</strong> from real data — nonlinear distributions, high dimensions, mixed data types. We’ll show how <strong>diffusion processes</strong> provide a unified solution.</p>
-</section>
-<section id="summary-of-the-talk" class="slide level2">
-<h2>Summary of the Talk</h2>
-<p><strong>Five software instruments for information theory — one diffusion framework:</strong></p>
-<div class="columns">
-<div class="column" style="width:50%;">
-<p><strong>1. MINDE</strong> <em>(Franzese et al., ICLR 2024)</em> <br>MI between <em>continuous</em> signals via diffusion score functions <br>→ <strong>The foundational building block</strong> — all methods below are extensions of this core idea</p>
-<p><strong>2. INFO-SEDD</strong> <em>(Foresti et al., ICLR 2025)</em> <br>MI for <em>discrete</em> data via Continuous Time Markov Chains <br>→ <em>DNA regulatory elements; scRNA-seq count data</em></p>
-<p><strong>3. DDMEC</strong> <em>(Bounoua et al., ICML 2025)</em> <br>Maximum-MI matching of unpaired multimodal data <br>→ <em>ATAC-seq / RNA-seq alignment without paired cells</em></p>
-</div><div class="column" style="width:50%;">
-<p><strong>4. SOI</strong> <em>(Bounoua et al., ICML 2024)</em> <br>O-Information — synergy &amp; redundancy across populations <br>→ <em>Visual cortex coding in mice; lineage disentanglement</em></p>
-<p><strong>5. TENDE</strong> <em>(Munoz et al., preprint)</em> <br>Transfer Entropy — directed information flow <br>→ <em>Organoid circuit formation; causal gene networks</em></p>
-<p><strong>The unifying insight</strong>: replace intractable measure-theoretic integrals with learnable <em>score functions</em> trained via self-supervised denoising.</p>
-</div></div>
+<p><strong>The unifying insight</strong>: replace intractable measure-theoretic integrals with learnable <em>score functions</em> trained via self-supervised denoising — the same machinery behind Stable Diffusion, repurposed for information theory.</p>
 </section>
 <section>
 <section id="introduction" class="title-slide slide level1 center">
@@ -520,24 +506,39 @@ Shared programs across independent lineages
 <li><strong>Gene regulatory networks</strong>: MI between gene pairs underpins GRN inference (ARACNE, MRNET) — reconstructing which transcription factors regulate which targets in developing organoid tissue.</li>
 </ul>
 </section>
-<section id="some-examples" class="slide level2">
-<h2>Some Examples</h2>
-<p><span class="math display">\[\textsc{I}(A;B)=\int_{\mathbb{R}^{N\times M}} p(x,y)\log\frac{p(x,y)}{p(x)p(y)}\,dx\,dy, \quad \mu^{A,B}(dx,dy)=p(x,y)\,dx\,dy\]</span></p>
-<p><span class="math display">\[\textsc{I}(A;B)=\sum_{x,y\in \mathcal{X}\times \mathcal{Y}} p(x,y)\log\frac{p(x,y)}{p(x)p(y)}, \quad \mu^{A,B}(x,y)=p(x,y)\]</span></p>
-<p>Critically we rely on i) knowledge of the measures ii) capability of computing integral/sums in closed form. Examples: AWGN Channel, Discrete RVs with known distribution…</p>
-</section>
 <section id="why-not-just-use-correlation" class="slide level2">
 <h2>Why Not Just Use Correlation?</h2>
 <p>Pearson correlation <span class="math inline">\(\rho(X,Y) = \frac{\operatorname{Cov}(X,Y)}{\sigma_X \sigma_Y}\)</span> is ubiquitous — but it fundamentally fails in neural data settings:</p>
+<div class="fragment">
 <ul>
-<li><p><strong>Nonlinearities</strong>: neurons have sigmoidal transfer functions, threshold and saturation effects. A neuron can be maximally informative about a stimulus yet have <em>zero</em> linear correlation with it.</p></li>
-<li><p><strong>The XOR problem</strong>: let <span class="math inline">\(X, Y\)</span> be independent fair coin flips, <span class="math inline">\(Z = X \oplus Y\)</span> (XOR). Then <span class="math inline">\(\rho(X,Z)=\rho(Y,Z)=0\)</span> — yet <span class="math inline">\(I(X;Z) &gt; 0\)</span>. This is precisely <em>synergistic coding</em>: the pair <span class="math inline">\((X,Y)\)</span> jointly encodes <span class="math inline">\(Z\)</span>, but neither alone does. This arises naturally in multi-neuron recordings.</p></li>
-<li><p><strong>Mixed data types</strong>: neural recordings mix spike counts (discrete, Poisson-like), local field potentials (continuous), and behavioural variables (categorical). Correlation requires a common scale; MI is defined uniformly for <em>any</em> pair of measures.</p></li>
-<li><p><strong>Reparametrisation invariance</strong>: MI is unchanged under any invertible transformation. Correlation depends on preprocessing choices (z-scoring, log-transform of firing rates) — MI does not.</p></li>
-<li><p><strong>scRNA-seq count data</strong>: gene expression counts are discrete, zero-inflated, and heavily skewed (negative binomial). Pearson correlation on raw or log-normalised counts systematically misses nonlinear co-regulation between genes. MI is defined directly on the count distribution, no normalisation required.</p></li>
-<li><p><strong>Organoid evidence — hidden states</strong>: Weinreb et al.&nbsp;(<em>Science</em>, 2020) showed that sister cells’ transcriptomes had <em>zero</em> useful linear correlation for predicting differential fate outcomes — yet MI between sisters grew steadily, revealing that hidden epigenetic states (invisible to sequencing) were the true fate determinants. Only MI detected this.</p></li>
-<li><p><strong>Beyond neurons</strong>: Uthamacumaran et al.&nbsp;(2024) applied MI-based functional connectivity to <em>aneural</em> morphogenetic tissue (Xenopus epidermis), revealing organised information structures invisible to pairwise correlation — showing these tools generalise across all developing biological systems.</p></li>
+<li><strong>Nonlinearities</strong>: neurons have sigmoidal transfer functions, threshold and saturation effects. A neuron can be maximally informative about a stimulus yet have <em>zero</em> linear correlation with it.</li>
 </ul>
+</div>
+<div class="fragment">
+<ul>
+<li><strong>The XOR problem</strong>: let <span class="math inline">\(X, Y\)</span> be independent fair coin flips, <span class="math inline">\(Z = X \oplus Y\)</span> (XOR). Then <span class="math inline">\(\rho(X,Z)=\rho(Y,Z)=0\)</span> — yet <span class="math inline">\(I(X;Z) &gt; 0\)</span>. This is precisely <em>synergistic coding</em>: the pair <span class="math inline">\((X,Y)\)</span> jointly encodes <span class="math inline">\(Z\)</span>, but neither alone does. This arises naturally in multi-neuron recordings.</li>
+</ul>
+</div>
+<div class="fragment">
+<ul>
+<li><strong>Mixed data types</strong>: neural recordings mix spike counts (discrete, Poisson-like), local field potentials (continuous), and behavioural variables (categorical). Correlation requires a common scale; MI is defined uniformly for <em>any</em> pair of measures.</li>
+</ul>
+</div>
+<div class="fragment">
+<ul>
+<li><strong>scRNA-seq count data</strong>: gene expression counts are discrete, zero-inflated, and heavily skewed. Pearson correlation on raw or log-normalised counts systematically misses nonlinear co-regulation. MI is defined directly on the count distribution, no normalisation required.</li>
+</ul>
+</div>
+<div class="fragment">
+<ul>
+<li><strong>Organoid evidence — hidden states</strong>: Weinreb et al.&nbsp;(<em>Science</em>, 2020) showed that sister cells’ transcriptomes had <em>zero</em> useful linear correlation for predicting differential fate — yet MI between sisters grew steadily, revealing hidden epigenetic states invisible to sequencing. Only MI detected this.</li>
+</ul>
+</div>
+<div class="fragment">
+<ul>
+<li><strong>Beyond neurons</strong>: Uthamacumaran et al.&nbsp;(2024) applied MI-based connectivity to <em>aneural</em> morphogenetic tissue (Xenopus epidermis), revealing organised information structures invisible to correlation — these tools generalise across all developing biological systems.</li>
+</ul>
+</div>
 </section>
 <section id="technical-simplification" class="slide level2">
 <h2>Technical Simplification</h2>
@@ -582,7 +583,9 @@ Shared programs across independent lineages
 <section>
 <section id="estimation-via-diffusion" class="title-slide slide level1 center">
 <h1>Estimation via Diffusion</h1>
-
+<div style="font-size:0.75em; color:#666; margin-top:0.5em;">
+<p><strong>MINDE</strong> → INFO-SEDD → DDMEC → SOI → TENDE</p>
+</div>
 </section>
 <section id="the-diffusion-idea-an-intuition" class="slide level2">
 <h2>The Diffusion Idea — An Intuition</h2>
@@ -727,17 +730,22 @@ Shared programs across independent lineages
 <h2>Why This Gap: an Intuition</h2>
 <div class="columns">
 <div class="column" style="width:50%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
 <p><img data-src="figures/pitfalls.jpg" style="width:100.0%"></p>
+<figcaption><strong>Left</strong>: score functions <span class="math inline">\(\nabla \log p_t(x)\)</span> are <em>smooth fields</em> defined everywhere — even in the tails. Learning them via denoising is stable and well-conditioned.</figcaption>
+</figure>
+</div>
 </div><div class="column" style="width:50%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
 <p><img data-src="figures/multi_scale.jpg" style="width:100.0%"></p>
+<figcaption><strong>Right</strong>: the same score function at multiple noise levels forms a hierarchy of “zoom levels”. Coarse levels capture global structure; fine levels capture local detail — together they tile all of density space reliably.</figcaption>
+</figure>
+</div>
 </div></div>
-<p>Credit: <a href="https://yang-song.net/blog/2021/score/">https://yang-song.net/blog/2021/score/</a></p>
-</section>
-<section id="a-different-perspective" class="slide level2">
-<h2>A Different Perspective</h2>
-<p>A <em>simpler</em> derivation of the estimator is based on the Feynman integration trick (a.k.a. in statistics as thermodynamic integration). Consider <span class="math inline">\(p_t=\exp(t\mathcal{L})p_0,\;q_t=\exp(t\mathcal{L})q_0\)</span>, where <span class="math inline">\(\mathcal{L}\)</span> is the Fokker-Planck operator of a “nice” diffusion <span class="math inline">\(\mathcal{L}=\nabla^\top(f\cdot)+\Delta(\cdot)\)</span>.</p>
-<p>Then: <span class="math display">\[\KL{p_0}{q_0}=\int_0^\infty \frac{d}{dt}\KL{p_t}{q_t}\,dt\]</span> where <span class="math display">\[\frac{d}{dt}\KL{p_t}{q_t}=\int \frac{d}{dt}p_t\log\frac{p_t}{q_t} +p_t \frac{d}{dt}\log\frac{p_t}{q_t}\,dx\]</span></p>
-<p>The idea of the proof: <span class="math inline">\(\mathcal{L}^\dagger\)</span> is known, integrate by parts, simplify, and obtain an expected difference of scores.</p>
+<p>In contrast, discriminative estimators (MINE, InfoNCE) must compute <span class="math inline">\(\log \mathbb{E}[\exp(T)]\)</span> — a log-sum-exp that is dominated by rare tail events, making variance explode in high dimensions or heavy-tailed settings. Score-based estimation sidesteps this entirely.</p>
+<p><em>Credit: Yang Song, <a href="https://yang-song.net/blog/2021/score/">yang-song.net/blog/2021/score</a></em></p>
 </section>
 <section id="continuous-time-markov-chains-conquering-discrete-spaces" class="slide level2">
 <h2>Continuous Time Markov Chains: Conquering Discrete Spaces</h2>
@@ -902,7 +910,9 @@ Shared programs across independent lineages
 <section>
 <section id="multivariate-information-theory" class="title-slide slide level1 center">
 <h1>Multivariate Information Theory</h1>
-
+<div style="font-size:0.75em; color:#666; margin-top:0.5em;">
+<p>MINDE → INFO-SEDD → DDMEC → <strong>SOI</strong> → <strong>TENDE</strong></p>
+</div>
 </section>
 <section id="multimodal-information-theory" class="slide level2">
 <h2>Multimodal Information Theory</h2>
@@ -959,9 +969,18 @@ Shared programs across independent lineages
 </section>
 <section id="o-information-cont." class="slide level2">
 <h2>O-Information (cont.)</h2>
-<p>Multiple brain regions: is assuming anything a-priori really safe?</p>
-
-<img data-src="figures/brain_pdf.png" style="width:65.0%" class="r-stretch"><p>We don’t need it!!</p>
+<div class="columns">
+<div class="column" style="width:55%;">
+<p>Real neural data — including organoid MEA recordings — does not follow a known parametric distribution. The marginal density of a single visual cortex area (right) is multimodal, skewed, and heavy-tailed.</p>
+<p><strong>Gaussian O-information estimators would be wrong by construction.</strong> A nonparametric, score-based approach is the only option that does not require assuming a distribution family.</p>
+</div><div class="column" style="width:45%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="figures/brain_pdf.png" style="width:100.0%"></p>
+<figcaption>Empirical density of a visual cortex population response — clearly non-Gaussian. Score-based SOI makes no distributional assumption.</figcaption>
+</figure>
+</div>
+</div></div>
 </section>
 <section id="score-based-diffusion-estimation-of-o-information" class="slide level2">
 <h2>Score-based (Diffusion) Estimation of O-Information</h2>
@@ -1037,10 +1056,13 @@ Shared programs across independent lineages
 </figure>
 </div>
 </div></div>
-<ul>
-<li>This suggests that higher amount of redundant information in the visual cortex regions is transmitted in case of a flash with new scene.</li>
-<li>Interestingly, when considering six areas of the visual cortex, our observations remain valid, suggesting that the measured behaviour is common to these other brain areas as well.</li>
-</ul>
+<div class="callout callout-note no-icon callout-style-simple">
+<div class="callout-body">
+<div class="callout-content">
+<p><strong>Key finding</strong>: novel stimuli elicit a broadcast, redundant response across all visual areas — reliability through independent copies. The effect holds consistently from 3 to 6 areas, suggesting it reflects a general property of the visual hierarchy rather than a local circuit artifact.</p>
+</div>
+</div>
+</div>
 </section>
 <section id="directed-functional-connectivity-beyond-correlation" class="slide level2">
 <h2>Directed Functional Connectivity: Beyond Correlation</h2>
@@ -1053,15 +1075,15 @@ Shared programs across independent lineages
 <li>Captures nonlinear, asymmetric information flow — critical for neural circuits where signalling is inherently nonlinear.</li>
 </ul>
 </div><div class="column" style="width:40%;">
-<div style="text-align:center; padding-top:1em;">
-<div style="font-size:1.8em;">
-🧠 → 🧠
+<div style="text-align:center; padding-top:2em; font-size:0.9em;">
+<div style="font-size:1.4em; font-family:monospace; letter-spacing:0.1em;">
+V1 &nbsp;⟶&nbsp; V2
 </div>
-<div style="font-size:0.85em; margin-top:0.5em;">
+<div style="font-size:0.9em; margin-top:0.8em;">
 <span class="math inline">\(\mathrm{TE}_{V1\to V2} \neq \mathrm{TE}_{V2\to V1}\)</span>
 </div>
-<div style="font-size:0.8em; margin-top:1em; color:#555;">
-Transfer entropy is asymmetric by construction — it captures the <em>direction</em> of information flow.
+<div style="font-size:0.82em; margin-top:1em; color:#555; font-style:italic;">
+Transfer entropy is asymmetric by construction — it captures the <em>direction</em> of information flow, not just its presence.
 </div>
 </div>
 </div></div>
@@ -1131,9 +1153,15 @@ Transfer entropy is asymmetric by construction — it captures the <em>direction
 </figure>
 </div>
 </div><div class="column" style="width:50%;">
-<p><strong>What is recovered</strong>: <strong>respiratory sinus arrhythmia (RSA)</strong> — the well-known phenomenon that breathing modulates heart rate more than the reverse. Respiration pacemaking in the brainstem overrides cardiac autonomic control, a nonlinear effect invisible to linear Granger causality.</p>
+<div class="fragment">
+<p><strong>What is recovered</strong>: <strong>respiratory sinus arrhythmia (RSA)</strong> — breathing modulates heart rate more than the reverse. Respiration pacemaking in the brainstem overrides cardiac autonomic control, a nonlinear effect invisible to linear Granger causality.</p>
+</div>
+<div class="fragment">
 <p><strong>Why previous methods failed</strong>: Granger requires Gaussian residuals; KNN estimators need <span class="math inline">\(O(n^2)\)</span> computation in high dimensions. TENDE — score-based, sample-efficient — gives stable estimates at 6000 samples with 1000 MC iterations.</p>
-<p><strong>Organoid application</strong>: applied to organoid MEA recordings, TENDE would quantify <span class="math inline">\(\mathrm{TE}_{A\to B}\)</span> between any neuron pair or region pair — mapping the <em>causal wiring diagram</em> of emerging circuits and how it evolves over weeks of maturation.</p>
+</div>
+<div class="fragment">
+<p><strong>Organoid application</strong>: applied to organoid MEA recordings, TENDE quantifies <span class="math inline">\(\mathrm{TE}_{A\to B}\)</span> between any electrode pair — mapping the <em>causal wiring diagram</em> of emerging circuits and tracking how it evolves over weeks of maturation.</p>
+</div>
 </div></div>
 </section></section>
 <section>
@@ -1192,13 +1220,58 @@ Transfer entropy is asymmetric by construction — it captures the <em>direction
 <li>DeepTracing (2024): Total Correlation → disentangling lineage from cell state</li>
 <li>Clonotrace (2025): MI → joint lineage + transcriptomic analysis</li>
 </ul>
-<p><strong>What we left out</strong> (we have some backup slides):</p>
+<p><strong>Going deeper</strong> (backup slides available):</p>
 <ul>
-<li>We made it <em>look</em> simple (“just adapt these formulas and you get an estimator”)</li>
-<li>A more formal discussion of the results</li>
-<li>Actual extensive numerical validation of the proposed methods</li>
-<li>Careful discussion of the convergence properties in terms of sample sizes, model complexity…</li>
+<li>Formal measure-theoretic derivations and proof sketches</li>
+<li>Convergence analysis: sample complexity, model capacity requirements</li>
+<li>Extended numerical validation across additional benchmark families</li>
+<li>Thermodynamic integration / Feynman-Kac alternative derivation</li>
 </ul>
+</section>
+<section id="try-it-yourself" class="slide level2">
+<h2>Try It Yourself</h2>
+<p>All results shown in this talk were produced by Colab notebooks — <strong>runnable in your browser, no installation required</strong>.</p>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><strong>Available notebooks:</strong></p>
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th>Method</th>
+<th>What you can run</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>INFO-SEDD</strong></td>
+<td>TATA-box discovery on <em>Arabidopsis</em> promoters</td>
+</tr>
+<tr class="even">
+<td><strong>SOI</strong></td>
+<td>Synthetic redundancy/synergy benchmarks</td>
+</tr>
+<tr class="odd">
+<td><strong>SOI</strong></td>
+<td>VBN visual cortex O-information</td>
+</tr>
+<tr class="even">
+<td><strong>TENDE</strong></td>
+<td>TE on coupled OU + heart rate/respiration</td>
+</tr>
+</tbody>
+</table>
+<p>All notebooks load pretrained checkpoints — results in minutes, not hours.</p>
+</div><div class="column" style="width:50%;">
+<p><strong>Repository</strong>: <a href="https://github.com/giuliofranzese/Cajal">github.com/giuliofranzese/Cajal</a></p>
+<div class="callout callout-tip no-icon callout-style-simple">
+<div class="callout-body">
+<div class="callout-content">
+<p>The same notebooks can serve as <strong>templates</strong> for your own data: substitute the data-loading cell, adjust dimensions, run. The estimators make no assumption about your distribution.</p>
+</div>
+</div>
+</div>
+<p><em>Questions, issues, collaborations: <a href="mailto:giulio.franzese@eurecom.fr">giulio.franzese@eurecom.fr</a></em></p>
+</div></div>
 </section>
 <section id="references" class="slide level2 scrollable">
 <h2>References</h2>
