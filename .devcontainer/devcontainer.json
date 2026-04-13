@@ -1,5 +1,5 @@
 {
-  "name": "TENDE",
+  "name": "Cajal",
   "build": {
     "dockerfile": "Dockerfile"
   },
