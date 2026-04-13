@@ -1,0 +1,1084 @@
+---
+title: "Mutual Information and Diffusion Processes"
+author: "**Giulio Franzese** — Eurecom, Data Science Department"
+date: ""
+format:
+  revealjs:
+    theme: default
+    slide-number: true
+    scrollable: true
+    smaller: true
+    fig-align: center
+    transition: slide
+    chalkboard: false
+    controls: true
+    html-math-method:
+      method: mathjax
+      url: "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js"
+    title-slide-attributes:
+      data-background-image: assets/logo/eurecom.png
+      data-background-size: "18%"
+      data-background-position: "bottom 30px right 40px"
+include-in-header:
+  text: |
+    <script>
+    window.MathJax = {
+      tex: {
+        tags: 'ams',
+        macros: {
+          textsc:  ["{\\text{#1}}", 1],
+          mathbold:    ["{\\boldsymbol{{#1}}}", 1],
+          mba: "{\\boldsymbol{a}}", mbb: "{\\boldsymbol{b}}", mbc: "{\\boldsymbol{c}}",
+          mbd: "{\\boldsymbol{d}}", mbe: "{\\boldsymbol{e}}", mbf: "{\\boldsymbol{f}}",
+          mbg: "{\\boldsymbol{g}}", mbh: "{\\boldsymbol{h}}", mbi: "{\\boldsymbol{i}}",
+          mbj: "{\\boldsymbol{j}}", mbk: "{\\boldsymbol{k}}", mbl: "{\\boldsymbol{l}}",
+          mbm: "{\\boldsymbol{m}}", mbn: "{\\boldsymbol{n}}", mbo: "{\\boldsymbol{o}}",
+          mbp: "{\\boldsymbol{p}}", mbq: "{\\boldsymbol{q}}", mbr: "{\\boldsymbol{r}}",
+          mbs: "{\\boldsymbol{s}}", mbt: "{\\boldsymbol{t}}", mbu: "{\\boldsymbol{u}}",
+          mbv: "{\\boldsymbol{v}}", mbw: "{\\boldsymbol{w}}", mbx: "{\\boldsymbol{x}}",
+          mby: "{\\boldsymbol{y}}", mbz: "{\\boldsymbol{z}}",
+          mbA: "{\\boldsymbol{A}}", mbB: "{\\boldsymbol{B}}", mbC: "{\\boldsymbol{C}}",
+          mbD: "{\\boldsymbol{D}}", mbE: "{\\boldsymbol{E}}", mbF: "{\\boldsymbol{F}}",
+          mbG: "{\\boldsymbol{G}}", mbH: "{\\boldsymbol{H}}", mbI: "{\\boldsymbol{I}}",
+          mbJ: "{\\boldsymbol{J}}", mbK: "{\\boldsymbol{K}}", mbL: "{\\boldsymbol{L}}",
+          mbM: "{\\boldsymbol{M}}", mbN: "{\\boldsymbol{N}}", mbO: "{\\boldsymbol{O}}",
+          mbP: "{\\boldsymbol{P}}", mbQ: "{\\boldsymbol{Q}}", mbR: "{\\boldsymbol{R}}",
+          mbS: "{\\boldsymbol{S}}", mbT: "{\\boldsymbol{T}}", mbU: "{\\boldsymbol{U}}",
+          mbV: "{\\boldsymbol{V}}", mbW: "{\\boldsymbol{W}}", mbX: "{\\boldsymbol{X}}",
+          mbY: "{\\boldsymbol{Y}}", mbZ: "{\\boldsymbol{Z}}",
+          mbalpha:   "{\\boldsymbol{\\alpha}}",
+          mbbeta:    "{\\boldsymbol{\\beta}}",
+          mbgamma:   "{\\boldsymbol{\\gamma}}",
+          mbdelta:   "{\\boldsymbol{\\delta}}",
+          mbepsilon: "{\\boldsymbol{\\epsilon}}",
+          mbchi:     "{\\boldsymbol{\\chi}}",
+          mbeta:     "{\\boldsymbol{\\eta}}",
+          mbiota:    "{\\boldsymbol{\\iota}}",
+          mbkappa:   "{\\boldsymbol{\\kappa}}",
+          mblambda:  "{\\boldsymbol{\\lambda}}",
+          mbmu:      "{\\boldsymbol{\\mu}}",
+          mbnu:      "{\\boldsymbol{\\nu}}",
+          mbomega:   "{\\boldsymbol{\\omega}}",
+          mbphi:     "{\\boldsymbol{\\phi}}",
+          mbpi:      "{\\boldsymbol{\\pi}}",
+          mbpsi:     "{\\boldsymbol{\\psi}}",
+          mbrho:     "{\\boldsymbol{\\rho}}",
+          mbsigma:   "{\\boldsymbol{\\sigma}}",
+          mbtau:     "{\\boldsymbol{\\tau}}",
+          mbtheta:   "{\\boldsymbol{\\theta}}",
+          mbupsilon: "{\\boldsymbol{\\upsilon}}",
+          mbvarepsilon: "{\\boldsymbol{\\varepsilon}}",
+          mbvarphi:  "{\\boldsymbol{\\varphi}}",
+          mbvartheta:"{\\boldsymbol{\\vartheta}}",
+          mbvarrho:  "{\\boldsymbol{\\varrho}}",
+          mbxi:      "{\\boldsymbol{\\xi}}",
+          mbzeta:    "{\\boldsymbol{\\zeta}}",
+          mbDelta:   "{\\boldsymbol{\\Delta}}",
+          mbGamma:   "{\\boldsymbol{\\Gamma}}",
+          mbLambda:  "{\\boldsymbol{\\Lambda}}",
+          mbOmega:   "{\\boldsymbol{\\Omega}}",
+          mbPhi:     "{\\boldsymbol{\\Phi}}",
+          mbPi:      "{\\boldsymbol{\\Pi}}",
+          mbPsi:     "{\\boldsymbol{\\Psi}}",
+          mbSigma:   "{\\boldsymbol{\\Sigma}}",
+          mbTheta:   "{\\boldsymbol{\\Theta}}",
+          mbUpsilon: "{\\boldsymbol{\\Upsilon}}",
+          mbXi:      "{\\boldsymbol{\\Xi}}",
+          qL: "{\\mathbb{Q}}",
+          pL: "{\\mathbb{P}}",
+          KL:   ["{\\text{KL}\\!\\left[#1\\;\\|\\;#2\\right]}", 2],
+          Df:   ["{\\mathcal{D}_f\\!\\left[#1\\;\\|\\;#2\\right]}", 2],
+          Gauss: ["{\\mathcal{N}_{#1}}", 1],
+          E:    "{\\mathbb{E}}",
+          bbH:  "{\\mathbb{H}}",
+          bbR:  "{\\mathbb{R}}",
+          bbS:  "{\\mathbb{S}}",
+          cB: "{\\mathcal{B}}", cC: "{\\mathcal{C}}", cS: "{\\mathcal{S}}",
+          cD: "{\\mathcal{D}}", cL: "{\\mathcal{L}}", cN: "{\\mathcal{N}}",
+          cP: "{\\mathcal{P}}", cQ: "{\\mathcal{Q}}", cR: "{\\mathcal{R}}",
+          cF: "{\\mathcal{F}}", cI: "{\\mathcal{I}}", cT: "{\\mathcal{T}}",
+          cV: "{\\mathcal{V}}", cE: "{\\mathcal{E}}", cG: "{\\mathcal{G}}",
+          cX: "{\\mathcal{X}}", cY: "{\\mathcal{Y}}", cH: "{\\mathcal{H}}",
+          cW: "{\\mathcal{W}}", cU: "{\\mathcal{U}}",
+          Normal: "{\\mathcal{N}}",
+          argmax: "{\\operatorname*{arg\\,max}}",
+          argmin: "{\\operatorname*{arg\\,min}}",
+          defeq:  "{\\stackrel{\\scriptscriptstyle\\text{def}}{=}}",
+          d:      ["{\\operatorname{d}\\!{#1}}", 1],
+          dd:     "{\\operatorname{d}\\!}",
+          g:      "{\\,|\\,}",
+          scalprod: ["{\\langle #1,\\, #2\\rangle}", 2],
+          norm:   ["{\\left\\| #1 \\right\\|}", 1],
+          const:  "{\\mathrm{const.}}",
+          diag:   "{\\textrm{diag}}",
+          supp:   "{\\textrm{supp}}",
+          pdata:  "{p_{\\text{data}}}",
+          fft:    "{\\mathfrak{F}}",
+          ifft:   "{\\mathfrak{I}}",
+          inv:    "{-1}",
+          eye:    "{\\boldsymbol{I}}",
+          zerovect: "{\\mathbf{0}}",
+          Lelbo:  "{\\mathcal{L}_{\\text{ELBO}}}",
+          bigO:   "{\\mathcal{O}}"
+        }
+      }
+    };
+    </script>
+---
+
+## Before Starting: a collaborative effort!
+
+::: {.columns}
+
+::: {.column width="33%"}
+![](pics/franzese.jpg){width=80%}
+
+**Giulio Franzese**
+:::
+
+::: {.column width="33%"}
+![](pics/michiardi-pietro_1.jpg){width=70%}
+
+**Pietro Michiardi**
+:::
+
+::: {.column width="33%"}
+![](pics/bounoua-mustapha.jpg){width=80%}
+
+**Bounoua Mustapha**
+:::
+
+:::
+
+::: {.columns}
+
+::: {.column width="33%"}
+![](pics/headshot_chao%20(1).jpg){width=80%}
+
+**Chao Wang**
+:::
+
+::: {.column width="33%"}
+![](pics/foresti-alberto.jpg){width=70%}
+
+**Alberto Foresti**
+:::
+
+::: {.column width="33%"}
+![](pics/nepote-luca.jpg){width=70%}
+
+**Luca Nepote**
+:::
+
+:::
+
+---
+
+## Information Theory Across Scales of Brain Biology
+
+**Shannon's answer** (1948): use **Mutual Information** — the unique measure that quantifies statistical dependence in bits, regardless of the shape of the distribution.
+
+The same tool answers interconnected questions at every scale of neuroscience:
+
+|  | Question | Scale | Tool |
+|--|---|---|---|
+| **1** | How much does a neuron's firing tell us about a stimulus? | Systems | MI |
+| **2** | Which brain area is *driving* which? | Circuits | Transfer Entropy |
+| **3** | Do populations code *redundantly* or *synergistically*? | Networks | O-Information |
+| **4** | How much does gene expression predict cell fate? *(Weinreb et al. 2020)* | Organoid / single-cell | MI |
+| **5** | What causal structure governs gene regulatory networks? *(Clonotrace 2025)* | Organoid / genomics | Transfer Entropy |
+
+The challenge: these quantities are **hard to estimate** from real data — nonlinear distributions, high dimensions, mixed data types. We'll show how **diffusion processes** provide a unified solution.
+
+---
+
+## Summary of the Talk
+
+**Five methods, one framework — all applicable to brain biology:**
+
+::: {.columns}
+::: {.column width="50%"}
+**1. MINDE** *(Franzese et al., ICLR 2024)*
+<br>MI between *continuous* signals via diffusion score functions
+<br>→ **The foundational building block** — all methods below are extensions of this core idea
+
+**2. INFO-SEDD** *(Foresti et al., ICLR 2025)*
+<br>MI for *discrete* data via Continuous Time Markov Chains
+<br>→ *DNA regulatory elements; scRNA-seq count data*
+
+**3. DDMEC** *(Bounoua et al., ICML 2025)*
+<br>Maximum-MI matching of unpaired multimodal data
+<br>→ *ATAC-seq / RNA-seq alignment without paired cells*
+:::
+::: {.column width="50%"}
+**4. SOI** *(Bounoua et al., ICML 2024)*
+<br>O-Information — synergy & redundancy across populations
+<br>→ *Visual cortex coding in mice; lineage disentanglement*
+
+**5. TENDE** *(Munoz et al., preprint)*
+<br>Transfer Entropy — directed information flow
+<br>→ *Organoid circuit formation; causal gene networks*
+
+**The unifying insight**: replace intractable measure-theoretic integrals with learnable *score functions* trained via self-supervised denoising.
+:::
+:::
+
+# Introduction
+
+## Definition of Mutual Information
+
+The mutual information between two random variables $X$ and $Y$ (or stochastic processes) is defined as:
+
+$$\textsc{I}(X; Y) = \mathbb{E} \left[ \log \frac{d\mu^{X,Y}}{d\mu^X d\mu^Y} \right]$$
+
+where:
+
+- $\mu^{X,Y}$ is the joint probability **measure** of $X$ and $Y$.
+- $\mu^X$ and $\mu^Y$ are the marginal measures.
+
+The same definition holds when $X$ and $Y$ are stochastic processes.
+
+---
+
+## Mutual Information as a Fundamental Measure
+
+- Mutual information is a fundamental measure of statistical dependence between random variables.
+- Imagine an omnipotent Daemon observing streams of data: **either** from the joint distribution $\mu^{X,Y}$ **or** from the product of the marginals $\mu^X \mu^Y$.
+- Mutual information quantifies the rate at which the daemon can distinguish between these two cases.
+- In practical terms:
+  - For discrete random variables, MI provides fundamental bounds on classification accuracy (e.g. how well can we decode a stimulus from a neural population response?).
+  - For continuous variables, it sets limits on estimation variance.
+- **We will see later** how this directly quantifies redundancy vs. synergy across visual cortex areas in mice — without any parametric assumption on neural firing distributions.
+
+---
+
+## Interpretation of Mutual Information
+
+- In a communication system, MI measures how much information about a message is retained after transmission through a noisy channel.
+- **Neuroscience translation**: the stimulus is the "message", the neural response is the "received signal". $\textsc{I}(\text{stimulus};\text{response})$ directly quantifies the neuron's coding fidelity — in bits.
+- Applications in neuroscience: neural coding efficiency, information bottleneck in sensory hierarchies, functional connectivity, consciousness research.
+- **Cell fate prediction**: Weinreb et al. (*Science*, 2020) used MI between sister cells' transcriptomes to show that cell fate is governed by *hidden* biological states (epigenetic, metabolic) invisible to standard single-cell RNA-seq — MI between sisters increased over time beyond what transcriptomes alone predicted, revealing the hidden information.
+- **Gene regulatory networks**: MI between gene pairs underpins GRN inference (ARACNE, MRNET) — reconstructing which transcription factors regulate which targets in developing organoid tissue.
+
+---
+
+## Some Examples
+
+$$\textsc{I}(A;B)=\int_{\mathbb{R}^{N\times M}} p(x,y)\log\frac{p(x,y)}{p(x)p(y)}\,dx\,dy, \quad \mu^{A,B}(dx,dy)=p(x,y)\,dx\,dy$$
+
+$$\textsc{I}(A;B)=\sum_{x,y\in \mathcal{X}\times \mathcal{Y}} p(x,y)\log\frac{p(x,y)}{p(x)p(y)}, \quad \mu^{A,B}(x,y)=p(x,y)$$
+
+Critically we rely on i) knowledge of the measures ii) capability of computing integral/sums in closed form. Examples: AWGN Channel, Discrete RVs with known distribution...
+
+---
+
+## Why Not Just Use Correlation?
+
+Pearson correlation $\rho(X,Y) = \frac{\operatorname{Cov}(X,Y)}{\sigma_X \sigma_Y}$ is ubiquitous — but it fundamentally fails in neural data settings:
+
+- **Nonlinearities**: neurons have sigmoidal transfer functions, threshold and saturation effects. A neuron can be maximally informative about a stimulus yet have *zero* linear correlation with it.
+
+- **The XOR problem**: let $X, Y$ be independent fair coin flips, $Z = X \oplus Y$ (XOR). Then $\rho(X,Z)=\rho(Y,Z)=0$ — yet $I(X;Z) > 0$. This is precisely *synergistic coding*: the pair $(X,Y)$ jointly encodes $Z$, but neither alone does. This arises naturally in multi-neuron recordings.
+
+- **Mixed data types**: neural recordings mix spike counts (discrete, Poisson-like), local field potentials (continuous), and behavioural variables (categorical). Correlation requires a common scale; MI is defined uniformly for *any* pair of measures.
+
+- **Reparametrisation invariance**: MI is unchanged under any invertible transformation. Correlation depends on preprocessing choices (z-scoring, log-transform of firing rates) — MI does not.
+
+- **scRNA-seq count data**: gene expression counts are discrete, zero-inflated, and heavily skewed (negative binomial). Pearson correlation on raw or log-normalised counts systematically misses nonlinear co-regulation between genes. MI is defined directly on the count distribution, no normalisation required.
+
+- **Organoid evidence — hidden states**: Weinreb et al. (*Science*, 2020) showed that sister cells' transcriptomes had *zero* useful linear correlation for predicting differential fate outcomes — yet MI between sisters grew steadily, revealing that hidden epigenetic states (invisible to sequencing) were the true fate determinants. Only MI detected this.
+
+- **Beyond neurons**: Uthamacumaran et al. (2024) applied MI-based functional connectivity to *aneural* morphogenetic tissue (Xenopus epidermis), revealing organised information structures invisible to pairwise correlation — showing these tools generalise across all developing biological systems.
+
+---
+
+## Technical Simplification
+
+To lighten up the notation, we present results for *generic* Kullback-Leibler divergences:
+
+$$\KL{\mu}{\rho}\defeq \int\phi\!\left(\frac{d\mu}{d\rho}\right)d\rho,\quad \text{with}\quad \phi(x)=x\log(x)$$
+
+Trivial exercise: show that $\textsc{I}(A,B)=\KL{\mu^{A,B}}{\mu^{A}\mu^{B}}$
+
+---
+
+## Mutual Information Estimators...?
+
+More than 80 years of research in three sentences:
+
+- For Continuous RVs *approximate* the distributions as Gaussian, Laplace (insert anything which gives easy to compute formulas) and compute MI, e.g.
+$$p(x,y)\simeq \mathcal{N}\!\left(\mu,\begin{bmatrix}\Sigma_{XX} &\Sigma_{XY}\\\Sigma_{XY}^\top &\Sigma_{YY}\end{bmatrix}\right) \;\rightarrow\; \textsc{I}(X,Y)=\tfrac{1}{2}\log\!\left(\frac{\det(\Sigma_{YY})\det(\Sigma_{XX})}{\det(\Sigma)}\right)$$
+- For Discrete random variables, estimate the histogram of joint occurrences from dataset $\{x_i,y_i\}_{i=1}^N$, store them in a large matrix, and compute
+$$\hat{H}=\frac{1}{N}\begin{bmatrix} \#(x_i=0,y_i=0) &\dots & \#(x_i=0,y_i=M) \\ \vdots & & \vdots \end{bmatrix}, \quad \hat{I}=\sum_{j,k}\hat{H}_{j,k}\log \hat{H}_{j,k}$$
+- Combine the approaches (binning, clustering prototypes, etc...)
+
+---
+
+## Mutual Information Estimators...? (cont.)
+
+**Problem**: classical estimators fail in high dimensional scenarios necessitating advanced estimation methods like neural estimators.
+
+- Two main families of neural approaches:
+  - **Discriminative**: a classifier distinguishes between samples from the joint ($\sim \mu^{A,B}$) or product of marginals ($\mu^A \mu^B$)
+  - **Generative (likelihood based)**: fit parametrically $\mu^{A,B}$ and estimate MI using Monte Carlo Methods
+- **Problem:** many existing neural estimators fail on challenging (long-tailed distributions) and do not pass *consistency tests*.
+
+---
+
+## Mutual Information Estimators...? (cont.)
+
+Discriminative approaches in one slide (convex duality of $\phi(\cdot)$):
+
+$$\phi^{*}(y)=\sup_{x}(xy-\phi(x)),\quad \phi^{**}(x)= \sup_{y}(yx-\phi^{*}(y)),\quad \phi^{**}(x)=\phi(x)$$
+
+- **Donsker-Varahdan Thm:**
+$$\KL{\mu}{\chi}=\sup_{T:\Omega\rightarrow\mathbb{R}}\E_\mu[T]-\log \E_\chi [\exp(T)]$$
+
+- From all possible functions $T$ to the smaller class of *neural networks*:
+$$\sup_{T:\Omega\rightarrow\mathbb{R}}(\E_\mu[T]-\log \E_\chi [\exp(T)])\geq \sup_{\theta\in \mathbb{R}^K}(\E_\mu[T^\theta]-\log \E_\chi [\exp(T^\theta)])$$
+
+![](figures/dec_bound.png){width=65%}
+
+- **Big problems**: i) Good luck with MC estimation of $\log \E [\exp(T^\theta)]$; ii) For tail events, estimation is unreliable.
+
+# Estimation via Diffusion
+
+## The Diffusion Idea — An Intuition
+
+::: {.columns}
+::: {.column width="55%"}
+**Step 1 — Forward process (noising):**
+
+Any distribution $p(x)$ converges to a Gaussian when you repeatedly add small amounts of noise.
+
+$$x_t = e^{-t}\,x_0 + \sqrt{1 - e^{-2t}}\;\varepsilon, \quad \varepsilon \sim \mathcal{N}(0,I)$$
+
+- At $t=0$: the original data distribution.
+- At $t\to\infty$: pure Gaussian noise.
+- The trajectory in between is fully tractable.
+
+**Step 2 — Score function = compass toward data:**
+
+$$\nabla_x \log p_t(x) \;\;\text{"points toward high-density regions"}$$
+
+- Intuitively: a noisy sample $x_t$ "knows" where $x_0$ came from.
+- The score is proportional to the **optimal denoiser** (Tweedie's formula):
+
+$$\nabla_x \log p_t(x) = \frac{e^{-t}\,\mathbb{E}[x_0 \mid x_t] - x_t}{1 - e^{-2t}}$$
+:::
+::: {.column width="45%"}
+![Different initial distributions all funnel into the same Gaussian after sufficient noising — only the score functions differ](figures/noisy_balls.png){width=100%}
+
+**Step 3 — Learn the score, get MI for free:**
+
+Train a neural network to denoise (self-supervised):
+$$\mathcal{L}(\theta) = \mathbb{E}\!\left[\|\text{net}_\theta(x_t, t) - x_0\|^2\right]$$
+
+The gap between two denoisers encodes the KL divergence — and therefore the Mutual Information.
+:::
+:::
+
+---
+
+## Introduction
+
+- Consider a generic random variable $A$ with probability measure $\mu^A$
+- Build a simple SDE in $[0,T]$ with initial conditions $\sim \mu^A$:
+$$\begin{cases}\dd X_t=-X_t\,\dd t+\sqrt{2}\,\dd W_t,\\ X_0=A\sim \mu^A\end{cases}$$
+where $W_t$ is a Brownian motion. **Informally**, $\dd W_t\sim \mathcal{N}(0,\dd t)$
+
+- For engineers/physicists:
+$$\frac{\dd X_t}{\dd t}=-X_t+\sqrt{2}\underbrace{\frac{\dd W_t}{\dd t}}_{N_t,\,\text{White Noise}}$$
+(even simpler: $X_t=h_t\star N_t$). We need measure theory and stoch. integrals for nonlinear drifts, etc...
+
+- This SDE corresponds to a path measure $\mathbb{P}^{A}$ (**informally** events like $\text{Pr}(X_{0\leq t\leq T}\in \mathcal{S})$).
+
+---
+
+## Introduction (cont.)
+
+- Two SDEs which differ only by initial conditions have KL divergence:
+$$\KL{\mathbb{P}^{A}}{\mathbb{P}^{B}}=\E_{\mathbb{P}^{A}}\!\left[\log\frac{d\mathbb{P}^{A}}{d\mathbb{P}^{B}}\right]=\E_{\mathbb{P}^{A}}\!\left[\log\frac{d\mu^{A}}{dp^{B}}\right]=\KL{\mu^A}{\mu^B}$$
+
+- Disintegration of measures explains why (simply Markov):
+$$\frac{d{P}^{A}}{d{P}^{B}}=\frac{d\mu^A(X_{0})}{d\mu^B(X_{0})}$$
+
+---
+
+## Introduction (cont.)
+
+**Time-reversal** $\hat{X}_t\defeq X_{T-t}$:
+
+- KL between path measures is invariant to time-reversal: $\KL{\mathbb{P}^{A}}{\mathbb{P}^{B}}=\KL{\hat{\mathbb{P}}^{A}}{\hat{\mathbb{P}}^{B}}$
+- Time reversal of SDE is again an SDE (provided technical conditions [Léonard 2014]):
+$$\dd \hat X_t=\hat X_t+2 \underbrace{\nabla\log \frac{d\mu_{T-t}^A}{dx}(\hat X_t)}_{\text{score function!}}\dd t+ \sqrt{2}\,\dd \hat W_t$$
+with $dx$ the Lebesgue measure.
+- Score function $\leftrightarrow$ Denoiser:
+$$\nabla\log \frac{d\mu_t^A}{dx}(x)=\nabla\log p^A_t(x)=\frac{\exp(-t)\,{\color{red}\E_{{\mathbb{P}^{A}}}[X_0\mid X_t=x]}-x}{1-\exp(-2t)}$$
+
+---
+
+## Introduction (cont.)
+
+**Girsanov theorem**: (informal) express the KL between path measures corresponding to two SDEs with different drifts.
+
+$$\KL{\hat{\mathbb{P}}^{A}}{\hat{\mathbb{P}}^{B}}\simeq  \E_{\mathbb{P}^{\mu^A}}\!\left[\int_0^T\norm{\nabla\log p^{A}_t(X_t)-\nabla\log p^{B}_t(X_t)}^2\dd t\right]$$
+
+- Combining with $\KL{\mathbb{P}^{A}}{\mathbb{P}^{B}}=\KL{\hat{\mathbb{P}}^{A}}{\hat{\mathbb{P}}^{B}}$ we can obtain a KL-estimator!
+
+---
+
+## Introduction (cont.)
+
+... but do we know the score? In general, **no**.
+
+**Solution** → parametric denoiser (score network):
+$$\mathcal{L}(\theta)=\E[\norm{\text{net}_\theta(X_t,t)-X_0}^2]$$
+
+Remember $X_0=A$. Basically a self-supervised procedure:
+
+- Start with a dataset.
+- Corrupt it with various levels of noise.
+- Try to learn a proper denoiser.
+
+---
+
+## Score-based Generative Models?
+
+::: {.columns}
+::: {.column width="52%"}
+The time reversal of diffusion processes is currently one of the main ingredients behind the extremely popular **generative AI** models (Stable Diffusion, DALL·E, Sora...).
+
+These models are trained to **denoise** — which means they implicitly learn the score $\nabla \log p_t(x)$ at every noise level.
+
+::: {.callout-tip appearance="minimal"}
+**Our key insight**: we *repurpose* this powerful machinery — originally developed for image synthesis — to estimate **Mutual Information**. No generative output needed; we only care about the score functions learned during training.
+
+The billions of dollars invested in scaling diffusion models also advance our ability to compute information-theoretic quantities on complex biological data.
+:::
+:::
+::: {.column width="48%"}
+![Song et al. "Score-Based Generative Modeling through SDEs" — forward process gradually corrupts data; reverse process (learned score) regenerates it](figures/sde_schematic.jpg){width=100%}
+:::
+:::
+
+---
+
+## Mutual Information Neural Diffusion Estimation
+
+::: {.columns}
+::: {.column width="50%"}
+Mutual Information between two random variables $A,B$:
+
+$$\textsc{I}(A,B)=\KL{\mu^{A,B}}{\mu^A\mu^B}$$
+
+Two families of diffusion processes: **joint (J)** and **conditional (C)**.
+
+$$\begin{cases}\dd [X_t,Y_t]^\top =-[X_t,Y_t]^\top \dd t+ \sqrt{2}\,[\dd W_t,\dd W'_t]^\top\\ [X_0,Y_0]^\top\sim \mu^{A,B}\end{cases}$$
+
+The joint and marginal scores are the only ingredients needed — train a single network, query it twice.
+:::
+::: {.column width="50%"}
+![MINDE achieves state-of-the-art MI estimation across all benchmarks](figures/SotA.png){width=100%}
+:::
+:::
+
+---
+
+## Mutual Information Neural Diffusion Estimation (cont.)
+
+First family, **MINDE-C**:
+
+::: {.callout-note appearance="minimal" title="Algorithm: Estimate Mutual Information using Diffusion Models"}
+1. $[A, B] \sim \mu^{A,B}$ &nbsp;&nbsp; ▷ Sample from joint distribution
+2. $t \sim \mathcal{U}[0, T]$ &nbsp;&nbsp; ▷ Uniformly sample $t$ from $[0,T]$
+3. $X_t \gets \exp(-t)A + \sqrt{1-\exp(-2t)}\,\epsilon$, where $\epsilon \sim \mathcal{N}(\mathbf{0},\boldsymbol{I})$ &nbsp;&nbsp; ▷ Simulate diffusion
+4. $s^{A} \gets \text{net}_\theta([X_t, 0], t, c=0)$ &nbsp;&nbsp; ▷ Compute unconditional score
+5. $s^{A_{B}} \gets \text{net}_\theta([X_t, B], t, c=1)$ &nbsp;&nbsp; ▷ Compute conditional score
+6. $\hat{I} \gets T\left\| s^{A}-s^{A_{B}} \right\|^2$ &nbsp;&nbsp; ▷ Estimate MI
+:::
+
+---
+
+## Why This Gap: an Intuition
+
+::: {.columns}
+::: {.column width="50%"}
+![](figures/pitfalls.jpg){width=100%}
+:::
+::: {.column width="50%"}
+![](figures/multi_scale.jpg){width=100%}
+:::
+:::
+
+Credit: [https://yang-song.net/blog/2021/score/](https://yang-song.net/blog/2021/score/)
+
+---
+
+## A Different Perspective
+
+A *simpler* derivation of the estimator is based on the Feynman integration trick (a.k.a. in statistics as thermodynamic integration). Consider $p_t=\exp(t\mathcal{L})p_0,\;q_t=\exp(t\mathcal{L})q_0$, where $\mathcal{L}$ is the Fokker-Planck operator of a "nice" diffusion $\mathcal{L}=\nabla^\top(f\cdot)+\Delta(\cdot)$.
+
+Then:
+$$\KL{p_0}{q_0}=\int_0^\infty \frac{d}{dt}\KL{p_t}{q_t}\,dt$$
+where
+$$\frac{d}{dt}\KL{p_t}{q_t}=\int \frac{d}{dt}p_t\log\frac{p_t}{q_t} +p_t \frac{d}{dt}\log\frac{p_t}{q_t}\,dx$$
+
+The idea of the proof: $\mathcal{L}^\dagger$ is known, integrate by parts, simplify, and obtain an expected difference of scores.
+
+---
+
+## Continuous Time Markov Chains: Conquering Discrete Spaces
+
+- Consider a **discrete** random variable $A\in \chi = \{1,\hdots,N\}$ with probability measure $\mu^A$ (discrete state spaces, conflate with $p^A$)
+- Build a CTMC in $[0,T]$ with initial conditions $\sim p^A$:
+$$\frac{d p^A_t(x)}{dt}=Q_t p^A_t(x)$$
+- The infinitesimal generator $Q_t$ is now a matrix, whereas it was a differential operator in $\mathbb{R}^N$. Think e.g. of Queuing Theory, Epidemic Models, or **scRNA-seq count data from organoids at successive developmental stages** — each gene expression level is a discrete state, and differentiation is a Markov transition between them.
+- We can adapt the previous calculations. Then $\KL{p_0}{q_0}=$
+$$\mathbb{E}\!\left[\int_0^T\sum_{x\neq X_t} Q_{t}(X_t,x)\!\left(K\!\left(\frac{p_t(x)}{p_t(X_t)}\right)+\frac{q_t(x)}{q_t(X_t)}-\frac{p_t(x)}{p_t(X_t)}\log\frac{q_t(x)}{q_t(X_t)}\right)dt\right]$$
+where $K(a)=a(\log(a)-1)$. The ratio $\frac{p_t(x)}{p_t(y)}$ is called the *discrete score* — approximated with a neural network.
+
+---
+
+## Continuous Time Markov Chains (cont.)
+
+::: {.columns}
+::: {.column width="48%"}
+![INFO-SEDD achieves state-of-the-art results across discrete MI estimation benchmarks](figures/infosed_res.PNG){width=100%}
+:::
+::: {.column width="52%"}
+![*Arabidopsis thaliana* promoter: sliding-window MI scan recovers TATA-box position (peak ~30bp upstream of TSS) with no supervised labels](figures/tata_box_sliding_window_plot.png){width=100% style="object-fit:contain; max-height:400px;"}
+:::
+:::
+
+---
+
+## INFO-SEDD Unlocks Discrete Biology
+
+Classical MI estimators assume continuous data — but biology is full of **discrete signals**. INFO-SEDD handles them natively:
+
+::: {.columns}
+::: {.column width="55%"}
+**DNA regulatory elements** *(right figure)*
+
+- Sliding-window MI scan over *Arabidopsis thaliana* promoter sequences identifies TATA-box location without any supervised labelling
+- Foundational for organoid research: TATA-box activity governs transcription factor binding → neural stem cell fate decisions
+- **No previous method** could estimate MI on raw DNA sequences at this scale
+
+**scRNA-seq count data**
+
+- Gene expression counts $\in \{0,1,2,\ldots\}$ are discrete by nature
+- INFO-SEDD computes MI between gene pairs on raw counts — no normalisation, no Gaussian approximation
+- Opens door to nonparametric GRN inference from organoid single-cell atlases
+:::
+::: {.column width="45%"}
+![](figures/tata_box_sliding_window_plot.png){width=100%}
+
+::: {style="font-size:0.8em; color:#444; margin-top:0.5em;"}
+Peak at TATA-box position recovered purely from MI — no sequence alignment, no pre-training on annotated data
+:::
+:::
+:::
+
+---
+
+## Unpaired Data Problem
+
+- Multimodal learning often assumes the availability of paired data.
+- However, real-world data is frequently **unpaired across modalities**.
+
+![](figures/unpaired.png){width=65%}
+
+---
+
+## Unpaired Data Problem (cont.)
+
+Given two marginals $\mu^{X}$ and $\mu^{Y}$, find a joint distribution $\mu^{XY}$ that satisfies:
+
+- The marginal constraints: $\mu^{XY}(S\times \mathbb{R}^N)=\mu^{X}(S),\;\mu^{XY}(\mathbb{R}^N\times S)=\mu^{Y}(S)$
+- **Maximise the Mutual Information** between $X$ and $Y$!
+
+**Why MI-maximisation, not just Optimal Transport?**
+
+Optimal Transport finds a *geometrically close* coupling — it minimises the cost of moving mass from $\mu^X$ to $\mu^Y$. But closeness in gene-expression space $\neq$ biological correspondence: a chromatin-open cell and an actively-transcribing cell may look distant by $L^2$ distance yet be the same cell state. MI-maximisation finds the coupling where knowing one modality maximally reduces uncertainty about the other — a **biological correspondence principle**, not a geometric one.
+
+---
+
+## Unpaired Data: Demonstrated Results
+
+DDMEC can pair any two unpaired distributions — demonstrated on image domains:
+
+::: {.columns}
+
+::: {.column width="48%"}
+<div style="display:grid; grid-template-columns: 1fr 1fr; gap:4px; text-align:center;">
+<div style="font-size:0.7em;">**Source**</div><div style="font-size:0.7em;">**Output**</div>
+<div>![](cat2dog/cond/6.png){width=100%}</div><div>![](cat2dog/out/6.png){width=100%}</div>
+<div>![](cat2dog/cond/9.png){width=100%}</div><div>![](cat2dog/out/9.png){width=100%}</div>
+<div>![](cat2dog/cond/11.png){width=100%}</div><div>![](cat2dog/out/11.png){width=100%}</div>
+<div>![](cat2dog/cond/52.png){width=100%}</div><div>![](cat2dog/out/52.png){width=100%}</div>
+</div>
+:::
+
+::: {.column width="4%"}
+:::
+
+::: {.column width="48%"}
+<div style="display:grid; grid-template-columns: 1fr 1fr; gap:4px; text-align:center;">
+<div style="font-size:0.7em;">**Source**</div><div style="font-size:0.7em;">**Output**</div>
+<div>![](wild2dog/cond/1.png){width=100%}</div><div>![](wild2dog/out/1.png){width=100%}</div>
+<div>![](wild2dog/cond/116.png){width=100%}</div><div>![](wild2dog/out/116.png){width=100%}</div>
+<div>![](wild2dog/cond2/2.png){width=100%}</div><div>![](wild2dog/out2/2.png){width=100%}</div>
+<div>![](wild2dog/cond/36.png){width=100%}</div><div>![](wild2dog/out/36.png){width=100%}</div>
+</div>
+:::
+
+:::
+
+---
+
+## Unpaired Data: Application to Single-Cell Multi-Omics
+
+The same principle applies to **organoid multi-omics**: aligning **ATAC-seq** (chromatin accessibility) with **RNA-seq** (gene expression) from the same organoid population — **without** paired single-cell measurements.
+
+::: {.columns}
+::: {.column width="47%"}
+![](figures/gen_pbmc.png){width=100%}
+:::
+::: {.column width="53%"}
+![](figures/out_pbmc.png){width=100%}
+:::
+:::
+
+::: {style="font-size:0.85em; color:#444;"}
+*DDMEC applied to PBMC single-cell data. This methodology could directly enable joint chromatin + transcriptome analysis of differentiating organoids without the experimental cost of paired profiling.*
+:::
+
+# Multivariate Information Theory
+
+## Multimodal Information Theory
+
+- Recently, the concept of MI has been extended to higher-order interactions: [**Redundant**]{style="color:blue"}, [**Synergistic**]{style="color:red"} and [**Unique**]{style="color:green"} Information. Seminal works by Williams and Beer (Partial Information Decomposition). Extremely important in consciousness studies.
+
+![](figures/info_pdf.png){width=55%}
+
+**Already used in organoid biology:**
+
+- **DeepTracing** (2024): uses *Total Correlation* — a key component of O-Information — as a regularization term to disentangle *heritable lineage constraints* from *intrinsic cell-state dynamics* in organoid scRNA-seq. TC penalises statistical dependence between latent variables, enforcing clean separation.
+- **SCENT** (Teschendorff et al. 2017): estimates *signaling entropy rate* from transcriptomic data integrated with a protein-protein interaction network. High entropy → pluripotent; low entropy → committed fate. A practical information-theoretic potency score for stem cells.
+
+---
+
+## Multimodal Information Theory (cont.)
+
+Applications: **Multimodal sensory** neuroscience — and increasingly, **organoid development**.
+
+::: {.columns}
+::: {.column width="50%"}
+![Luppi et al: PID decomposition of fMRI brain-wide activity — redundant vs synergistic regions](figures/pid_fmri%20(1).PNG){width=100%}
+:::
+::: {.column width="50%"}
+![PID applied to multisensory integration and eye-tracking responses](figures/PID_eyes%20(1).PNG){width=100%}
+:::
+:::
+
+**Organoid angle**: the same decomposition applied to multi-electrode or calcium imaging data during organoid maturation can reveal whether developing circuits build *redundant* (fault-tolerant) or *synergistic* (integrative) coding strategies.
+
+---
+
+## O-Information
+
+Analyzing systems with more than two variables. Example of metric: **O-Information**.
+
+::: {.columns}
+::: {.column width="60%"}
+$$\Omega(X) = T(X) - D(X)$$
+where $T(X) = \sum_{i=1}^{N} H(X_i) - H(X)$ is the **Total Correlation** and $D(X) = H(X) - \sum_{i=1}^{N} H(X_i | X_{\backslash i})$ is the **Dual Total Correlation**.
+
+- $\Omega > 0$: **redundancy** dominates — each variable independently carries overlapping information
+- $\Omega < 0$: **synergy** dominates — variables jointly encode information no single one carries alone
+
+Nice properties, but out of reach unless data are Gaussian (or "*simple*") and/or discrete. The Hasse diagram (right) shows the full lattice of information atoms underlying the decomposition.
+:::
+::: {.column width="40%"}
+![Hasse diagram of the Partial Information Decomposition lattice](figures/hassediag.png){width=100%}
+:::
+:::
+
+---
+
+## O-Information (cont.)
+
+Multiple brain regions: is assuming anything a-priori really safe?
+
+![](figures/brain_pdf.png){width=65%}
+
+We don't need it!!
+
+---
+
+## Score-based (Diffusion) Estimation of O-Information
+
+- Total Correlation (TC) estimation:
+$$T(X) = \int p_t(x) \left\| \nabla \log p_t(x) - \sum_{i=1}^{N} \nabla \log p_t(x_i) \right\|^2 dx\, dt$$
+
+- Dual Total Correlation (DTC) estimation:
+$$D(X) = \int p_t(x) \left\| \nabla \log p_t(x) - \sum_{i=1}^{N} \nabla \log p_t(x_i | x_{\backslash i}) \right\|^2 dx\, dt$$
+
+- With our implementation, all the ingredients are *amortized* within a *single* model.
+
+**Why this matters for organoids**: DeepTracing (2024) uses TC as a regulariser but must rely on a simplified surrogate — a closed-form Gaussian approximation. Our score-based estimator computes TC *exactly* for any distribution, making it directly applicable to the heavy-tailed, zero-inflated distributions of organoid scRNA-seq data at scale.
+
+---
+
+## Example: Analysis of Mice Brain Activity
+
+::: {.columns}
+::: {.column width="60%"}
+Study: O-information across multiple visual cortex areas in mice, in response to **novel vs. repeated** visual stimuli.
+
+- **Novel stimulus** → high O-information (*redundancy*): multiple areas independently broadcast the same "alert" signal — reliability through redundancy
+- **Repeated stimulus** → negative O-information (*synergy*): areas develop a *joint* representation not present in any single area — efficient compressed coding emerges with familiarity
+
+**Why this matters for organoids**: the same analysis applied during organoid maturation could reveal *when* circuits transition from redundant (immature, broadcast) to synergistic (mature, integrated) coding — a potential biomarker of functional maturity.
+:::
+::: {.column width="40%"}
+![](figures/mouse.JPG){width=80%}
+:::
+:::
+
+---
+
+## Mice Brain Activity Results
+
+::: {.columns}
+::: {.column width="50%"}
+![3 areas](figures/new_vbn_setting_3_dim_25.png){width=90%}
+:::
+::: {.column width="50%"}
+![6 areas](figures/new_vbn_setting_6_dim_25.png){width=90%}
+:::
+:::
+
+- This suggests that higher amount of redundant information in the visual cortex regions is transmitted in case of a flash with new scene.
+- Interestingly, when considering six areas of the visual cortex, our observations remain valid, suggesting that the measured behaviour is common to these other brain areas as well.
+
+---
+
+## Directed Functional Connectivity: Beyond Correlation
+
+::: {.columns}
+::: {.column width="60%"}
+A core goal in systems neuroscience: determine not just *whether* two brain areas are coupled, but **who drives whom**.
+
+- **Granger causality** (1969): $X$ Granger-causes $Y$ if the past of $X$ helps predict $Y$ beyond $Y$'s own past — widely used but assumes linear, Gaussian dynamics.
+- **Transfer Entropy** (Schreiber 2000): the nonlinear, model-free generalisation:
+$$\mathrm{TE}_{X\to Y} = I(Y_t;\, \mathbf{X}_{\text{past}} \mid \mathbf{Y}_{\text{past}})$$
+  Granger causality is a *special case* of TE under Gaussian assumptions.
+- Captures nonlinear, asymmetric information flow — critical for neural circuits where signalling is inherently nonlinear.
+:::
+::: {.column width="40%"}
+<div style="text-align:center; padding-top:1em;">
+<div style="font-size:1.8em;">🧠 → 🧠</div>
+<div style="font-size:0.85em; margin-top:0.5em;">$\mathrm{TE}_{V1\to V2} \neq \mathrm{TE}_{V2\to V1}$</div>
+<div style="font-size:0.8em; margin-top:1em; color:#555;">Transfer entropy is asymmetric by construction — it captures the *direction* of information flow.</div>
+</div>
+:::
+:::
+
+- *However*: existing TE estimators suffer from the curse of dimensionality, require restrictive distributional assumptions...
+- We propose **TENDE** (Transfer Entropy Neural Diffusion Estimation) with Simon Pedro Galeano Munoz and Maurizio Filippone (KAUST)
+
+---
+
+## Emerging Connectivity in Brain Organoids
+
+**Muccitri et al.** (*Cell Reports*, 2024) coupled human iPSC-derived neural organoids to **high-density microelectrode arrays (HD-MEAs)** over 13 weeks of maturation, tracking the emergence of network structure and short-term potentiation — the building blocks of learning and memory.
+
+::: {.columns}
+::: {.column width="60%"}
+**Key finding**: **Mutual Information was the primary metric** used to weight edges in the functional connectivity network — capturing nonlinear statistical dependencies between electrodes that reflect genuine neuronal communication, invisible to Pearson correlation.
+
+- Scale-free (critical) network dynamics emerge around week 8–10
+- Short-term potentiation develops alongside organised connectivity
+- MI-weighted networks successfully distinguished responsive from non-responsive organoid batches
+
+**Transfer Entropy** extends this to directed connectivity:
+$$\mathrm{TE}_{i\to j} = I\!\left(X_t^{(j)};\, X_{\text{past}}^{(i)} \;\middle|\; X_{\text{past}}^{(j)}\right)$$
+tracking *which electrode drives which* as the circuit matures.
+
+**Uthamacumaran et al. (2024)**: MI-based functional connectivity applied to *aneural* Xenopus morphogenetic tissue — showing these tools generalise to any developing biological system.
+:::
+::: {.column width="40%"}
+<div style="border: 1px solid #ccc; border-radius: 8px; padding: 1em; font-size: 0.85em; background: #f9f9f9; margin-top: 1em;">
+<strong>Why standard methods fail here:</strong><br><br>
+Granger causality assumes linear, Gaussian dynamics — calcium transients and MEA signals are neither.<br><br>
+TENDE estimates TE nonparametrically via score matching, handling the nonlinear, heavy-tailed dynamics of organoid electrical activity.
+</div>
+:::
+:::
+
+---
+
+## Transfer Entropy: Formulation
+
+- Let $\{X_t\}$ and $\{Y_t\}$ denote discrete time stochastic processes.
+- Define:
+$$\begin{cases}\begin{aligned}\mathbf{Y}_{t-\ell} &= [Y_{t-1},\,\dots,\,Y_{t-\ell}] \\ \mathbf{X}_{t-k} &= [X_{t-1},\,\dots,\,X_{t-k}]\end{aligned}\end{cases}$$
+for some natural numbers $\ell, k$.
+- The TE from $\{X_t\}$ to $\{Y_t\}$ is given by:
+$$\mathrm{TE}_{X\to Y}(k,\ell) = I\!\left(Y_t;\,\mathbf{X}_{t-k}\mid\mathbf{Y}_{t-\ell}\right)$$
+- TE quantifies how much $Y_t$ depends on the past of $\{X_t\}$ once its own past is already known.
+
+---
+
+## Transfer Entropy: Example
+
+Example: analysis of asymmetry of information measures in biomedical signals.
+
+![](figures/signals.png){width=65%}
+
+---
+
+## TENDE Results
+
+::: {.columns}
+::: {.column width="55%"}
+![](figures/tende_res.PNG){width=100%}
+:::
+::: {.column width="45%"}
+**Physiological result**: TENDE recovers the known asymmetry: respiration drives heart rate ($\mathrm{TE}_{\text{resp}\to\text{HR}} > \mathrm{TE}_{\text{HR}\to\text{resp}}$), consistent with respiratory sinus arrhythmia.
+
+**Why previous methods failed**: linear Granger causality on these signals gives erratic estimates — cardiac and respiratory dynamics are nonlinear and non-Gaussian. TENDE is the first method to give stable, physiologically interpretable TE estimates at this scale.
+
+**Organoid application**: the same approach applied to multi-electrode organoid data would reveal the *causal architecture* of developing circuits — which neurons or regions drive network dynamics, and how this changes over maturation weeks.
+:::
+:::
+
+# Conclusions
+
+## In Summary
+
+**A unified framework** — score-based diffusion processes — enables scalable, nonparametric estimation of five information metrics that were previously intractable for real biological data:
+
+| Method | What it measures | Key biological result |
+|---|---|---|
+| MINDE | MI (continuous) | **Foundational building block** — enables INFO-SEDD, DDMEC, SOI, TENDE |
+| INFO-SEDD | MI (discrete) | DNA regulatory elements; scRNA-seq GRN inference |
+| DDMEC | Max-MI coupling | ATAC-seq / RNA-seq alignment without paired cells |
+| SOI | Synergy & redundancy | Redundant→synergistic transition in visual cortex |
+| TENDE | Directed information flow | Causal architecture of developing neural circuits |
+
+**The organoid field is already using these metrics** — we provide the scalable estimators:
+
+- Muccitri et al. (2024): MI → organoid functional connectomes from HD-MEA
+- Weinreb et al. (2020): MI between sister cells → hidden fate determinants
+- DeepTracing (2024): Total Correlation → disentangling lineage from cell state
+- Clonotrace (2025): MI → joint lineage + transcriptomic analysis
+
+**What we left out** (we have some backup slides):
+
+- We made it *look* simple ("just adapt these formulas and you get an estimator")
+- A more formal discussion of the results
+- Actual extensive numerical validation of the proposed methods
+- Careful discussion of the convergence properties in terms of sample sizes, model complexity...
+
+---
+
+## References
+
+1. Franzese et al, *Mutual Information Neural Diffusion Estimation*, ICLR 2024
+2. Bounoua et al, *S$\Omega$I: Score-based O-Information Estimation*, ICML 2024
+3. Wang et al, *Information Theoretic Text-to-Image Alignment*, ICLR 2025
+4. Wang et al, *RFMI: Estimating Mutual Information on Rectified Flow for Text-to-Image Alignment*, ICLR (Workshop) 2025
+5. Foresti et al, *INFO-SEDD: Continuous Time Markov Chains as Scalable Information Metrics Estimators*, ICLR (Workshop) 2025
+6. Bounoua et al, *Learning to Match Unpaired Data with Minimum Entropy Coupling*, ICML 2025
+7. Franzese et al, *Continuous Time Functional Diffusion Processes*, NeurIPS 2024
+8. Franzese et al, *Generative diffusion models in infinite dimensions: a survey*, Philosophical Transactions A 2025
+9. Munoz et al, *TENDE: Transfer Entropy Neural Diffusion Estimation*, arXiv preprint
+
+**Organoid & biology literature:**
+
+10. Muccitri et al, *Human neural organoid microphysiological systems show the building blocks necessary for basic learning and memory*, Cell Reports 2024
+11. Weinreb et al, *Lineage tracing on transcriptional landscapes links state to fate during differentiation*, Science 2020
+12. Teschendorff et al, *Single-cell entropy for quantifying differentiation potency (SCENT)*, Nature Protocols 2017/2021
+13. Uthamacumaran et al, *Revealing non-trivial information structures in aneural biological tissues via functional connectivity*, 2024
+14. DeepTracing: *A deep generative framework for disentangling intrinsic states from lineage constraints*, 2024/2025
+15. Clonotrace: *A framework for integrating lineage and transcriptomic information*, 2024/2025
+
+# Backup
+
+## An Informal Introduction
+
+::: {style="font-size: 2em; text-align: center; margin-top: 2em;"}
+An **informal** introduction
+:::
+
+---
+
+## Probability Spaces
+
+- A probability space $(\Omega, \mathcal{F}, \mathrm{P})$ consists of:
+  - $\Omega$: The sample space (set of all possible outcomes).
+  - $\mathcal{F}$: A $\sigma$-algebra, a collection of subsets of $\Omega$ representing events.
+  - $\mathrm{P}$: A probability measure that assigns a number between 0 and 1 to each event in $\mathcal{F}$.
+
+---
+
+## Understanding $\sigma$-Algebra in Simple Terms
+
+- A $\sigma$-algebra can be understood as defining the **granularity** of information available.
+- It must satisfy:
+  - The whole sample space $\Omega$ is included.
+  - If an event is in $\mathcal{F}$, its complement must also be in $\mathcal{F}$.
+  - If a countable sequence of events is in $\mathcal{F}$, their union must also be in $\mathcal{F}$.
+- Example: Rolling a dice.
+  - $\Omega = \{1,2,3,4,5,6\}$.
+  - A possible $\sigma$-algebra: $\{\emptyset, \Omega, \{1,3,5\}, \{2,4,6\}\}$ (representing even and odd outcomes).
+
+---
+
+## Understanding $\sigma$-Algebra (cont.)
+
+![Example of $\sigma$-algebra](figures/sigmaalg.png){width=50%}
+
+---
+
+## Random Variables as Mappings
+
+- A random variable $X$ is a function that maps outcomes from the sample space $\Omega$ to real numbers:
+$$X: \Omega \to \mathbb{R}$$
+- Example 1: Rolling a dice. If $\omega\in\Omega=\{1,2,3,4,5,6\}$, then $X(\omega)=\omega$.
+- Example 2: Defining an odd/even variable. $Y(\omega)=1$ if $\omega$ is odd, $Y(\omega)=0$ if $\omega$ is even.
+
+---
+
+## Random Variables as Mappings (cont.)
+
+- A random variable must be measurable with respect to a given $\sigma$-algebra to be well-defined.
+- Example:
+  - With $\sigma$-algebra $\{\emptyset,\Omega,\{1,3,5\},\{2,4,6\}\}$, $Y$ (odd/even) is measurable.
+  - However, $X$ (exact roll outcome) is not measurable — a **finer** $\sigma$-algebra is needed.
+- Intuitive interpretation: **Doob's lemma**: A random variable is measurable with respect to a $\sigma$-algebra if and only if there exists a function that depends only on elements of the algebra.
+
+---
+
+## Introduction to Stochastic Processes
+
+- A stochastic process is a collection of random variables indexed by time:
+$$Y_t: \Omega \to \mathbb{R}, \quad t \geq 0$$
+- It describes how a system evolves randomly over time.
+- Examples:
+  - Stock prices.
+  - Population dynamics.
+  - Temperature variations.
+
+---
+
+## Filtration and Adapted Processes
+
+- A filtration is a sequence of $\sigma$-algebras representing growing information over time:
+$$\mathcal{F}_0 \subseteq \mathcal{F}_1 \subseteq \mathcal{F}_2 \subseteq \dots$$
+- Intuitively, it models the **accumulation of knowledge** as time progresses.
+- A process is *adapted* if at each time instant it is measurable with respect to the filtration.
+
+---
+
+## Probability Measure
+
+(**Informal, not complete**) In the framework of measure theory, a probability measure $\mu$ is a mapping from **subsets** $\{S_i\}_i$ of a given sample space $\Omega$ such that:
+
+- It is positive: $\mu(S_i)\geq 0$
+- For disjoint sets $S_i,S_j$ ($S_i\cap S_j=\emptyset$) it holds $\mu(S_i\cup S_j)=\mu(S_i)+\mu(S_j)$.
+- Its "integral" is equal to one: $\mu(\Omega)=1$.
+
+Familiar examples:
+
+- $\Omega=\mathbb{R}$, Gaussian probability $\mu(dx)=p(x)dx=\frac{1}{\sqrt{2\pi}}\exp(-\frac{x^2}{2})dx$
+- $\Omega=\{0,1\}$, Bernoulli RV $\mu(\{0\})=\mu(\{1\})=\frac{1}{2}$
+
+---
+
+## Definition of SDEs
+
+- A stochastic differential equation (SDE) is a particular class of stochastic processes.
+- A general diffusion process on a probability space $(\Omega,\mathcal{F},\mathrm{P})$ is given by:
+$$Y_t(\omega) = Y_0(\omega) + \int_0^t H(Y_s(\omega),t)\,ds + W_t(\omega)$$
+where:
+  - $Y_t$ is the stochastic process.
+  - $H(Y_t(\omega),t)$ is the drift term.
+  - $W_t$ is a Brownian motion, representing Gaussian noise.
+- It only makes sense when considered with respect to a **filtration** $(\mathcal{F}_t)_{t\geq 0}$, representing the available information over time.
+
+---
+
+## Formal MINDE Derivation
+
+- Consider a probability space $(\Omega,\mathcal{F},\mathbb{P})$, together with a growing filtration $\mathcal{F}_t$
+- Consider a generic random variable $A$ ($\mathcal{F}_0$-measurable) with probability measure $\mu^A(dx)$
+- Build a simple SDE in $[0,T]$ with initial conditions $\sim\mu^A$:
+$$\begin{cases}\dd X_t=-X_t\,\dd t+\sqrt{2}\,\dd W_t,\\X_0=A\sim\mu^A\end{cases}$$
+where $W_t$ is an $\mathcal{F}_t$ Brownian motion.
+- This SDE corresponds to a path measure $\mathbb{P}^{A}$.
+- Two SDEs which differ only by initial conditions have KL divergence:
+$$\KL{\mathbb{P}^{\mu^A}}{\mathbb{P}^{\mu^B}}=\E_{\mathbb{P}^{\mu^A}}\!\left[\log\frac{d\mathbb{P}^{\mu^A}}{d\mathbb{P}^{\mu^B}}\right]=\KL{\mu^A}{\mu^B}$$
+
+---
+
+## Formal MINDE Derivation (cont.)
+
+**Time-reversal** $\hat{X}_t\defeq X_{T-t}$:
+
+- KL is invariant to time-reversal: $\KL{\mathbb{P}^{\mu^A}}{\mathbb{P}^{\mu^B}}=\KL{\hat{\mathbb{P}}^{\mu^A}}{\hat{\mathbb{P}}^{\mu^B}}$
+- Time reversal of SDE is again an SDE [Léonard 2014]
+- Score function $\leftrightarrow$ Denoiser (same as before)
+
+**Girsanov theorem**:
+
+$$\KL{\hat{\mathbb{P}}^{\mu^A}}{\hat{\mathbb{P}}^{\mu^B}}\simeq \E_{\mathbb{P}^{\mu^A}}\!\left[\int_0^T\norm{\nabla\log p^{A}_t(X_t)-\nabla\log p^{B}_t(X_t)}^2\dd t\right]$$
+
+- Combining with time-reversal invariance → KL-estimator!
+- Initial conditions $\KL{\mu^A_T}{\mu^B_T}$ should be negligible (Bakry-Emery condition / ergodicity [Collet, Malrieu 2008])
+
+---
+
+## Experimental Results
+
+MINDE variants:
+
+- Consistently outperform all competitors on standard benchmarks.
+- Are capable of accurately estimating MI in the challenging High MI benchmarks:
+
+::: {.columns}
+::: {.column width="30%"}
+![Sparse Normal](figures/high_mi_multinormal.jpg){width=100%}
+:::
+::: {.column width="30%"}
+![Half-cube](figures/Half-cube.jpg){width=100%}
+:::
+::: {.column width="30%"}
+![Spiral](figures/spiral.jpg){width=100%}
+:::
+:::
+
+---
+
+## Experimental Results (cont.)
+
+Pass the self-consistency tests:
+
+::: {.columns}
+::: {.column width="33%"}
+![Baseline](figures/consistency.jpg){width=100%}
+:::
+::: {.column width="33%"}
+![Data Processing](figures/dataprocessing.jpg){width=100%}
+:::
+::: {.column width="33%"}
+![Additivity](figures/additivity.jpg){width=100%}
+:::
+:::
+
+![](figures/consistency_tests.PNG){width=100%}
+
+![](figures/minde_res.PNG){width=60%}

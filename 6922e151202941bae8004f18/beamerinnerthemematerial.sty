@@ -1,0 +1,124 @@
+\setbeamercolor{background canvas}{bg=BGgrey03}
+\newcolumntype{x}[1]{>{\centering\arraybackslash\hspace{0pt}}p{#1}}
+
+% Title page
+\defbeamertemplate*{title page}{material}[1][]
+{ 
+  \makebox[\linewidth][c]{%
+  \begin{minipage}[t][\paperheight]{\paperwidth}
+    \raggedright
+    \begin{tcolorbox}[colback=BGgrey03,  boxrule=0mm, coltext=primary, width=\paperwidth, height=0.22\paperheight, valign=top, frame hidden,boxsep=0.15cm]
+      {\usebeamercolor[fg]{titlegraphic}\inserttitlegraphic\par}
+    \end{tcolorbox}
+
+    \begin{tcolorbox}[colback=BGgrey03, enhanced, sharpish corners=all, boxrule=0mm, coltext=primary, width=\paperwidth, height=0.75\paperheight, frame hidden, flushright upper, valign=bottom, boxsep=0.5cm]
+      {\usebeamerfont{title}\bf \inserttitle\par}\vspace{.5ex}
+      \rule{\linewidth}{.5mm}
+      {%
+        \vspace{.0ex}\par\usebeamerfont{author}\setlength{\tabcolsep}{15pt}%
+      % \begin{tabular}{x{3.25cm}x{3.25cm}x{3.25cm}}
+      \begin{center}
+      \begin{tabular}{cccc}
+      \tikz\node[circle,inner sep=.7cm,draw,text=white,path picture={\node at (path picture bounding box.center){\includegraphics[width=1.96cm]{figures/giulio_2.jpg}};}]{};% 
+      &
+        \tikz\node[circle,inner sep=.7cm,draw,text=white,path picture={\node at (path picture bounding box.center){\includegraphics[width=1.96cm]{figures/dimistris.jpg}};}]{}; %
+               & 
+        \tikz\node[circle,inner sep=.7cm,draw,text=white,path picture={\node at (path picture bounding box.center){\includegraphics[width=1.96cm]{figures/maurizio.jpg}};}]{}; %
+        &
+    \tikz\node[circle,inner sep=.7cm,draw,text=white,path picture={\node at (path picture bounding box.center){\includegraphics[width=1.96cm]{figures/pietro.jpg}};}]{}; %
+                \\[1ex]
+          \textbf{Giulio Franzese} & Dimitrios Milios & Maurizio Filippone & Pietro Michiardi\\
+      \end{tabular}
+      \end{center}
+      
+      \begin{center}
+        {\small EURECOM, Sophia Antipolis}
+      \end{center}
+
+      %\vspace{.5cm}
+      \begin{center}
+        {\small 39th International Conference on Machine Learning, Baltimore 2022}
+      \end{center}
+
+      % \insertauthor
+      }
+    \end{tcolorbox}
+    % \vspace{-.05\paperheight}
+    % \vfill
+    % Check if date is empty, then show nothing
+  
+    % \ifx\insertdate\empty%
+    % \else%
+    % \begin{tcolorbox}[colback=primary!80, enhanced, sharpish corners=all, boxrule=0mm, coltext=textPrimary,
+    %                   width=\paperwidth, height=0.15\paperheight, flushright upper, valign=bottom, boxsep=0.25cm, bottom=0.1cm]
+    %   {\usebeamerfont{author}\bf\insertdate}
+    % \end{tcolorbox}
+    % \fi
+    
+  \end{minipage}%
+  }%
+  % \vfill
+}
+
+
+\providebool{material@standout}
+\define@key{beamerframe}{standout}[true]{%
+  \booltrue{material@standout}
+  \begingroup
+    \setkeys{beamerframe}{c}
+    \setkeys{beamerframe}{noframenumbering}
+    \setbeamercolor{background canvas}{
+        use=primary,
+        bg=primary,
+        fg=primary
+      }
+    \setbeamercolor{local structure}{
+      fg=primary
+    }
+    \usebeamercolor[fg]{primary}
+    \setbeamercolor{normal text}{fg=white,bg=white}
+}
+%    \end{macrocode}
+%
+%    Then we just have to close the group after the standout slide is finished
+%    in order to restore the colours and fonts for the rest of the
+%    presentation. Unfortunately, we cannot use \AfterEndEnvironment{frame} for
+%    this (see \url{http://tex.stackexchange.com/questions/226319/}).
+%    Instead, we prepend the |\endgroup| to |\beamer@reseteecodes|, which is run
+%    exactly once at the end of each slide.
+%
+%    \begin{macrocode}
+  \pretocmd{\beamer@reseteecodes}{%
+    \ifbool{material@standout}{
+      \endgroup
+      \boolfalse{material@standout}
+    }{}
+  }{}{}
+%    \end{macrocode}
+%
+%    We set the fonts and the \centering alignment on the inner content,
+%    in such a way that the speaker's note layout isn't affected by the custom
+%    formatting.
+%
+%    \begin{macrocode}
+  \AtBeginEnvironment{beamer@frameslide}{
+    \ifbool{material@standout}{
+      \centering
+      \usebeamerfont{standout}
+      \color{textPrimary}
+    }{}
+  }
+
+
+
+% Items
+\setbeamertemplate{enumerate items}[circle]
+\setbeamertemplate{itemize items}{\Large $\bullet$}
+\setbeamertemplate{sections/subsections in toc}[circle]
+
+\setbeamercolor{local structure}{fg=accent}
+
+
+
+\mode
+<all>

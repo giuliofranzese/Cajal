@@ -1,0 +1,19 @@
+\begin{frame}
+\begin{theorem} \label{theo_girsa}
+Define $\tilde{W}_t\defeq Y_t-Y_0$. Define the new probability space $\cctU$ via the measure $\PT(A)=\E_{\PO}\left[ \mathbf{1}(A)({\psi^{\ctF}_T})^{-1}\right]$, for $A\in \ctF_T$, where 
+\begin{equation}\label{radonniko}
+\psi^{\ctF}_t\defeq \exp(\int_0^t \E_{\PO}[H(Y_s,X,s)\g\ctF_s]\dd Y_s-\frac{1}{2}\int_0^t\norm{\E_{\PO}[H(Y_s,X,s)\g\ctF_s]}^2 \dd s ),
+\end{equation}
+and  
+$$\PT\g_{\ctF_t}=\E_{\PO}\left[ \mathbf{1}(A)\E_\PO[({\psi^{\ctF}_T})^{-1}\g\ctF_t]\right]=\E_{\PO}\left[ \mathbf{1}(A)({\psi^{\ctF}_t})^{-1}\right].$$ 
+
+
+Then, the stochastic process $\{\tilde{W}_{0\leq t\leq T}, \ctF_{0\leq t\leq T}\}$ is a Brownian motion on the space $\cctU$. $\tilde{W}_t$ is independent of any $\ctF_0$ measurable random variable under the measure $\PT$. 
+Moreover, it holds that for all $\mathcal{R}'_t\subseteq \mathcal{R}_t$, 
+$\PT\g_{\mathcal{R}'_t}=\mathrm{Q}^{\mathcal{R}'}\g_{\mathcal{R}'_t}
+$.
+
+\end{theorem}
+\end{frame}
+
+

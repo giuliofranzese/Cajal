@@ -1,0 +1,79 @@
+\documentclass[10pt]{beamer}
+\usetheme{Darmstadt}
+% \usecolortheme{beaver}
+\input{config/packages_slide}
+\input{config/math}
+\input{config/acronyms}
+\definecolor{darkgreen}{rgb}{0.0, 0.5, 0.0}
+\usepackage{enumerate}
+%\input{notation}
+% Default colour for \item in itemizecolor
+
+%\input{config/template}
+
+
+\input{notation}
+\setbeamertemplate{frametitle continuation}{[\insertcontinuationcount]}
+\usefonttheme[onlymath]{serif,structurebold}
+\setbeamertemplate{sidebar right}{}
+\setbeamertemplate{footline}{%
+\hfill\usebeamertemplate***{navigation symbols}
+\hspace{0cm}\insertframenumber{}/\inserttotalframenumber}
+
+
+
+%\setcounter{tocdepth}{4}
+
+
+\input{config/title}
+
+
+
+\begin{document}
+
+\input{content/minde_content}
+
+\input{content/soi_content}
+
+\input{content/wrapup}
+
+\begin{frame}[allowframebreaks]{References}
+
+\begin{thebibliography}{9}
+\bibitem{minde}
+Franzese et al, Mutual Information Neural Diffusion Estimation, ICLR 2024
+
+\bibitem{soi}
+Bounoua et al, S$\Omega$I: Score-based O-Information Estimation, ICML 2024
+
+\bibitem{mitune}
+Wang et al, Information Theoretic Text-to-Image Alignment, ICLR 2025
+
+\bibitem{rfmi}
+Wang et al, RFMI: Estimating Mutual Information on Rectified Flow for Text-to-Image Alignment, ICLR (Workshop) 2025
+\bibitem{infosedd}
+ Foresti et al, INFO-SEDD: Continuous Time Markov Chains as Scalable Information Metrics Estimators, ICLR (Workshop) 2025
+\bibitem{mec}
+ Bounoua et al, Learning to Match Unpaired Data with Minimum Entropy Coupling, ICML 2025
+\bibitem{fdp} 
+Franzese et al, Continuous Time Functional Diffusion Processes, Neurips 2024
+\bibitem{infsurv} 
+Franzese et al, Generative diffusion models in infinite dimensions: a survey, Philosophical Transactions A 2025
+\bibitem{tende}
+Munoz et al, TENDE: Transfer Entropy Neural Diffusion Estimation, arxiv Preprint 
+
+
+\end{thebibliography}
+\end{frame}
+\part{Backup}
+\input{content/basics}
+
+
+
+
+
+%\input{content/backup}
+
+\end{document}
+
+

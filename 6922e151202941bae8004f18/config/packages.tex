@@ -1,0 +1,232 @@
+% Acronyms
+\usepackage{scalefnt,letltxmacro}
+\LetLtxMacro{\oldtextsc}{\textsc}
+\renewcommand{\textsc}[1]{\oldtextsc{\scalefont{1.10}#1}}
+\usepackage[acronym,nowarn]{glossaries}
+%\setacronymstyle{long-short-desc}
+
+\glsdisablehyper
+\makeglossaries
+\usepackage{xspace}
+\usepackage{float}
+\usepackage{physics}
+\usepackage[normalem]{ulem}
+
+% Bullets
+\usepackage{enumitem}
+% Maths
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amsthm,thmtools}
+\usepackage{booktabs}
+% \usepackage[ruled,vlined]{algorithm2e}
+\usepackage[]{microtype}
+
+% Algorithms
+\usepackage[linesnumbered,ruled,vlined]{algorithm2e}
+\newcommand\mycommfont[1]{\footnotesize\ttfamily\textcolor{gray}{#1}}
+\SetCommentSty{mycommfont}
+\SetKwInput{KwInput}{Input}
+\SetKwInput{KwOutput}{Output}
+
+\usepackage{hyperref}
+\usepackage{svg}
+
+% cleverref
+\usepackage[capitalize,nameinlink,]{cleveref} %noabbrev
+\crefname{section}{\S}{\S\S}
+\Crefname{section}{\S}{\S\S}
+% \creflabelformat{equation}{#2\textup{#1}#3}
+\providecommand\algorithmname{algorithm}
+
+% color
+
+%\definecolor{shadecolor}{gray}{0.9}
+\newcommand{\red}[1]{\textcolor{BrickRed}{#1}}
+\newcommand{\orange}[1]{\textcolor{BurntOrange}{#1}}
+\newcommand{\green}[1]{\textcolor{OliveGreen}{#1}}
+\newcommand{\blue}[1]{\textcolor{MidnightBlue}{#1}}
+\newcommand{\sky}[1]{\textcolor{SkyBlue}{#1}}
+\newcommand{\gray}[1]{\textcolor{black!60}{#1}}
+%\definecolor{mylightgray}{gray}{0.94}
+
+% counter for table
+\makeatletter
+\@ifundefined{c@rownum}{%
+	\let\c@rownum\rownum
+}{}
+\@ifundefined{therownum}{%
+	\def\therownum{\@arabic\rownum}%
+}{}
+\makeatother
+
+% Other           
+\DeclareRobustCommand{\parhead}[1]{\textbf{#1}~}
+
+% For crossferencing across documents
+\makeatletter
+\newcommand*{\addFileDependency}[1]{% argument=file name and extension
+	\typeout{(#1)}
+	\@addtofilelist{#1}
+	\IfFileExists{#1}{}{\typeout{No file #1.}}
+}
+\makeatother
+\newcommand*{\myexternaldocument}[1]{%
+	\externaldocument{#1}%
+	\addFileDependency{#1.tex}%
+	\addFileDependency{#1.aux}%
+}
+% % Figures
+% \usepackage{nidanfloat}
+\usepackage[font=footnotesize,labelfont=bf,tableposition=top]{caption}
+\usepackage{tikz}
+\usetikzlibrary{fit}
+\usepackage{graphicx}
+\usepackage[]{subcaption}   %% Already defined
+% \usepackage{wrapfig}
+
+
+\newcommand{\rulesep}{\unskip\ \hrule\ }
+
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.6}
+\usepgfplotslibrary{groupplots}
+%% Use sans serif font for pictures
+\tikzstyle{every picture}+=[font=\sffamily]
+\tikzstyle{optimized} = [circle,fill=white,draw=black, dashed,inner sep=1pt, minimum size=20pt, font=\fontsize{10}{10}\selectfont, node distance=1]
+\pgfkeys{/pgf/number format/.cd,1000 sep={}}
+\pgfplotsset{
+	tick label style = {font=\sffamily},
+	every axis label/.append style={font=\sffamily},
+	typeset ticklabels with strut,
+}
+\pgfplotsset{every axis/.append style={
+			every x tick label/.append style={font=\fontsize{6pt}{6pt}\sffamily, yshift=.5ex,},
+			every y tick label/.append style={font=\fontsize{6pt}{6pt}\sffamily, xshift=.5ex},
+			every y label/.append style={xshift=10ex, font=\sffamily},
+			every x label/.append style={yshift=3ex, font=\sffamily},
+			every title/.append style={font=\sffamily}
+		},
+}
+\pgfplotsset{
+	xticklabel={$\mathsf{\pgfmathprintnumber{\tick}}$},
+	yticklabel={$\mathsf{\pgfmathprintnumber{\tick}}$},
+}
+\pgfplotsset{every axis title/.append style={yshift=-1ex}}
+\newlength\figureheight
+\newlength\figurewidth
+\usepgfplotslibrary{external}
+\tikzexternalize[mode=list and make]
+\tikzexternaldisable
+\newcommand{\tikzfile}[1]{
+	\tikzsetnextfilename{#1}%  
+	\input{#1.tikz}
+}
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{
+		\node[shape=circle,draw,inner sep=2pt] (char) {\tiny #1};}}
+
+
+
+
+% \usepackage{physics}
+% \usepackage{mathdots}
+% \usepackage{yhmath}
+% \usepackage{cancel}
+% \usepackage{color}
+% \usepackage{siunitx}
+% \usepackage{array}
+% \usepackage{multirow}
+% \usepackage{amssymb}
+% \usepackage{gensymb}
+% \usepackage{tabularx}
+% \usepackage{extarrows}
+% \usepackage{booktabs}
+% \usetikzlibrary{fadings}
+% \usetikzlibrary{patterns}
+% \usetikzlibrary{shadows.blur}
+% \usetikzlibrary{shapes}
+
+
+% ********************************************************************
+% Notes and todos
+% ********************************************************************
+\usepackage[colorinlistoftodos,
+	% disable,
+	textsize=scriptsize,
+	linecolor=red!30,
+	bordercolor=red!30,
+	backgroundcolor=red!10]{todonotes}
+% \makeatletter
+\renewcommand{\todo}[2][]{\tikzexternaldisable\@todo[#1]{#2}\tikzexternalenable}
+% \makeatother
+\newcommand{\note}[1]{\todo[linecolor=BurntOrange,backgroundcolor=BurntOrange!25,bordercolor=BurntOrange, inline, ]{\color{BurntOrange!80!black}{\textbf{\textit{#1}}}}}
+
+
+\usepackage[most]{tcolorbox}
+\newenvironment{highlight}%
+{\begin{tcolorbox}[toprule=2mm,left=4pt,right=4pt,top=0pt,bottom=1pt,boxsep=2pt, before skip = 2ex, after skip =2ex]}{\end{tcolorbox}}
+\tcbset{boxsep=4pt,left=2pt,right=2pt,top=-0pt,bottom=0pt}
+
+
+\newcommand\noteMF[1]{{\color{red}{\footnotesize {\textbf{\textsc{MF}}: ``#1''}\xspace}}}
+\newcommand\notePP[1]{{\color{blue}{\footnotesize {\textbf{\textsc{PP}}: {``#1''}}\xspace}}}
+\newcommand\notePM[1]{{\color{orange}{\footnotesize {\textbf{\textsc{PM}}: ``#1''}\xspace}}}
+\newcommand\noteGF[1]{{\color{violet}{\footnotesize {\textbf{\textsc{GF}}: ``#1''}\xspace}}}
+\newcommand\noteEB[1]{{\color{green}{\footnotesize {\textbf{\textsc{EB}}: ``#1''}\xspace}}}
+\newcommand\noteGC[1]{{\color{cyan}{\footnotesize {\textbf{\textsc{GC}}: ``#1''}\xspace}}}
+
+
+\usepackage{url}
+
+% \usepackage{xr}
+% \externaldocument{supplementary}
+
+%\usepackage{algorithm}
+%\usepackage{algorithmic}
+\usepackage{subcaption}
+
+\usepackage{tikz}
+\usepackage{graphicx}
+%\usepackage{subfigure}
+\usepackage{xcolor}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{bm}
+\usepackage{amsthm} % theorems and proofs
+\usepackage{nicefrac}
+
+
+\declaretheorem[name=Theorem]{theorem}
+\declaretheorem[name=Lemma]{lemma}
+\declaretheorem[name=Proposition]{proposition}
+\declaretheorem[name=Corollary]{corollary}%numberwithin=section
+\declaretheorem[name=Definition]{definition}
+\declaretheorem[name=Condition]{condition}
+\declaretheorem[name=Assumption]{assumption}
+\declaretheorem[name=Example]{example}
+\declaretheorem[name=Problem]{problem}
+
+
+%\newtheorem{theorem}{Theorem}
+%\newtheorem{proposition}{Proposition}
+%\newtheorem{lemma}{Lemma}
+%\newtheorem{sublemma}{Lemma}[lemma]
+%\newtheorem{corollary}{Corollary}
+%\newtheorem{definition}{Definition}
+
+\usepackage{adjustbox}
+\usepackage{multirow}
+\usepackage{mathtools}
+%\DeclareMathOperator{\Hessian}{H}
+%\DeclareMathOperator{\Hessian}{\mathbf{H}}
+\DeclareMathOperator{\Hessian}{Hess}
+
+\usepackage{xspace}
+
+%\hypersetup{draft}
+\newcommand{\redquestionmark}{\textbf{\textcolor{red!60!black}{?}}}
+
+
+

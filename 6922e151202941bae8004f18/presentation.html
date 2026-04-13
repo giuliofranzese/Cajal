@@ -1,0 +1,1622 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<script src="presentation_files/libs/clipboard/clipboard.min.js"></script>
+<script src="presentation_files/libs/quarto-html/tabby.min.js"></script>
+<script src="presentation_files/libs/quarto-html/popper.min.js"></script>
+<script src="presentation_files/libs/quarto-html/tippy.umd.min.js"></script>
+<link href="presentation_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="presentation_files/libs/quarto-html/light-border.css" rel="stylesheet">
+<link href="presentation_files/libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.6.42">
+
+  <meta name="author" content="Giulio Franzese — Eurecom, Data Science Department">
+  <title>Mutual Information and Diffusion Processes</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="presentation_files/libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="presentation_files/libs/revealjs/dist/reveal.css">
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+      vertical-align: middle;
+    }
+  </style>
+  <link rel="stylesheet" href="presentation_files/libs/revealjs/dist/theme/quarto-2f366650f320edcfcf53d73c80250a32.css">
+  <link href="presentation_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+  <link href="presentation_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+  <link href="presentation_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="presentation_files/libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+  <style type="text/css">
+    .reveal div.sourceCode {
+      margin: 0;
+      overflow: auto;
+    }
+    .reveal div.hanging-indent {
+      margin-left: 1em;
+      text-indent: -1em;
+    }
+    .reveal .slide:not(.center) {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide.scrollable {
+      overflow-y: auto;
+    }
+    .reveal .footnotes {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide .absolute {
+      position: absolute;
+      display: block;
+    }
+    .reveal .footnotes ol {
+      counter-reset: ol;
+      list-style-type: none; 
+      margin-left: 0;
+    }
+    .reveal .footnotes ol li:before {
+      counter-increment: ol;
+      content: counter(ol) ". "; 
+    }
+    .reveal .footnotes ol li > p:first-child {
+      display: inline-block;
+    }
+    .reveal .slide ul,
+    .reveal .slide ol {
+      margin-bottom: 0.5em;
+    }
+    .reveal .slide ul li,
+    .reveal .slide ol li {
+      margin-top: 0.4em;
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide ul[role="tablist"] li {
+      margin-bottom: 0;
+    }
+    .reveal .slide ul li > *:first-child,
+    .reveal .slide ol li > *:first-child {
+      margin-block-start: 0;
+    }
+    .reveal .slide ul li > *:last-child,
+    .reveal .slide ol li > *:last-child {
+      margin-block-end: 0;
+    }
+    .reveal .slide .columns:nth-child(3) {
+      margin-block-start: 0.8em;
+    }
+    .reveal blockquote {
+      box-shadow: none;
+    }
+    .reveal .tippy-content>* {
+      margin-top: 0.2em;
+      margin-bottom: 0.7em;
+    }
+    .reveal .tippy-content>*:last-child {
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide > img.stretch.quarto-figure-center,
+    .reveal .slide > img.r-stretch.quarto-figure-center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-left,
+    .reveal .slide > img.r-stretch.quarto-figure-left  {
+      display: block;
+      margin-left: 0;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-right,
+    .reveal .slide > img.r-stretch.quarto-figure-right  {
+      display: block;
+      margin-left: auto;
+      margin-right: 0; 
+    }
+  </style>
+  <script>
+  window.MathJax = {
+    tex: {
+      tags: 'ams',
+      macros: {
+        textsc:  ["{\\text{#1}}", 1],
+        mathbold:    ["{\\boldsymbol{{#1}}}", 1],
+        mba: "{\\boldsymbol{a}}", mbb: "{\\boldsymbol{b}}", mbc: "{\\boldsymbol{c}}",
+        mbd: "{\\boldsymbol{d}}", mbe: "{\\boldsymbol{e}}", mbf: "{\\boldsymbol{f}}",
+        mbg: "{\\boldsymbol{g}}", mbh: "{\\boldsymbol{h}}", mbi: "{\\boldsymbol{i}}",
+        mbj: "{\\boldsymbol{j}}", mbk: "{\\boldsymbol{k}}", mbl: "{\\boldsymbol{l}}",
+        mbm: "{\\boldsymbol{m}}", mbn: "{\\boldsymbol{n}}", mbo: "{\\boldsymbol{o}}",
+        mbp: "{\\boldsymbol{p}}", mbq: "{\\boldsymbol{q}}", mbr: "{\\boldsymbol{r}}",
+        mbs: "{\\boldsymbol{s}}", mbt: "{\\boldsymbol{t}}", mbu: "{\\boldsymbol{u}}",
+        mbv: "{\\boldsymbol{v}}", mbw: "{\\boldsymbol{w}}", mbx: "{\\boldsymbol{x}}",
+        mby: "{\\boldsymbol{y}}", mbz: "{\\boldsymbol{z}}",
+        mbA: "{\\boldsymbol{A}}", mbB: "{\\boldsymbol{B}}", mbC: "{\\boldsymbol{C}}",
+        mbD: "{\\boldsymbol{D}}", mbE: "{\\boldsymbol{E}}", mbF: "{\\boldsymbol{F}}",
+        mbG: "{\\boldsymbol{G}}", mbH: "{\\boldsymbol{H}}", mbI: "{\\boldsymbol{I}}",
+        mbJ: "{\\boldsymbol{J}}", mbK: "{\\boldsymbol{K}}", mbL: "{\\boldsymbol{L}}",
+        mbM: "{\\boldsymbol{M}}", mbN: "{\\boldsymbol{N}}", mbO: "{\\boldsymbol{O}}",
+        mbP: "{\\boldsymbol{P}}", mbQ: "{\\boldsymbol{Q}}", mbR: "{\\boldsymbol{R}}",
+        mbS: "{\\boldsymbol{S}}", mbT: "{\\boldsymbol{T}}", mbU: "{\\boldsymbol{U}}",
+        mbV: "{\\boldsymbol{V}}", mbW: "{\\boldsymbol{W}}", mbX: "{\\boldsymbol{X}}",
+        mbY: "{\\boldsymbol{Y}}", mbZ: "{\\boldsymbol{Z}}",
+        mbalpha:   "{\\boldsymbol{\\alpha}}",
+        mbbeta:    "{\\boldsymbol{\\beta}}",
+        mbgamma:   "{\\boldsymbol{\\gamma}}",
+        mbdelta:   "{\\boldsymbol{\\delta}}",
+        mbepsilon: "{\\boldsymbol{\\epsilon}}",
+        mbchi:     "{\\boldsymbol{\\chi}}",
+        mbeta:     "{\\boldsymbol{\\eta}}",
+        mbiota:    "{\\boldsymbol{\\iota}}",
+        mbkappa:   "{\\boldsymbol{\\kappa}}",
+        mblambda:  "{\\boldsymbol{\\lambda}}",
+        mbmu:      "{\\boldsymbol{\\mu}}",
+        mbnu:      "{\\boldsymbol{\\nu}}",
+        mbomega:   "{\\boldsymbol{\\omega}}",
+        mbphi:     "{\\boldsymbol{\\phi}}",
+        mbpi:      "{\\boldsymbol{\\pi}}",
+        mbpsi:     "{\\boldsymbol{\\psi}}",
+        mbrho:     "{\\boldsymbol{\\rho}}",
+        mbsigma:   "{\\boldsymbol{\\sigma}}",
+        mbtau:     "{\\boldsymbol{\\tau}}",
+        mbtheta:   "{\\boldsymbol{\\theta}}",
+        mbupsilon: "{\\boldsymbol{\\upsilon}}",
+        mbvarepsilon: "{\\boldsymbol{\\varepsilon}}",
+        mbvarphi:  "{\\boldsymbol{\\varphi}}",
+        mbvartheta:"{\\boldsymbol{\\vartheta}}",
+        mbvarrho:  "{\\boldsymbol{\\varrho}}",
+        mbxi:      "{\\boldsymbol{\\xi}}",
+        mbzeta:    "{\\boldsymbol{\\zeta}}",
+        mbDelta:   "{\\boldsymbol{\\Delta}}",
+        mbGamma:   "{\\boldsymbol{\\Gamma}}",
+        mbLambda:  "{\\boldsymbol{\\Lambda}}",
+        mbOmega:   "{\\boldsymbol{\\Omega}}",
+        mbPhi:     "{\\boldsymbol{\\Phi}}",
+        mbPi:      "{\\boldsymbol{\\Pi}}",
+        mbPsi:     "{\\boldsymbol{\\Psi}}",
+        mbSigma:   "{\\boldsymbol{\\Sigma}}",
+        mbTheta:   "{\\boldsymbol{\\Theta}}",
+        mbUpsilon: "{\\boldsymbol{\\Upsilon}}",
+        mbXi:      "{\\boldsymbol{\\Xi}}",
+        qL: "{\\mathbb{Q}}",
+        pL: "{\\mathbb{P}}",
+        KL:   ["{\\text{KL}\\!\\left[#1\\;\\|\\;#2\\right]}", 2],
+        Df:   ["{\\mathcal{D}_f\\!\\left[#1\\;\\|\\;#2\\right]}", 2],
+        Gauss: ["{\\mathcal{N}_{#1}}", 1],
+        E:    "{\\mathbb{E}}",
+        bbH:  "{\\mathbb{H}}",
+        bbR:  "{\\mathbb{R}}",
+        bbS:  "{\\mathbb{S}}",
+        cB: "{\\mathcal{B}}", cC: "{\\mathcal{C}}", cS: "{\\mathcal{S}}",
+        cD: "{\\mathcal{D}}", cL: "{\\mathcal{L}}", cN: "{\\mathcal{N}}",
+        cP: "{\\mathcal{P}}", cQ: "{\\mathcal{Q}}", cR: "{\\mathcal{R}}",
+        cF: "{\\mathcal{F}}", cI: "{\\mathcal{I}}", cT: "{\\mathcal{T}}",
+        cV: "{\\mathcal{V}}", cE: "{\\mathcal{E}}", cG: "{\\mathcal{G}}",
+        cX: "{\\mathcal{X}}", cY: "{\\mathcal{Y}}", cH: "{\\mathcal{H}}",
+        cW: "{\\mathcal{W}}", cU: "{\\mathcal{U}}",
+        Normal: "{\\mathcal{N}}",
+        argmax: "{\\operatorname*{arg\\,max}}",
+        argmin: "{\\operatorname*{arg\\,min}}",
+        defeq:  "{\\stackrel{\\scriptscriptstyle\\text{def}}{=}}",
+        d:      ["{\\operatorname{d}\\!{#1}}", 1],
+        dd:     "{\\operatorname{d}\\!}",
+        g:      "{\\,|\\,}",
+        scalprod: ["{\\langle #1,\\, #2\\rangle}", 2],
+        norm:   ["{\\left\\| #1 \\right\\|}", 1],
+        const:  "{\\mathrm{const.}}",
+        diag:   "{\\textrm{diag}}",
+        supp:   "{\\textrm{supp}}",
+        pdata:  "{p_{\\text{data}}}",
+        fft:    "{\\mathfrak{F}}",
+        ifft:   "{\\mathfrak{I}}",
+        inv:    "{-1}",
+        eye:    "{\\boldsymbol{I}}",
+        zerovect: "{\\mathbf{0}}",
+        Lelbo:  "{\\mathcal{L}_{\\text{ELBO}}}",
+        bigO:   "{\\mathcal{O}}"
+      }
+    }
+  };
+  </script>
+</head>
+<body class="quarto-light">
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide" data-background-image="assets/logo/eurecom.png" data-background-position="bottom 30px right 40px" data-background-size="18%" class="quarto-title-block center">
+  <h1 class="title">Mutual Information and Diffusion Processes</h1>
+
+<div class="quarto-title-authors">
+<div class="quarto-title-author">
+<div class="quarto-title-author-name">
+<strong>Giulio Franzese</strong> — Eurecom, Data Science Department 
+</div>
+</div>
+</div>
+
+</section>
+<section id="before-starting-a-collaborative-effort" class="slide level2">
+<h2>Before Starting: a collaborative effort!</h2>
+<div class="columns">
+<div class="column" style="width:33%;">
+<p><img data-src="pics/franzese.jpg" style="width:80.0%"></p>
+<p><strong>Giulio Franzese</strong></p>
+</div><div class="column" style="width:33%;">
+<p><img data-src="pics/michiardi-pietro_1.jpg" style="width:70.0%"></p>
+<p><strong>Pietro Michiardi</strong></p>
+</div><div class="column" style="width:33%;">
+<p><img data-src="pics/bounoua-mustapha.jpg" style="width:80.0%"></p>
+<p><strong>Bounoua Mustapha</strong></p>
+</div></div>
+<div class="columns">
+<div class="column" style="width:33%;">
+<p><img data-src="pics/headshot_chao%20(1).jpg" style="width:80.0%"></p>
+<p><strong>Chao Wang</strong></p>
+</div><div class="column" style="width:33%;">
+<p><img data-src="pics/foresti-alberto.jpg" style="width:70.0%"></p>
+<p><strong>Alberto Foresti</strong></p>
+</div><div class="column" style="width:33%;">
+<p><img data-src="pics/nepote-luca.jpg" style="width:70.0%"></p>
+<p><strong>Luca Nepote</strong></p>
+</div></div>
+</section>
+<section id="information-theory-across-scales-of-brain-biology" class="slide level2">
+<h2>Information Theory Across Scales of Brain Biology</h2>
+<p><strong>Shannon’s answer</strong> (1948): use <strong>Mutual Information</strong> — the unique measure that quantifies statistical dependence in bits, regardless of the shape of the distribution.</p>
+<p>The same tool answers interconnected questions at every scale of neuroscience:</p>
+<table class="caption-top">
+<colgroup>
+<col style="width: 18%">
+<col style="width: 27%">
+<col style="width: 27%">
+<col style="width: 27%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th>Question</th>
+<th>Scale</th>
+<th>Tool</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>1</strong></td>
+<td>How much does a neuron’s firing tell us about a stimulus?</td>
+<td>Systems</td>
+<td>MI</td>
+</tr>
+<tr class="even">
+<td><strong>2</strong></td>
+<td>Which brain area is <em>driving</em> which?</td>
+<td>Circuits</td>
+<td>Transfer Entropy</td>
+</tr>
+<tr class="odd">
+<td><strong>3</strong></td>
+<td>Do populations code <em>redundantly</em> or <em>synergistically</em>?</td>
+<td>Networks</td>
+<td>O-Information</td>
+</tr>
+<tr class="even">
+<td><strong>4</strong></td>
+<td>How much does gene expression predict cell fate? <em>(Weinreb et al.&nbsp;2020)</em></td>
+<td>Organoid / single-cell</td>
+<td>MI</td>
+</tr>
+<tr class="odd">
+<td><strong>5</strong></td>
+<td>What causal structure governs gene regulatory networks? <em>(Clonotrace 2025)</em></td>
+<td>Organoid / genomics</td>
+<td>Transfer Entropy</td>
+</tr>
+</tbody>
+</table>
+<p>The challenge: these quantities are <strong>hard to estimate</strong> from real data — nonlinear distributions, high dimensions, mixed data types. We’ll show how <strong>diffusion processes</strong> provide a unified solution.</p>
+</section>
+<section id="summary-of-the-talk" class="slide level2">
+<h2>Summary of the Talk</h2>
+<p><strong>Five methods, one framework — all applicable to brain biology:</strong></p>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><strong>1. MINDE</strong> <em>(Franzese et al., ICLR 2024)</em> <br>MI between <em>continuous</em> signals via diffusion score functions <br>→ <strong>The foundational building block</strong> — all methods below are extensions of this core idea</p>
+<p><strong>2. INFO-SEDD</strong> <em>(Foresti et al., ICLR 2025)</em> <br>MI for <em>discrete</em> data via Continuous Time Markov Chains <br>→ <em>DNA regulatory elements; scRNA-seq count data</em></p>
+<p><strong>3. DDMEC</strong> <em>(Bounoua et al., ICML 2025)</em> <br>Maximum-MI matching of unpaired multimodal data <br>→ <em>ATAC-seq / RNA-seq alignment without paired cells</em></p>
+</div><div class="column" style="width:50%;">
+<p><strong>4. SOI</strong> <em>(Bounoua et al., ICML 2024)</em> <br>O-Information — synergy &amp; redundancy across populations <br>→ <em>Visual cortex coding in mice; lineage disentanglement</em></p>
+<p><strong>5. TENDE</strong> <em>(Munoz et al., preprint)</em> <br>Transfer Entropy — directed information flow <br>→ <em>Organoid circuit formation; causal gene networks</em></p>
+<p><strong>The unifying insight</strong>: replace intractable measure-theoretic integrals with learnable <em>score functions</em> trained via self-supervised denoising.</p>
+</div></div>
+</section>
+<section>
+<section id="introduction" class="title-slide slide level1 center">
+<h1>Introduction</h1>
+
+</section>
+<section id="definition-of-mutual-information" class="slide level2">
+<h2>Definition of Mutual Information</h2>
+<p>The mutual information between two random variables <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> (or stochastic processes) is defined as:</p>
+<p><span class="math display">\[\textsc{I}(X; Y) = \mathbb{E} \left[ \log \frac{d\mu^{X,Y}}{d\mu^X d\mu^Y} \right]\]</span></p>
+<p>where:</p>
+<ul>
+<li><span class="math inline">\(\mu^{X,Y}\)</span> is the joint probability <strong>measure</strong> of <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span>.</li>
+<li><span class="math inline">\(\mu^X\)</span> and <span class="math inline">\(\mu^Y\)</span> are the marginal measures.</li>
+</ul>
+<p>The same definition holds when <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> are stochastic processes.</p>
+</section>
+<section id="mutual-information-as-a-fundamental-measure" class="slide level2">
+<h2>Mutual Information as a Fundamental Measure</h2>
+<ul>
+<li>Mutual information is a fundamental measure of statistical dependence between random variables.</li>
+<li>Imagine an omnipotent Daemon observing streams of data: <strong>either</strong> from the joint distribution <span class="math inline">\(\mu^{X,Y}\)</span> <strong>or</strong> from the product of the marginals <span class="math inline">\(\mu^X \mu^Y\)</span>.</li>
+<li>Mutual information quantifies the rate at which the daemon can distinguish between these two cases.</li>
+<li>In practical terms:
+<ul>
+<li>For discrete random variables, MI provides fundamental bounds on classification accuracy (e.g.&nbsp;how well can we decode a stimulus from a neural population response?).</li>
+<li>For continuous variables, it sets limits on estimation variance.</li>
+</ul></li>
+<li><strong>We will see later</strong> how this directly quantifies redundancy vs.&nbsp;synergy across visual cortex areas in mice — without any parametric assumption on neural firing distributions.</li>
+</ul>
+</section>
+<section id="interpretation-of-mutual-information" class="slide level2">
+<h2>Interpretation of Mutual Information</h2>
+<ul>
+<li>In a communication system, MI measures how much information about a message is retained after transmission through a noisy channel.</li>
+<li><strong>Neuroscience translation</strong>: the stimulus is the “message”, the neural response is the “received signal”. <span class="math inline">\(\textsc{I}(\text{stimulus};\text{response})\)</span> directly quantifies the neuron’s coding fidelity — in bits.</li>
+<li>Applications in neuroscience: neural coding efficiency, information bottleneck in sensory hierarchies, functional connectivity, consciousness research.</li>
+<li><strong>Cell fate prediction</strong>: Weinreb et al.&nbsp;(<em>Science</em>, 2020) used MI between sister cells’ transcriptomes to show that cell fate is governed by <em>hidden</em> biological states (epigenetic, metabolic) invisible to standard single-cell RNA-seq — MI between sisters increased over time beyond what transcriptomes alone predicted, revealing the hidden information.</li>
+<li><strong>Gene regulatory networks</strong>: MI between gene pairs underpins GRN inference (ARACNE, MRNET) — reconstructing which transcription factors regulate which targets in developing organoid tissue.</li>
+</ul>
+</section>
+<section id="some-examples" class="slide level2">
+<h2>Some Examples</h2>
+<p><span class="math display">\[\textsc{I}(A;B)=\int_{\mathbb{R}^{N\times M}} p(x,y)\log\frac{p(x,y)}{p(x)p(y)}\,dx\,dy, \quad \mu^{A,B}(dx,dy)=p(x,y)\,dx\,dy\]</span></p>
+<p><span class="math display">\[\textsc{I}(A;B)=\sum_{x,y\in \mathcal{X}\times \mathcal{Y}} p(x,y)\log\frac{p(x,y)}{p(x)p(y)}, \quad \mu^{A,B}(x,y)=p(x,y)\]</span></p>
+<p>Critically we rely on i) knowledge of the measures ii) capability of computing integral/sums in closed form. Examples: AWGN Channel, Discrete RVs with known distribution…</p>
+</section>
+<section id="why-not-just-use-correlation" class="slide level2">
+<h2>Why Not Just Use Correlation?</h2>
+<p>Pearson correlation <span class="math inline">\(\rho(X,Y) = \frac{\operatorname{Cov}(X,Y)}{\sigma_X \sigma_Y}\)</span> is ubiquitous — but it fundamentally fails in neural data settings:</p>
+<ul>
+<li><p><strong>Nonlinearities</strong>: neurons have sigmoidal transfer functions, threshold and saturation effects. A neuron can be maximally informative about a stimulus yet have <em>zero</em> linear correlation with it.</p></li>
+<li><p><strong>The XOR problem</strong>: let <span class="math inline">\(X, Y\)</span> be independent fair coin flips, <span class="math inline">\(Z = X \oplus Y\)</span> (XOR). Then <span class="math inline">\(\rho(X,Z)=\rho(Y,Z)=0\)</span> — yet <span class="math inline">\(I(X;Z) &gt; 0\)</span>. This is precisely <em>synergistic coding</em>: the pair <span class="math inline">\((X,Y)\)</span> jointly encodes <span class="math inline">\(Z\)</span>, but neither alone does. This arises naturally in multi-neuron recordings.</p></li>
+<li><p><strong>Mixed data types</strong>: neural recordings mix spike counts (discrete, Poisson-like), local field potentials (continuous), and behavioural variables (categorical). Correlation requires a common scale; MI is defined uniformly for <em>any</em> pair of measures.</p></li>
+<li><p><strong>Reparametrisation invariance</strong>: MI is unchanged under any invertible transformation. Correlation depends on preprocessing choices (z-scoring, log-transform of firing rates) — MI does not.</p></li>
+<li><p><strong>scRNA-seq count data</strong>: gene expression counts are discrete, zero-inflated, and heavily skewed (negative binomial). Pearson correlation on raw or log-normalised counts systematically misses nonlinear co-regulation between genes. MI is defined directly on the count distribution, no normalisation required.</p></li>
+<li><p><strong>Organoid evidence — hidden states</strong>: Weinreb et al.&nbsp;(<em>Science</em>, 2020) showed that sister cells’ transcriptomes had <em>zero</em> useful linear correlation for predicting differential fate outcomes — yet MI between sisters grew steadily, revealing that hidden epigenetic states (invisible to sequencing) were the true fate determinants. Only MI detected this.</p></li>
+<li><p><strong>Beyond neurons</strong>: Uthamacumaran et al.&nbsp;(2024) applied MI-based functional connectivity to <em>aneural</em> morphogenetic tissue (Xenopus epidermis), revealing organised information structures invisible to pairwise correlation — showing these tools generalise across all developing biological systems.</p></li>
+</ul>
+</section>
+<section id="technical-simplification" class="slide level2">
+<h2>Technical Simplification</h2>
+<p>To lighten up the notation, we present results for <em>generic</em> Kullback-Leibler divergences:</p>
+<p><span class="math display">\[\KL{\mu}{\rho}\defeq \int\phi\!\left(\frac{d\mu}{d\rho}\right)d\rho,\quad \text{with}\quad \phi(x)=x\log(x)\]</span></p>
+<p>Trivial exercise: show that <span class="math inline">\(\textsc{I}(A,B)=\KL{\mu^{A,B}}{\mu^{A}\mu^{B}}\)</span></p>
+</section>
+<section id="mutual-information-estimators" class="slide level2">
+<h2>Mutual Information Estimators…?</h2>
+<p>More than 80 years of research in three sentences:</p>
+<ul>
+<li>For Continuous RVs <em>approximate</em> the distributions as Gaussian, Laplace (insert anything which gives easy to compute formulas) and compute MI, e.g. <span class="math display">\[p(x,y)\simeq \mathcal{N}\!\left(\mu,\begin{bmatrix}\Sigma_{XX} &amp;\Sigma_{XY}\\\Sigma_{XY}^\top &amp;\Sigma_{YY}\end{bmatrix}\right) \;\rightarrow\; \textsc{I}(X,Y)=\tfrac{1}{2}\log\!\left(\frac{\det(\Sigma_{YY})\det(\Sigma_{XX})}{\det(\Sigma)}\right)\]</span></li>
+<li>For Discrete random variables, estimate the histogram of joint occurrences from dataset <span class="math inline">\(\{x_i,y_i\}_{i=1}^N\)</span>, store them in a large matrix, and compute <span class="math display">\[\hat{H}=\frac{1}{N}\begin{bmatrix} \#(x_i=0,y_i=0) &amp;\dots &amp; \#(x_i=0,y_i=M) \\ \vdots &amp; &amp; \vdots \end{bmatrix}, \quad \hat{I}=\sum_{j,k}\hat{H}_{j,k}\log \hat{H}_{j,k}\]</span></li>
+<li>Combine the approaches (binning, clustering prototypes, etc…)</li>
+</ul>
+</section>
+<section id="mutual-information-estimators-cont." class="slide level2">
+<h2>Mutual Information Estimators…? (cont.)</h2>
+<p><strong>Problem</strong>: classical estimators fail in high dimensional scenarios necessitating advanced estimation methods like neural estimators.</p>
+<ul>
+<li>Two main families of neural approaches:
+<ul>
+<li><strong>Discriminative</strong>: a classifier distinguishes between samples from the joint (<span class="math inline">\(\sim \mu^{A,B}\)</span>) or product of marginals (<span class="math inline">\(\mu^A \mu^B\)</span>)</li>
+<li><strong>Generative (likelihood based)</strong>: fit parametrically <span class="math inline">\(\mu^{A,B}\)</span> and estimate MI using Monte Carlo Methods</li>
+</ul></li>
+<li><strong>Problem:</strong> many existing neural estimators fail on challenging (long-tailed distributions) and do not pass <em>consistency tests</em>.</li>
+</ul>
+</section>
+<section id="mutual-information-estimators-cont.-1" class="slide level2">
+<h2>Mutual Information Estimators…? (cont.)</h2>
+<p>Discriminative approaches in one slide (convex duality of <span class="math inline">\(\phi(\cdot)\)</span>):</p>
+<p><span class="math display">\[\phi^{*}(y)=\sup_{x}(xy-\phi(x)),\quad \phi^{**}(x)= \sup_{y}(yx-\phi^{*}(y)),\quad \phi^{**}(x)=\phi(x)\]</span></p>
+<ul>
+<li><p><strong>Donsker-Varahdan Thm:</strong> <span class="math display">\[\KL{\mu}{\chi}=\sup_{T:\Omega\rightarrow\mathbb{R}}\E_\mu[T]-\log \E_\chi [\exp(T)]\]</span></p></li>
+<li><p>From all possible functions <span class="math inline">\(T\)</span> to the smaller class of <em>neural networks</em>: <span class="math display">\[\sup_{T:\Omega\rightarrow\mathbb{R}}(\E_\mu[T]-\log \E_\chi [\exp(T)])\geq \sup_{\theta\in \mathbb{R}^K}(\E_\mu[T^\theta]-\log \E_\chi [\exp(T^\theta)])\]</span></p></li>
+</ul>
+
+<img data-src="figures/dec_bound.png" style="width:65.0%" class="r-stretch"><ul>
+<li><strong>Big problems</strong>: i) Good luck with MC estimation of <span class="math inline">\(\log \E [\exp(T^\theta)]\)</span>; ii) For tail events, estimation is unreliable.</li>
+</ul>
+</section></section>
+<section>
+<section id="estimation-via-diffusion" class="title-slide slide level1 center">
+<h1>Estimation via Diffusion</h1>
+
+</section>
+<section id="the-diffusion-idea-an-intuition" class="slide level2">
+<h2>The Diffusion Idea — An Intuition</h2>
+<div class="columns">
+<div class="column" style="width:55%;">
+<p><strong>Step 1 — Forward process (noising):</strong></p>
+<p>Any distribution <span class="math inline">\(p(x)\)</span> converges to a Gaussian when you repeatedly add small amounts of noise.</p>
+<p><span class="math display">\[x_t = e^{-t}\,x_0 + \sqrt{1 - e^{-2t}}\;\varepsilon, \quad \varepsilon \sim \mathcal{N}(0,I)\]</span></p>
+<ul>
+<li>At <span class="math inline">\(t=0\)</span>: the original data distribution.</li>
+<li>At <span class="math inline">\(t\to\infty\)</span>: pure Gaussian noise.</li>
+<li>The trajectory in between is fully tractable.</li>
+</ul>
+<p><strong>Step 2 — Score function = compass toward data:</strong></p>
+<p><span class="math display">\[\nabla_x \log p_t(x) \;\;\text{"points toward high-density regions"}\]</span></p>
+<ul>
+<li>Intuitively: a noisy sample <span class="math inline">\(x_t\)</span> “knows” where <span class="math inline">\(x_0\)</span> came from.</li>
+<li>The score is proportional to the <strong>optimal denoiser</strong> (Tweedie’s formula):</li>
+</ul>
+<p><span class="math display">\[\nabla_x \log p_t(x) = \frac{e^{-t}\,\mathbb{E}[x_0 \mid x_t] - x_t}{1 - e^{-2t}}\]</span></p>
+</div><div class="column" style="width:45%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="figures/noisy_balls.png" style="width:100.0%"></p>
+<figcaption>Different initial distributions all funnel into the same Gaussian after sufficient noising — only the score functions differ</figcaption>
+</figure>
+</div>
+<p><strong>Step 3 — Learn the score, get MI for free:</strong></p>
+<p>Train a neural network to denoise (self-supervised): <span class="math display">\[\mathcal{L}(\theta) = \mathbb{E}\!\left[\|\text{net}_\theta(x_t, t) - x_0\|^2\right]\]</span></p>
+<p>The gap between two denoisers encodes the KL divergence — and therefore the Mutual Information.</p>
+</div></div>
+</section>
+<section id="introduction-1" class="slide level2">
+<h2>Introduction</h2>
+<ul>
+<li><p>Consider a generic random variable <span class="math inline">\(A\)</span> with probability measure <span class="math inline">\(\mu^A\)</span></p></li>
+<li><p>Build a simple SDE in <span class="math inline">\([0,T]\)</span> with initial conditions <span class="math inline">\(\sim \mu^A\)</span>: <span class="math display">\[\begin{cases}\dd X_t=-X_t\,\dd t+\sqrt{2}\,\dd W_t,\\ X_0=A\sim \mu^A\end{cases}\]</span> where <span class="math inline">\(W_t\)</span> is a Brownian motion. <strong>Informally</strong>, <span class="math inline">\(\dd W_t\sim \mathcal{N}(0,\dd t)\)</span></p></li>
+<li><p>For engineers/physicists: <span class="math display">\[\frac{\dd X_t}{\dd t}=-X_t+\sqrt{2}\underbrace{\frac{\dd W_t}{\dd t}}_{N_t,\,\text{White Noise}}\]</span> (even simpler: <span class="math inline">\(X_t=h_t\star N_t\)</span>). We need measure theory and stoch. integrals for nonlinear drifts, etc…</p></li>
+<li><p>This SDE corresponds to a path measure <span class="math inline">\(\mathbb{P}^{A}\)</span> (<strong>informally</strong> events like <span class="math inline">\(\text{Pr}(X_{0\leq t\leq T}\in \mathcal{S})\)</span>).</p></li>
+</ul>
+</section>
+<section id="introduction-cont." class="slide level2">
+<h2>Introduction (cont.)</h2>
+<ul>
+<li><p>Two SDEs which differ only by initial conditions have KL divergence: <span class="math display">\[\KL{\mathbb{P}^{A}}{\mathbb{P}^{B}}=\E_{\mathbb{P}^{A}}\!\left[\log\frac{d\mathbb{P}^{A}}{d\mathbb{P}^{B}}\right]=\E_{\mathbb{P}^{A}}\!\left[\log\frac{d\mu^{A}}{dp^{B}}\right]=\KL{\mu^A}{\mu^B}\]</span></p></li>
+<li><p>Disintegration of measures explains why (simply Markov): <span class="math display">\[\frac{d{P}^{A}}{d{P}^{B}}=\frac{d\mu^A(X_{0})}{d\mu^B(X_{0})}\]</span></p></li>
+</ul>
+</section>
+<section id="introduction-cont.-1" class="slide level2">
+<h2>Introduction (cont.)</h2>
+<p><strong>Time-reversal</strong> <span class="math inline">\(\hat{X}_t\defeq X_{T-t}\)</span>:</p>
+<ul>
+<li>KL between path measures is invariant to time-reversal: <span class="math inline">\(\KL{\mathbb{P}^{A}}{\mathbb{P}^{B}}=\KL{\hat{\mathbb{P}}^{A}}{\hat{\mathbb{P}}^{B}}\)</span></li>
+<li>Time reversal of SDE is again an SDE (provided technical conditions [Léonard 2014]): <span class="math display">\[\dd \hat X_t=\hat X_t+2 \underbrace{\nabla\log \frac{d\mu_{T-t}^A}{dx}(\hat X_t)}_{\text{score function!}}\dd t+ \sqrt{2}\,\dd \hat W_t\]</span> with <span class="math inline">\(dx\)</span> the Lebesgue measure.</li>
+<li>Score function <span class="math inline">\(\leftrightarrow\)</span> Denoiser: <span class="math display">\[\nabla\log \frac{d\mu_t^A}{dx}(x)=\nabla\log p^A_t(x)=\frac{\exp(-t)\,{\color{red}\E_{{\mathbb{P}^{A}}}[X_0\mid X_t=x]}-x}{1-\exp(-2t)}\]</span></li>
+</ul>
+</section>
+<section id="introduction-cont.-2" class="slide level2">
+<h2>Introduction (cont.)</h2>
+<p><strong>Girsanov theorem</strong>: (informal) express the KL between path measures corresponding to two SDEs with different drifts.</p>
+<p><span class="math display">\[\KL{\hat{\mathbb{P}}^{A}}{\hat{\mathbb{P}}^{B}}\simeq  \E_{\mathbb{P}^{\mu^A}}\!\left[\int_0^T\norm{\nabla\log p^{A}_t(X_t)-\nabla\log p^{B}_t(X_t)}^2\dd t\right]\]</span></p>
+<ul>
+<li>Combining with <span class="math inline">\(\KL{\mathbb{P}^{A}}{\mathbb{P}^{B}}=\KL{\hat{\mathbb{P}}^{A}}{\hat{\mathbb{P}}^{B}}\)</span> we can obtain a KL-estimator!</li>
+</ul>
+</section>
+<section id="introduction-cont.-3" class="slide level2">
+<h2>Introduction (cont.)</h2>
+<p>… but do we know the score? In general, <strong>no</strong>.</p>
+<p><strong>Solution</strong> → parametric denoiser (score network): <span class="math display">\[\mathcal{L}(\theta)=\E[\norm{\text{net}_\theta(X_t,t)-X_0}^2]\]</span></p>
+<p>Remember <span class="math inline">\(X_0=A\)</span>. Basically a self-supervised procedure:</p>
+<ul>
+<li>Start with a dataset.</li>
+<li>Corrupt it with various levels of noise.</li>
+<li>Try to learn a proper denoiser.</li>
+</ul>
+</section>
+<section id="score-based-generative-models" class="slide level2">
+<h2>Score-based Generative Models?</h2>
+<div class="columns">
+<div class="column" style="width:52%;">
+<p>The time reversal of diffusion processes is currently one of the main ingredients behind the extremely popular <strong>generative AI</strong> models (Stable Diffusion, DALL·E, Sora…).</p>
+<p>These models are trained to <strong>denoise</strong> — which means they implicitly learn the score <span class="math inline">\(\nabla \log p_t(x)\)</span> at every noise level.</p>
+<div class="callout callout-tip no-icon callout-style-simple">
+<div class="callout-body">
+<div class="callout-content">
+<p><strong>Our key insight</strong>: we <em>repurpose</em> this powerful machinery — originally developed for image synthesis — to estimate <strong>Mutual Information</strong>. No generative output needed; we only care about the score functions learned during training.</p>
+<p>The billions of dollars invested in scaling diffusion models also advance our ability to compute information-theoretic quantities on complex biological data.</p>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:48%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="figures/sde_schematic.jpg" style="width:100.0%"></p>
+<figcaption>Song et al.&nbsp;“Score-Based Generative Modeling through SDEs” — forward process gradually corrupts data; reverse process (learned score) regenerates it</figcaption>
+</figure>
+</div>
+</div></div>
+</section>
+<section id="mutual-information-neural-diffusion-estimation" class="slide level2">
+<h2>Mutual Information Neural Diffusion Estimation</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p>Mutual Information between two random variables <span class="math inline">\(A,B\)</span>:</p>
+<p><span class="math display">\[\textsc{I}(A,B)=\KL{\mu^{A,B}}{\mu^A\mu^B}\]</span></p>
+<p>Two families of diffusion processes: <strong>joint (J)</strong> and <strong>conditional (C)</strong>.</p>
+<p><span class="math display">\[\begin{cases}\dd [X_t,Y_t]^\top =-[X_t,Y_t]^\top \dd t+ \sqrt{2}\,[\dd W_t,\dd W'_t]^\top\\ [X_0,Y_0]^\top\sim \mu^{A,B}\end{cases}\]</span></p>
+<p>The joint and marginal scores are the only ingredients needed — train a single network, query it twice.</p>
+</div><div class="column" style="width:50%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="figures/SotA.png" style="width:100.0%"></p>
+<figcaption>MINDE achieves state-of-the-art MI estimation across all benchmarks</figcaption>
+</figure>
+</div>
+</div></div>
+</section>
+<section id="mutual-information-neural-diffusion-estimation-cont." class="slide level2 scrollable">
+<h2>Mutual Information Neural Diffusion Estimation (cont.)</h2>
+<p>First family, <strong>MINDE-C</strong>:</p>
+<div title="Algorithm: Estimate Mutual Information using Diffusion Models">
+<div class="callout callout-note no-icon callout-titled callout-style-simple">
+<div class="callout-body">
+<div class="callout-title">
+<p><strong>Algorithm: Estimate Mutual Information using Diffusion Models</strong></p>
+</div>
+<div class="callout-content">
+<ol type="1">
+<li><span class="math inline">\([A, B] \sim \mu^{A,B}\)</span> &nbsp;&nbsp; ▷ Sample from joint distribution</li>
+<li><span class="math inline">\(t \sim \mathcal{U}[0, T]\)</span> &nbsp;&nbsp; ▷ Uniformly sample <span class="math inline">\(t\)</span> from <span class="math inline">\([0,T]\)</span></li>
+<li><span class="math inline">\(X_t \gets \exp(-t)A + \sqrt{1-\exp(-2t)}\,\epsilon\)</span>, where <span class="math inline">\(\epsilon \sim \mathcal{N}(\mathbf{0},\boldsymbol{I})\)</span> &nbsp;&nbsp; ▷ Simulate diffusion</li>
+<li><span class="math inline">\(s^{A} \gets \text{net}_\theta([X_t, 0], t, c=0)\)</span> &nbsp;&nbsp; ▷ Compute unconditional score</li>
+<li><span class="math inline">\(s^{A_{B}} \gets \text{net}_\theta([X_t, B], t, c=1)\)</span> &nbsp;&nbsp; ▷ Compute conditional score</li>
+<li><span class="math inline">\(\hat{I} \gets T\left\| s^{A}-s^{A_{B}} \right\|^2\)</span> &nbsp;&nbsp; ▷ Estimate MI</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="why-this-gap-an-intuition" class="slide level2">
+<h2>Why This Gap: an Intuition</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><img data-src="figures/pitfalls.jpg" style="width:100.0%"></p>
+</div><div class="column" style="width:50%;">
+<p><img data-src="figures/multi_scale.jpg" style="width:100.0%"></p>
+</div></div>
+<p>Credit: <a href="https://yang-song.net/blog/2021/score/">https://yang-song.net/blog/2021/score/</a></p>
+</section>
+<section id="a-different-perspective" class="slide level2">
+<h2>A Different Perspective</h2>
+<p>A <em>simpler</em> derivation of the estimator is based on the Feynman integration trick (a.k.a. in statistics as thermodynamic integration). Consider <span class="math inline">\(p_t=\exp(t\mathcal{L})p_0,\;q_t=\exp(t\mathcal{L})q_0\)</span>, where <span class="math inline">\(\mathcal{L}\)</span> is the Fokker-Planck operator of a “nice” diffusion <span class="math inline">\(\mathcal{L}=\nabla^\top(f\cdot)+\Delta(\cdot)\)</span>.</p>
+<p>Then: <span class="math display">\[\KL{p_0}{q_0}=\int_0^\infty \frac{d}{dt}\KL{p_t}{q_t}\,dt\]</span> where <span class="math display">\[\frac{d}{dt}\KL{p_t}{q_t}=\int \frac{d}{dt}p_t\log\frac{p_t}{q_t} +p_t \frac{d}{dt}\log\frac{p_t}{q_t}\,dx\]</span></p>
+<p>The idea of the proof: <span class="math inline">\(\mathcal{L}^\dagger\)</span> is known, integrate by parts, simplify, and obtain an expected difference of scores.</p>
+</section>
+<section id="continuous-time-markov-chains-conquering-discrete-spaces" class="slide level2">
+<h2>Continuous Time Markov Chains: Conquering Discrete Spaces</h2>
+<ul>
+<li>Consider a <strong>discrete</strong> random variable <span class="math inline">\(A\in \chi = \{1,\hdots,N\}\)</span> with probability measure <span class="math inline">\(\mu^A\)</span> (discrete state spaces, conflate with <span class="math inline">\(p^A\)</span>)</li>
+<li>Build a CTMC in <span class="math inline">\([0,T]\)</span> with initial conditions <span class="math inline">\(\sim p^A\)</span>: <span class="math display">\[\frac{d p^A_t(x)}{dt}=Q_t p^A_t(x)\]</span></li>
+<li>The infinitesimal generator <span class="math inline">\(Q_t\)</span> is now a matrix, whereas it was a differential operator in <span class="math inline">\(\mathbb{R}^N\)</span>. Think e.g.&nbsp;of Queuing Theory, Epidemic Models, or <strong>scRNA-seq count data from organoids at successive developmental stages</strong> — each gene expression level is a discrete state, and differentiation is a Markov transition between them.</li>
+<li>We can adapt the previous calculations. Then <span class="math inline">\(\KL{p_0}{q_0}=\)</span> <span class="math display">\[\mathbb{E}\!\left[\int_0^T\sum_{x\neq X_t} Q_{t}(X_t,x)\!\left(K\!\left(\frac{p_t(x)}{p_t(X_t)}\right)+\frac{q_t(x)}{q_t(X_t)}-\frac{p_t(x)}{p_t(X_t)}\log\frac{q_t(x)}{q_t(X_t)}\right)dt\right]\]</span> where <span class="math inline">\(K(a)=a(\log(a)-1)\)</span>. The ratio <span class="math inline">\(\frac{p_t(x)}{p_t(y)}\)</span> is called the <em>discrete score</em> — approximated with a neural network.</li>
+</ul>
+</section>
+<section id="continuous-time-markov-chains-cont." class="slide level2">
+<h2>Continuous Time Markov Chains (cont.)</h2>
+<div class="columns">
+<div class="column" style="width:48%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="figures/infosed_res.PNG" style="width:100.0%"></p>
+<figcaption>INFO-SEDD achieves state-of-the-art results across discrete MI estimation benchmarks</figcaption>
+</figure>
+</div>
+</div><div class="column" style="width:52%;">
+<div class="quarto-figure quarto-figure-center" style="object-fit:contain; max-height:400px;">
+<figure>
+<p><img data-src="figures/tata_box_sliding_window_plot.png" style="width:100.0%"></p>
+<figcaption><em>Arabidopsis thaliana</em> promoter: sliding-window MI scan recovers TATA-box position (peak ~30bp upstream of TSS) with no supervised labels</figcaption>
+</figure>
+</div>
+</div></div>
+</section>
+<section id="info-sedd-unlocks-discrete-biology" class="slide level2">
+<h2>INFO-SEDD Unlocks Discrete Biology</h2>
+<p>Classical MI estimators assume continuous data — but biology is full of <strong>discrete signals</strong>. INFO-SEDD handles them natively:</p>
+<div class="columns">
+<div class="column" style="width:55%;">
+<p><strong>DNA regulatory elements</strong> <em>(right figure)</em></p>
+<ul>
+<li>Sliding-window MI scan over <em>Arabidopsis thaliana</em> promoter sequences identifies TATA-box location without any supervised labelling</li>
+<li>Foundational for organoid research: TATA-box activity governs transcription factor binding → neural stem cell fate decisions</li>
+<li><strong>No previous method</strong> could estimate MI on raw DNA sequences at this scale</li>
+</ul>
+<p><strong>scRNA-seq count data</strong></p>
+<ul>
+<li>Gene expression counts <span class="math inline">\(\in \{0,1,2,\ldots\}\)</span> are discrete by nature</li>
+<li>INFO-SEDD computes MI between gene pairs on raw counts — no normalisation, no Gaussian approximation</li>
+<li>Opens door to nonparametric GRN inference from organoid single-cell atlases</li>
+</ul>
+</div><div class="column" style="width:45%;">
+<p><img data-src="figures/tata_box_sliding_window_plot.png" style="width:100.0%"></p>
+<div style="font-size:0.8em; color:#444; margin-top:0.5em;">
+<p>Peak at TATA-box position recovered purely from MI — no sequence alignment, no pre-training on annotated data</p>
+</div>
+</div></div>
+</section>
+<section id="unpaired-data-problem" class="slide level2">
+<h2>Unpaired Data Problem</h2>
+<ul>
+<li>Multimodal learning often assumes the availability of paired data.</li>
+<li>However, real-world data is frequently <strong>unpaired across modalities</strong>.</li>
+</ul>
+
+<img data-src="figures/unpaired.png" style="width:65.0%" class="r-stretch"></section>
+<section id="unpaired-data-problem-cont." class="slide level2">
+<h2>Unpaired Data Problem (cont.)</h2>
+<p>Given two marginals <span class="math inline">\(\mu^{X}\)</span> and <span class="math inline">\(\mu^{Y}\)</span>, find a joint distribution <span class="math inline">\(\mu^{XY}\)</span> that satisfies:</p>
+<ul>
+<li>The marginal constraints: <span class="math inline">\(\mu^{XY}(S\times \mathbb{R}^N)=\mu^{X}(S),\;\mu^{XY}(\mathbb{R}^N\times S)=\mu^{Y}(S)\)</span></li>
+<li><strong>Maximise the Mutual Information</strong> between <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span>!</li>
+</ul>
+<p><strong>Why MI-maximisation, not just Optimal Transport?</strong></p>
+<p>Optimal Transport finds a <em>geometrically close</em> coupling — it minimises the cost of moving mass from <span class="math inline">\(\mu^X\)</span> to <span class="math inline">\(\mu^Y\)</span>. But closeness in gene-expression space <span class="math inline">\(\neq\)</span> biological correspondence: a chromatin-open cell and an actively-transcribing cell may look distant by <span class="math inline">\(L^2\)</span> distance yet be the same cell state. MI-maximisation finds the coupling where knowing one modality maximally reduces uncertainty about the other — a <strong>biological correspondence principle</strong>, not a geometric one.</p>
+</section>
+<section id="unpaired-data-demonstrated-results" class="slide level2">
+<h2>Unpaired Data: Demonstrated Results</h2>
+<p>DDMEC can pair any two unpaired distributions — demonstrated on image domains:</p>
+<div class="columns">
+<div class="column" style="width:48%;">
+<div style="display:grid; grid-template-columns: 1fr 1fr; gap:4px; text-align:center;">
+<div style="font-size:0.7em;">
+<strong>Source</strong>
+</div>
+<div style="font-size:0.7em;">
+<strong>Output</strong>
+</div>
+<div>
+<img data-src="cat2dog/cond/6.png" style="width:100.0%">
+</div>
+<div>
+<img data-src="cat2dog/out/6.png" style="width:100.0%">
+</div>
+<div>
+<img data-src="cat2dog/cond/9.png" style="width:100.0%">
+</div>
+<div>
+<img data-src="cat2dog/out/9.png" style="width:100.0%">
+</div>
+<div>
+<img data-src="cat2dog/cond/11.png" style="width:100.0%">
+</div>
+<div>
+<img data-src="cat2dog/out/11.png" style="width:100.0%">
+</div>
+<div>
+<img data-src="cat2dog/cond/52.png" style="width:100.0%">
+</div>
+<div>
+<img data-src="cat2dog/out/52.png" style="width:100.0%">
+</div>
+</div>
+</div><div class="column" style="width:4%;">
+
+</div><div class="column" style="width:48%;">
+<div style="display:grid; grid-template-columns: 1fr 1fr; gap:4px; text-align:center;">
+<div style="font-size:0.7em;">
+<strong>Source</strong>
+</div>
+<div style="font-size:0.7em;">
+<strong>Output</strong>
+</div>
+<div>
+<img data-src="wild2dog/cond/1.png" style="width:100.0%">
+</div>
+<div>
+<img data-src="wild2dog/out/1.png" style="width:100.0%">
+</div>
+<div>
+<img data-src="wild2dog/cond/116.png" style="width:100.0%">
+</div>
+<div>
+<img data-src="wild2dog/out/116.png" style="width:100.0%">
+</div>
+<div>
+<img data-src="wild2dog/cond2/2.png" style="width:100.0%">
+</div>
+<div>
+<img data-src="wild2dog/out2/2.png" style="width:100.0%">
+</div>
+<div>
+<img data-src="wild2dog/cond/36.png" style="width:100.0%">
+</div>
+<div>
+<img data-src="wild2dog/out/36.png" style="width:100.0%">
+</div>
+</div>
+</div></div>
+</section>
+<section id="unpaired-data-application-to-single-cell-multi-omics" class="slide level2">
+<h2>Unpaired Data: Application to Single-Cell Multi-Omics</h2>
+<p>The same principle applies to <strong>organoid multi-omics</strong>: aligning <strong>ATAC-seq</strong> (chromatin accessibility) with <strong>RNA-seq</strong> (gene expression) from the same organoid population — <strong>without</strong> paired single-cell measurements.</p>
+<div class="columns">
+<div class="column" style="width:47%;">
+<p><img data-src="figures/gen_pbmc.png" style="width:100.0%"></p>
+</div><div class="column" style="width:53%;">
+<p><img data-src="figures/out_pbmc.png" style="width:100.0%"></p>
+</div></div>
+<div style="font-size:0.85em; color:#444;">
+<p><em>DDMEC applied to PBMC single-cell data. This methodology could directly enable joint chromatin + transcriptome analysis of differentiating organoids without the experimental cost of paired profiling.</em></p>
+</div>
+</section></section>
+<section>
+<section id="multivariate-information-theory" class="title-slide slide level1 center">
+<h1>Multivariate Information Theory</h1>
+
+</section>
+<section id="multimodal-information-theory" class="slide level2">
+<h2>Multimodal Information Theory</h2>
+<ul>
+<li>Recently, the concept of MI has been extended to higher-order interactions: <span style="color:blue"><strong>Redundant</strong></span>, <span style="color:red"><strong>Synergistic</strong></span> and <span style="color:green"><strong>Unique</strong></span> Information. Seminal works by Williams and Beer (Partial Information Decomposition). Extremely important in consciousness studies.</li>
+</ul>
+
+<img data-src="figures/info_pdf.png" style="width:55.0%" class="r-stretch"><p><strong>Already used in organoid biology:</strong></p>
+<ul>
+<li><strong>DeepTracing</strong> (2024): uses <em>Total Correlation</em> — a key component of O-Information — as a regularization term to disentangle <em>heritable lineage constraints</em> from <em>intrinsic cell-state dynamics</em> in organoid scRNA-seq. TC penalises statistical dependence between latent variables, enforcing clean separation.</li>
+<li><strong>SCENT</strong> (Teschendorff et al.&nbsp;2017): estimates <em>signaling entropy rate</em> from transcriptomic data integrated with a protein-protein interaction network. High entropy → pluripotent; low entropy → committed fate. A practical information-theoretic potency score for stem cells.</li>
+</ul>
+</section>
+<section id="multimodal-information-theory-cont." class="slide level2">
+<h2>Multimodal Information Theory (cont.)</h2>
+<p>Applications: <strong>Multimodal sensory</strong> neuroscience — and increasingly, <strong>organoid development</strong>.</p>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="figures/pid_fmri%20(1).PNG" style="width:100.0%"></p>
+<figcaption>Luppi et al: PID decomposition of fMRI brain-wide activity — redundant vs synergistic regions</figcaption>
+</figure>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="figures/PID_eyes%20(1).PNG" style="width:100.0%"></p>
+<figcaption>PID applied to multisensory integration and eye-tracking responses</figcaption>
+</figure>
+</div>
+</div></div>
+<p><strong>Organoid angle</strong>: the same decomposition applied to multi-electrode or calcium imaging data during organoid maturation can reveal whether developing circuits build <em>redundant</em> (fault-tolerant) or <em>synergistic</em> (integrative) coding strategies.</p>
+</section>
+<section id="o-information" class="slide level2">
+<h2>O-Information</h2>
+<p>Analyzing systems with more than two variables. Example of metric: <strong>O-Information</strong>.</p>
+<div class="columns">
+<div class="column" style="width:60%;">
+<p><span class="math display">\[\Omega(X) = T(X) - D(X)\]</span> where <span class="math inline">\(T(X) = \sum_{i=1}^{N} H(X_i) - H(X)\)</span> is the <strong>Total Correlation</strong> and <span class="math inline">\(D(X) = H(X) - \sum_{i=1}^{N} H(X_i | X_{\backslash i})\)</span> is the <strong>Dual Total Correlation</strong>.</p>
+<ul>
+<li><span class="math inline">\(\Omega &gt; 0\)</span>: <strong>redundancy</strong> dominates — each variable independently carries overlapping information</li>
+<li><span class="math inline">\(\Omega &lt; 0\)</span>: <strong>synergy</strong> dominates — variables jointly encode information no single one carries alone</li>
+</ul>
+<p>Nice properties, but out of reach unless data are Gaussian (or “<em>simple</em>”) and/or discrete. The Hasse diagram (right) shows the full lattice of information atoms underlying the decomposition.</p>
+</div><div class="column" style="width:40%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="figures/hassediag.png" style="width:100.0%"></p>
+<figcaption>Hasse diagram of the Partial Information Decomposition lattice</figcaption>
+</figure>
+</div>
+</div></div>
+</section>
+<section id="o-information-cont." class="slide level2">
+<h2>O-Information (cont.)</h2>
+<p>Multiple brain regions: is assuming anything a-priori really safe?</p>
+
+<img data-src="figures/brain_pdf.png" style="width:65.0%" class="r-stretch"><p>We don’t need it!!</p>
+</section>
+<section id="score-based-diffusion-estimation-of-o-information" class="slide level2">
+<h2>Score-based (Diffusion) Estimation of O-Information</h2>
+<ul>
+<li><p>Total Correlation (TC) estimation: <span class="math display">\[T(X) = \int p_t(x) \left\| \nabla \log p_t(x) - \sum_{i=1}^{N} \nabla \log p_t(x_i) \right\|^2 dx\, dt\]</span></p></li>
+<li><p>Dual Total Correlation (DTC) estimation: <span class="math display">\[D(X) = \int p_t(x) \left\| \nabla \log p_t(x) - \sum_{i=1}^{N} \nabla \log p_t(x_i | x_{\backslash i}) \right\|^2 dx\, dt\]</span></p></li>
+<li><p>With our implementation, all the ingredients are <em>amortized</em> within a <em>single</em> model.</p></li>
+</ul>
+<p><strong>Why this matters for organoids</strong>: DeepTracing (2024) uses TC as a regulariser but must rely on a simplified surrogate — a closed-form Gaussian approximation. Our score-based estimator computes TC <em>exactly</em> for any distribution, making it directly applicable to the heavy-tailed, zero-inflated distributions of organoid scRNA-seq data at scale.</p>
+</section>
+<section id="example-analysis-of-mice-brain-activity" class="slide level2">
+<h2>Example: Analysis of Mice Brain Activity</h2>
+<div class="columns">
+<div class="column" style="width:60%;">
+<p>Study: O-information across multiple visual cortex areas in mice, in response to <strong>novel vs.&nbsp;repeated</strong> visual stimuli.</p>
+<ul>
+<li><strong>Novel stimulus</strong> → high O-information (<em>redundancy</em>): multiple areas independently broadcast the same “alert” signal — reliability through redundancy</li>
+<li><strong>Repeated stimulus</strong> → negative O-information (<em>synergy</em>): areas develop a <em>joint</em> representation not present in any single area — efficient compressed coding emerges with familiarity</li>
+</ul>
+<p><strong>Why this matters for organoids</strong>: the same analysis applied during organoid maturation could reveal <em>when</em> circuits transition from redundant (immature, broadcast) to synergistic (mature, integrated) coding — a potential biomarker of functional maturity.</p>
+</div><div class="column" style="width:40%;">
+<p><img data-src="figures/mouse.JPG" style="width:80.0%"></p>
+</div></div>
+</section>
+<section id="mice-brain-activity-results" class="slide level2">
+<h2>Mice Brain Activity Results</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="figures/new_vbn_setting_3_dim_25.png" style="width:90.0%"></p>
+<figcaption>3 areas</figcaption>
+</figure>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="figures/new_vbn_setting_6_dim_25.png" style="width:90.0%"></p>
+<figcaption>6 areas</figcaption>
+</figure>
+</div>
+</div></div>
+<ul>
+<li>This suggests that higher amount of redundant information in the visual cortex regions is transmitted in case of a flash with new scene.</li>
+<li>Interestingly, when considering six areas of the visual cortex, our observations remain valid, suggesting that the measured behaviour is common to these other brain areas as well.</li>
+</ul>
+</section>
+<section id="directed-functional-connectivity-beyond-correlation" class="slide level2">
+<h2>Directed Functional Connectivity: Beyond Correlation</h2>
+<div class="columns">
+<div class="column" style="width:60%;">
+<p>A core goal in systems neuroscience: determine not just <em>whether</em> two brain areas are coupled, but <strong>who drives whom</strong>.</p>
+<ul>
+<li><strong>Granger causality</strong> (1969): <span class="math inline">\(X\)</span> Granger-causes <span class="math inline">\(Y\)</span> if the past of <span class="math inline">\(X\)</span> helps predict <span class="math inline">\(Y\)</span> beyond <span class="math inline">\(Y\)</span>’s own past — widely used but assumes linear, Gaussian dynamics.</li>
+<li><strong>Transfer Entropy</strong> (Schreiber 2000): the nonlinear, model-free generalisation: <span class="math display">\[\mathrm{TE}_{X\to Y} = I(Y_t;\, \mathbf{X}_{\text{past}} \mid \mathbf{Y}_{\text{past}})\]</span> Granger causality is a <em>special case</em> of TE under Gaussian assumptions.</li>
+<li>Captures nonlinear, asymmetric information flow — critical for neural circuits where signalling is inherently nonlinear.</li>
+</ul>
+</div><div class="column" style="width:40%;">
+<div style="text-align:center; padding-top:1em;">
+<div style="font-size:1.8em;">
+🧠 → 🧠
+</div>
+<div style="font-size:0.85em; margin-top:0.5em;">
+<span class="math inline">\(\mathrm{TE}_{V1\to V2} \neq \mathrm{TE}_{V2\to V1}\)</span>
+</div>
+<div style="font-size:0.8em; margin-top:1em; color:#555;">
+Transfer entropy is asymmetric by construction — it captures the <em>direction</em> of information flow.
+</div>
+</div>
+</div></div>
+<ul>
+<li><em>However</em>: existing TE estimators suffer from the curse of dimensionality, require restrictive distributional assumptions…</li>
+<li>We propose <strong>TENDE</strong> (Transfer Entropy Neural Diffusion Estimation) with Simon Pedro Galeano Munoz and Maurizio Filippone (KAUST)</li>
+</ul>
+</section>
+<section id="emerging-connectivity-in-brain-organoids" class="slide level2">
+<h2>Emerging Connectivity in Brain Organoids</h2>
+<p><strong>Muccitri et al.</strong> (<em>Cell Reports</em>, 2024) coupled human iPSC-derived neural organoids to <strong>high-density microelectrode arrays (HD-MEAs)</strong> over 13 weeks of maturation, tracking the emergence of network structure and short-term potentiation — the building blocks of learning and memory.</p>
+<div class="columns">
+<div class="column" style="width:60%;">
+<p><strong>Key finding</strong>: <strong>Mutual Information was the primary metric</strong> used to weight edges in the functional connectivity network — capturing nonlinear statistical dependencies between electrodes that reflect genuine neuronal communication, invisible to Pearson correlation.</p>
+<ul>
+<li>Scale-free (critical) network dynamics emerge around week 8–10</li>
+<li>Short-term potentiation develops alongside organised connectivity</li>
+<li>MI-weighted networks successfully distinguished responsive from non-responsive organoid batches</li>
+</ul>
+<p><strong>Transfer Entropy</strong> extends this to directed connectivity: <span class="math display">\[\mathrm{TE}_{i\to j} = I\!\left(X_t^{(j)};\, X_{\text{past}}^{(i)} \;\middle|\; X_{\text{past}}^{(j)}\right)\]</span> tracking <em>which electrode drives which</em> as the circuit matures.</p>
+<p><strong>Uthamacumaran et al.&nbsp;(2024)</strong>: MI-based functional connectivity applied to <em>aneural</em> Xenopus morphogenetic tissue — showing these tools generalise to any developing biological system.</p>
+</div><div class="column" style="width:40%;">
+<div style="border: 1px solid #ccc; border-radius: 8px; padding: 1em; font-size: 0.85em; background: #f9f9f9; margin-top: 1em;">
+<p><strong>Why standard methods fail here:</strong><br><br> Granger causality assumes linear, Gaussian dynamics — calcium transients and MEA signals are neither.<br><br> TENDE estimates TE nonparametrically via score matching, handling the nonlinear, heavy-tailed dynamics of organoid electrical activity.</p>
+</div>
+</div></div>
+</section>
+<section id="transfer-entropy-formulation" class="slide level2">
+<h2>Transfer Entropy: Formulation</h2>
+<ul>
+<li>Let <span class="math inline">\(\{X_t\}\)</span> and <span class="math inline">\(\{Y_t\}\)</span> denote discrete time stochastic processes.</li>
+<li>Define: <span class="math display">\[\begin{cases}\begin{aligned}\mathbf{Y}_{t-\ell} &amp;= [Y_{t-1},\,\dots,\,Y_{t-\ell}] \\ \mathbf{X}_{t-k} &amp;= [X_{t-1},\,\dots,\,X_{t-k}]\end{aligned}\end{cases}\]</span> for some natural numbers <span class="math inline">\(\ell, k\)</span>.</li>
+<li>The TE from <span class="math inline">\(\{X_t\}\)</span> to <span class="math inline">\(\{Y_t\}\)</span> is given by: <span class="math display">\[\mathrm{TE}_{X\to Y}(k,\ell) = I\!\left(Y_t;\,\mathbf{X}_{t-k}\mid\mathbf{Y}_{t-\ell}\right)\]</span></li>
+<li>TE quantifies how much <span class="math inline">\(Y_t\)</span> depends on the past of <span class="math inline">\(\{X_t\}\)</span> once its own past is already known.</li>
+</ul>
+</section>
+<section id="transfer-entropy-example" class="slide level2">
+<h2>Transfer Entropy: Example</h2>
+<p>Example: analysis of asymmetry of information measures in biomedical signals.</p>
+
+<img data-src="figures/signals.png" style="width:65.0%" class="r-stretch"></section>
+<section id="tende-results" class="slide level2">
+<h2>TENDE Results</h2>
+<div class="columns">
+<div class="column" style="width:55%;">
+<p><img data-src="figures/tende_res.PNG" style="width:100.0%"></p>
+</div><div class="column" style="width:45%;">
+<p><strong>Physiological result</strong>: TENDE recovers the known asymmetry: respiration drives heart rate (<span class="math inline">\(\mathrm{TE}_{\text{resp}\to\text{HR}} &gt; \mathrm{TE}_{\text{HR}\to\text{resp}}\)</span>), consistent with respiratory sinus arrhythmia.</p>
+<p><strong>Why previous methods failed</strong>: linear Granger causality on these signals gives erratic estimates — cardiac and respiratory dynamics are nonlinear and non-Gaussian. TENDE is the first method to give stable, physiologically interpretable TE estimates at this scale.</p>
+<p><strong>Organoid application</strong>: the same approach applied to multi-electrode organoid data would reveal the <em>causal architecture</em> of developing circuits — which neurons or regions drive network dynamics, and how this changes over maturation weeks.</p>
+</div></div>
+</section></section>
+<section>
+<section id="conclusions" class="title-slide slide level1 center">
+<h1>Conclusions</h1>
+
+</section>
+<section id="in-summary" class="slide level2">
+<h2>In Summary</h2>
+<p><strong>A unified framework</strong> — score-based diffusion processes — enables scalable, nonparametric estimation of five information metrics that were previously intractable for real biological data:</p>
+<table class="caption-top">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Method</th>
+<th>What it measures</th>
+<th>Key biological result</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>MINDE</td>
+<td>MI (continuous)</td>
+<td><strong>Foundational building block</strong> — enables INFO-SEDD, DDMEC, SOI, TENDE</td>
+</tr>
+<tr class="even">
+<td>INFO-SEDD</td>
+<td>MI (discrete)</td>
+<td>DNA regulatory elements; scRNA-seq GRN inference</td>
+</tr>
+<tr class="odd">
+<td>DDMEC</td>
+<td>Max-MI coupling</td>
+<td>ATAC-seq / RNA-seq alignment without paired cells</td>
+</tr>
+<tr class="even">
+<td>SOI</td>
+<td>Synergy &amp; redundancy</td>
+<td>Redundant→synergistic transition in visual cortex</td>
+</tr>
+<tr class="odd">
+<td>TENDE</td>
+<td>Directed information flow</td>
+<td>Causal architecture of developing neural circuits</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The organoid field is already using these metrics</strong> — we provide the scalable estimators:</p>
+<ul>
+<li>Muccitri et al.&nbsp;(2024): MI → organoid functional connectomes from HD-MEA</li>
+<li>Weinreb et al.&nbsp;(2020): MI between sister cells → hidden fate determinants</li>
+<li>DeepTracing (2024): Total Correlation → disentangling lineage from cell state</li>
+<li>Clonotrace (2025): MI → joint lineage + transcriptomic analysis</li>
+</ul>
+<p><strong>What we left out</strong> (we have some backup slides):</p>
+<ul>
+<li>We made it <em>look</em> simple (“just adapt these formulas and you get an estimator”)</li>
+<li>A more formal discussion of the results</li>
+<li>Actual extensive numerical validation of the proposed methods</li>
+<li>Careful discussion of the convergence properties in terms of sample sizes, model complexity…</li>
+</ul>
+</section>
+<section id="references" class="slide level2 scrollable">
+<h2>References</h2>
+<ol type="1">
+<li>Franzese et al, <em>Mutual Information Neural Diffusion Estimation</em>, ICLR 2024</li>
+<li>Bounoua et al, <em>S<span class="math inline">\(\Omega\)</span>I: Score-based O-Information Estimation</em>, ICML 2024</li>
+<li>Wang et al, <em>Information Theoretic Text-to-Image Alignment</em>, ICLR 2025</li>
+<li>Wang et al, <em>RFMI: Estimating Mutual Information on Rectified Flow for Text-to-Image Alignment</em>, ICLR (Workshop) 2025</li>
+<li>Foresti et al, <em>INFO-SEDD: Continuous Time Markov Chains as Scalable Information Metrics Estimators</em>, ICLR (Workshop) 2025</li>
+<li>Bounoua et al, <em>Learning to Match Unpaired Data with Minimum Entropy Coupling</em>, ICML 2025</li>
+<li>Franzese et al, <em>Continuous Time Functional Diffusion Processes</em>, NeurIPS 2024</li>
+<li>Franzese et al, <em>Generative diffusion models in infinite dimensions: a survey</em>, Philosophical Transactions A 2025</li>
+<li>Munoz et al, <em>TENDE: Transfer Entropy Neural Diffusion Estimation</em>, arXiv preprint</li>
+</ol>
+<p><strong>Organoid &amp; biology literature:</strong></p>
+<ol start="10" type="1">
+<li>Muccitri et al, <em>Human neural organoid microphysiological systems show the building blocks necessary for basic learning and memory</em>, Cell Reports 2024</li>
+<li>Weinreb et al, <em>Lineage tracing on transcriptional landscapes links state to fate during differentiation</em>, Science 2020</li>
+<li>Teschendorff et al, <em>Single-cell entropy for quantifying differentiation potency (SCENT)</em>, Nature Protocols 2017/2021</li>
+<li>Uthamacumaran et al, <em>Revealing non-trivial information structures in aneural biological tissues via functional connectivity</em>, 2024</li>
+<li>DeepTracing: <em>A deep generative framework for disentangling intrinsic states from lineage constraints</em>, 2024/2025</li>
+<li>Clonotrace: <em>A framework for integrating lineage and transcriptomic information</em>, 2024/2025</li>
+</ol>
+</section></section>
+<section>
+<section id="backup" class="title-slide slide level1 center">
+<h1>Backup</h1>
+
+</section>
+<section id="an-informal-introduction" class="slide level2">
+<h2>An Informal Introduction</h2>
+<div style="font-size: 2em; text-align: center; margin-top: 2em;">
+<p>An <strong>informal</strong> introduction</p>
+</div>
+</section>
+<section id="probability-spaces" class="slide level2">
+<h2>Probability Spaces</h2>
+<ul>
+<li>A probability space <span class="math inline">\((\Omega, \mathcal{F}, \mathrm{P})\)</span> consists of:
+<ul>
+<li><span class="math inline">\(\Omega\)</span>: The sample space (set of all possible outcomes).</li>
+<li><span class="math inline">\(\mathcal{F}\)</span>: A <span class="math inline">\(\sigma\)</span>-algebra, a collection of subsets of <span class="math inline">\(\Omega\)</span> representing events.</li>
+<li><span class="math inline">\(\mathrm{P}\)</span>: A probability measure that assigns a number between 0 and 1 to each event in <span class="math inline">\(\mathcal{F}\)</span>.</li>
+</ul></li>
+</ul>
+</section>
+<section id="understanding-sigma-algebra-in-simple-terms" class="slide level2">
+<h2>Understanding <span class="math inline">\(\sigma\)</span>-Algebra in Simple Terms</h2>
+<ul>
+<li>A <span class="math inline">\(\sigma\)</span>-algebra can be understood as defining the <strong>granularity</strong> of information available.</li>
+<li>It must satisfy:
+<ul>
+<li>The whole sample space <span class="math inline">\(\Omega\)</span> is included.</li>
+<li>If an event is in <span class="math inline">\(\mathcal{F}\)</span>, its complement must also be in <span class="math inline">\(\mathcal{F}\)</span>.</li>
+<li>If a countable sequence of events is in <span class="math inline">\(\mathcal{F}\)</span>, their union must also be in <span class="math inline">\(\mathcal{F}\)</span>.</li>
+</ul></li>
+<li>Example: Rolling a dice.
+<ul>
+<li><span class="math inline">\(\Omega = \{1,2,3,4,5,6\}\)</span>.</li>
+<li>A possible <span class="math inline">\(\sigma\)</span>-algebra: <span class="math inline">\(\{\emptyset, \Omega, \{1,3,5\}, \{2,4,6\}\}\)</span> (representing even and odd outcomes).</li>
+</ul></li>
+</ul>
+</section>
+<section id="understanding-sigma-algebra-cont." class="slide level2">
+<h2>Understanding <span class="math inline">\(\sigma\)</span>-Algebra (cont.)</h2>
+
+<img data-src="figures/sigmaalg.png" style="width:50.0%" class="r-stretch quarto-figure-center"><p class="caption">Example of <span class="math inline">\(\sigma\)</span>-algebra</p></section>
+<section id="random-variables-as-mappings" class="slide level2">
+<h2>Random Variables as Mappings</h2>
+<ul>
+<li>A random variable <span class="math inline">\(X\)</span> is a function that maps outcomes from the sample space <span class="math inline">\(\Omega\)</span> to real numbers: <span class="math display">\[X: \Omega \to \mathbb{R}\]</span></li>
+<li>Example 1: Rolling a dice. If <span class="math inline">\(\omega\in\Omega=\{1,2,3,4,5,6\}\)</span>, then <span class="math inline">\(X(\omega)=\omega\)</span>.</li>
+<li>Example 2: Defining an odd/even variable. <span class="math inline">\(Y(\omega)=1\)</span> if <span class="math inline">\(\omega\)</span> is odd, <span class="math inline">\(Y(\omega)=0\)</span> if <span class="math inline">\(\omega\)</span> is even.</li>
+</ul>
+</section>
+<section id="random-variables-as-mappings-cont." class="slide level2">
+<h2>Random Variables as Mappings (cont.)</h2>
+<ul>
+<li>A random variable must be measurable with respect to a given <span class="math inline">\(\sigma\)</span>-algebra to be well-defined.</li>
+<li>Example:
+<ul>
+<li>With <span class="math inline">\(\sigma\)</span>-algebra <span class="math inline">\(\{\emptyset,\Omega,\{1,3,5\},\{2,4,6\}\}\)</span>, <span class="math inline">\(Y\)</span> (odd/even) is measurable.</li>
+<li>However, <span class="math inline">\(X\)</span> (exact roll outcome) is not measurable — a <strong>finer</strong> <span class="math inline">\(\sigma\)</span>-algebra is needed.</li>
+</ul></li>
+<li>Intuitive interpretation: <strong>Doob’s lemma</strong>: A random variable is measurable with respect to a <span class="math inline">\(\sigma\)</span>-algebra if and only if there exists a function that depends only on elements of the algebra.</li>
+</ul>
+</section>
+<section id="introduction-to-stochastic-processes" class="slide level2">
+<h2>Introduction to Stochastic Processes</h2>
+<ul>
+<li>A stochastic process is a collection of random variables indexed by time: <span class="math display">\[Y_t: \Omega \to \mathbb{R}, \quad t \geq 0\]</span></li>
+<li>It describes how a system evolves randomly over time.</li>
+<li>Examples:
+<ul>
+<li>Stock prices.</li>
+<li>Population dynamics.</li>
+<li>Temperature variations.</li>
+</ul></li>
+</ul>
+</section>
+<section id="filtration-and-adapted-processes" class="slide level2">
+<h2>Filtration and Adapted Processes</h2>
+<ul>
+<li>A filtration is a sequence of <span class="math inline">\(\sigma\)</span>-algebras representing growing information over time: <span class="math display">\[\mathcal{F}_0 \subseteq \mathcal{F}_1 \subseteq \mathcal{F}_2 \subseteq \dots\]</span></li>
+<li>Intuitively, it models the <strong>accumulation of knowledge</strong> as time progresses.</li>
+<li>A process is <em>adapted</em> if at each time instant it is measurable with respect to the filtration.</li>
+</ul>
+</section>
+<section id="probability-measure" class="slide level2">
+<h2>Probability Measure</h2>
+<p>(<strong>Informal, not complete</strong>) In the framework of measure theory, a probability measure <span class="math inline">\(\mu\)</span> is a mapping from <strong>subsets</strong> <span class="math inline">\(\{S_i\}_i\)</span> of a given sample space <span class="math inline">\(\Omega\)</span> such that:</p>
+<ul>
+<li>It is positive: <span class="math inline">\(\mu(S_i)\geq 0\)</span></li>
+<li>For disjoint sets <span class="math inline">\(S_i,S_j\)</span> (<span class="math inline">\(S_i\cap S_j=\emptyset\)</span>) it holds <span class="math inline">\(\mu(S_i\cup S_j)=\mu(S_i)+\mu(S_j)\)</span>.</li>
+<li>Its “integral” is equal to one: <span class="math inline">\(\mu(\Omega)=1\)</span>.</li>
+</ul>
+<p>Familiar examples:</p>
+<ul>
+<li><span class="math inline">\(\Omega=\mathbb{R}\)</span>, Gaussian probability <span class="math inline">\(\mu(dx)=p(x)dx=\frac{1}{\sqrt{2\pi}}\exp(-\frac{x^2}{2})dx\)</span></li>
+<li><span class="math inline">\(\Omega=\{0,1\}\)</span>, Bernoulli RV <span class="math inline">\(\mu(\{0\})=\mu(\{1\})=\frac{1}{2}\)</span></li>
+</ul>
+</section>
+<section id="definition-of-sdes" class="slide level2">
+<h2>Definition of SDEs</h2>
+<ul>
+<li>A stochastic differential equation (SDE) is a particular class of stochastic processes.</li>
+<li>A general diffusion process on a probability space <span class="math inline">\((\Omega,\mathcal{F},\mathrm{P})\)</span> is given by: <span class="math display">\[Y_t(\omega) = Y_0(\omega) + \int_0^t H(Y_s(\omega),t)\,ds + W_t(\omega)\]</span> where:
+<ul>
+<li><span class="math inline">\(Y_t\)</span> is the stochastic process.</li>
+<li><span class="math inline">\(H(Y_t(\omega),t)\)</span> is the drift term.</li>
+<li><span class="math inline">\(W_t\)</span> is a Brownian motion, representing Gaussian noise.</li>
+</ul></li>
+<li>It only makes sense when considered with respect to a <strong>filtration</strong> <span class="math inline">\((\mathcal{F}_t)_{t\geq 0}\)</span>, representing the available information over time.</li>
+</ul>
+</section>
+<section id="formal-minde-derivation" class="slide level2">
+<h2>Formal MINDE Derivation</h2>
+<ul>
+<li>Consider a probability space <span class="math inline">\((\Omega,\mathcal{F},\mathbb{P})\)</span>, together with a growing filtration <span class="math inline">\(\mathcal{F}_t\)</span></li>
+<li>Consider a generic random variable <span class="math inline">\(A\)</span> (<span class="math inline">\(\mathcal{F}_0\)</span>-measurable) with probability measure <span class="math inline">\(\mu^A(dx)\)</span></li>
+<li>Build a simple SDE in <span class="math inline">\([0,T]\)</span> with initial conditions <span class="math inline">\(\sim\mu^A\)</span>: <span class="math display">\[\begin{cases}\dd X_t=-X_t\,\dd t+\sqrt{2}\,\dd W_t,\\X_0=A\sim\mu^A\end{cases}\]</span> where <span class="math inline">\(W_t\)</span> is an <span class="math inline">\(\mathcal{F}_t\)</span> Brownian motion.</li>
+<li>This SDE corresponds to a path measure <span class="math inline">\(\mathbb{P}^{A}\)</span>.</li>
+<li>Two SDEs which differ only by initial conditions have KL divergence: <span class="math display">\[\KL{\mathbb{P}^{\mu^A}}{\mathbb{P}^{\mu^B}}=\E_{\mathbb{P}^{\mu^A}}\!\left[\log\frac{d\mathbb{P}^{\mu^A}}{d\mathbb{P}^{\mu^B}}\right]=\KL{\mu^A}{\mu^B}\]</span></li>
+</ul>
+</section>
+<section id="formal-minde-derivation-cont." class="slide level2">
+<h2>Formal MINDE Derivation (cont.)</h2>
+<p><strong>Time-reversal</strong> <span class="math inline">\(\hat{X}_t\defeq X_{T-t}\)</span>:</p>
+<ul>
+<li>KL is invariant to time-reversal: <span class="math inline">\(\KL{\mathbb{P}^{\mu^A}}{\mathbb{P}^{\mu^B}}=\KL{\hat{\mathbb{P}}^{\mu^A}}{\hat{\mathbb{P}}^{\mu^B}}\)</span></li>
+<li>Time reversal of SDE is again an SDE [Léonard 2014]</li>
+<li>Score function <span class="math inline">\(\leftrightarrow\)</span> Denoiser (same as before)</li>
+</ul>
+<p><strong>Girsanov theorem</strong>:</p>
+<p><span class="math display">\[\KL{\hat{\mathbb{P}}^{\mu^A}}{\hat{\mathbb{P}}^{\mu^B}}\simeq \E_{\mathbb{P}^{\mu^A}}\!\left[\int_0^T\norm{\nabla\log p^{A}_t(X_t)-\nabla\log p^{B}_t(X_t)}^2\dd t\right]\]</span></p>
+<ul>
+<li>Combining with time-reversal invariance → KL-estimator!</li>
+<li>Initial conditions <span class="math inline">\(\KL{\mu^A_T}{\mu^B_T}\)</span> should be negligible (Bakry-Emery condition / ergodicity [Collet, Malrieu 2008])</li>
+</ul>
+</section>
+<section id="experimental-results" class="slide level2">
+<h2>Experimental Results</h2>
+<p>MINDE variants:</p>
+<ul>
+<li>Consistently outperform all competitors on standard benchmarks.</li>
+<li>Are capable of accurately estimating MI in the challenging High MI benchmarks:</li>
+</ul>
+<div class="columns">
+<div class="column" style="width:30%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="figures/high_mi_multinormal.jpg" style="width:100.0%"></p>
+<figcaption>Sparse Normal</figcaption>
+</figure>
+</div>
+</div><div class="column" style="width:30%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="figures/Half-cube.jpg" style="width:100.0%"></p>
+<figcaption>Half-cube</figcaption>
+</figure>
+</div>
+</div><div class="column" style="width:30%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="figures/spiral.jpg" style="width:100.0%"></p>
+<figcaption>Spiral</figcaption>
+</figure>
+</div>
+</div></div>
+</section>
+<section id="experimental-results-cont." class="slide level2">
+<h2>Experimental Results (cont.)</h2>
+<p>Pass the self-consistency tests:</p>
+<div class="columns">
+<div class="column" style="width:33%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="figures/consistency.jpg" style="width:100.0%"></p>
+<figcaption>Baseline</figcaption>
+</figure>
+</div>
+</div><div class="column" style="width:33%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="figures/dataprocessing.jpg" style="width:100.0%"></p>
+<figcaption>Data Processing</figcaption>
+</figure>
+</div>
+</div><div class="column" style="width:33%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="figures/additivity.jpg" style="width:100.0%"></p>
+<figcaption>Additivity</figcaption>
+</figure>
+</div>
+</div></div>
+<p><img data-src="figures/consistency_tests.PNG" style="width:100.0%"></p>
+<p><img data-src="figures/minde_res.PNG" style="width:60.0%"></p>
+
+</section></section>
+    </div>
+  <div class="quarto-auto-generated-content" style="display: none;">
+<div class="footer footer-default">
+
+</div>
+</div></div>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script>
+  <script src="presentation_files/libs/revealjs/dist/reveal.js"></script>
+  <!-- reveal.js plugins -->
+  <script src="presentation_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="presentation_files/libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="presentation_files/libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="presentation_files/libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="presentation_files/libs/revealjs/plugin/quarto-support/support.js"></script>
+  
+
+  <script src="presentation_files/libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="presentation_files/libs/revealjs/plugin/search/search.js"></script>
+  <script src="presentation_files/libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script src="presentation_files/libs/revealjs/plugin/math/math.js"></script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+'controlsAuto': false,
+'previewLinksAuto': false,
+'pdfSeparateFragments': false,
+'autoAnimateEasing': "ease",
+'autoAnimateDuration': 1,
+'autoAnimateUnmatched': true,
+'jumpToSlide': true,
+'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleScrollView(event)\"><kbd>r</kbd> Scroll View Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
+'smaller': true,
+ 
+        // Display controls in the bottom right corner
+        controls: true,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: false,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'edges',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: 'c/t',
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: true,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: false,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'linear',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: false,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'slide',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'none',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // The "normal" size of the presentation, aspect ratio will be preserved
+        // when the presentation is scaled to fit different resolutions. Can be
+        // specified using percentage units.
+        width: 1050,
+
+        height: 700,
+
+        // Factor of the display size that should remain empty around the content
+        margin: 0.1,
+
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, QuartoSupport,
+
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    <script id="quarto-html-after-body" type="application/javascript">
+    window.document.addEventListener("DOMContentLoaded", function (event) {
+      const toggleBodyColorMode = (bsSheetEl) => {
+        const mode = bsSheetEl.getAttribute("data-mode");
+        const bodyEl = window.document.querySelector("body");
+        if (mode === "dark") {
+          bodyEl.classList.add("quarto-dark");
+          bodyEl.classList.remove("quarto-light");
+        } else {
+          bodyEl.classList.add("quarto-light");
+          bodyEl.classList.remove("quarto-dark");
+        }
+      }
+      const toggleBodyColorPrimary = () => {
+        const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+        if (bsSheetEl) {
+          toggleBodyColorMode(bsSheetEl);
+        }
+      }
+      toggleBodyColorPrimary();  
+      const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+      tabsets.forEach(function(tabset) {
+        const tabby = new Tabby('#' + tabset.id);
+      });
+      const isCodeAnnotation = (el) => {
+        for (const clz of el.classList) {
+          if (clz.startsWith('code-annotation-')) {                     
+            return true;
+          }
+        }
+        return false;
+      }
+      const onCopySuccess = function(e) {
+        // button target
+        const button = e.trigger;
+        // don't keep focus
+        button.blur();
+        // flash "checked"
+        button.classList.add('code-copy-button-checked');
+        var currentTitle = button.getAttribute("title");
+        button.setAttribute("title", "Copied!");
+        let tooltip;
+        if (window.bootstrap) {
+          button.setAttribute("data-bs-toggle", "tooltip");
+          button.setAttribute("data-bs-placement", "left");
+          button.setAttribute("data-bs-title", "Copied!");
+          tooltip = new bootstrap.Tooltip(button, 
+            { trigger: "manual", 
+              customClass: "code-copy-button-tooltip",
+              offset: [0, -8]});
+          tooltip.show();    
+        }
+        setTimeout(function() {
+          if (tooltip) {
+            tooltip.hide();
+            button.removeAttribute("data-bs-title");
+            button.removeAttribute("data-bs-toggle");
+            button.removeAttribute("data-bs-placement");
+          }
+          button.setAttribute("title", currentTitle);
+          button.classList.remove('code-copy-button-checked');
+        }, 1000);
+        // clear code selection
+        e.clearSelection();
+      }
+      const getTextToCopy = function(trigger) {
+          const codeEl = trigger.previousElementSibling.cloneNode(true);
+          for (const childEl of codeEl.children) {
+            if (isCodeAnnotation(childEl)) {
+              childEl.remove();
+            }
+          }
+          return codeEl.innerText;
+      }
+      const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+        text: getTextToCopy
+      });
+      clipboard.on('success', onCopySuccess);
+      if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+        const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+          text: getTextToCopy,
+          container: window.document.getElementById('quarto-embedded-source-code-modal')
+        });
+        clipboardModal.on('success', onCopySuccess);
+      }
+        var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+        var mailtoRegex = new RegExp(/^mailto:/);
+          var filterRegex = new RegExp('/' + window.location.host + '/');
+        var isInternal = (href) => {
+            return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+        }
+        // Inspect non-navigation links and adorn them if external
+     	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+        for (var i=0; i<links.length; i++) {
+          const link = links[i];
+          if (!isInternal(link.href)) {
+            // undo the damage that might have been done by quarto-nav.js in the case of
+            // links that we want to consider external
+            if (link.dataset.originalHref !== undefined) {
+              link.href = link.dataset.originalHref;
+            }
+          }
+        }
+      function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+        const config = {
+          allowHTML: true,
+          maxWidth: 500,
+          delay: 100,
+          arrow: false,
+          appendTo: function(el) {
+              return el.closest('section.slide') || el.parentElement;
+          },
+          interactive: true,
+          interactiveBorder: 10,
+          theme: 'light-border',
+          placement: 'bottom-start',
+        };
+        if (contentFn) {
+          config.content = contentFn;
+        }
+        if (onTriggerFn) {
+          config.onTrigger = onTriggerFn;
+        }
+        if (onUntriggerFn) {
+          config.onUntrigger = onUntriggerFn;
+        }
+          config['offset'] = [0,0];
+          config['maxWidth'] = 700;
+        window.tippy(el, config); 
+      }
+      const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+      for (var i=0; i<noterefs.length; i++) {
+        const ref = noterefs[i];
+        tippyHover(ref, function() {
+          // use id or data attribute instead here
+          let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+          try { href = new URL(href).hash; } catch {}
+          const id = href.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note) {
+            return note.innerHTML;
+          } else {
+            return "";
+          }
+        });
+      }
+      const findCites = (el) => {
+        const parentEl = el.parentElement;
+        if (parentEl) {
+          const cites = parentEl.dataset.cites;
+          if (cites) {
+            return {
+              el,
+              cites: cites.split(' ')
+            };
+          } else {
+            return findCites(el.parentElement)
+          }
+        } else {
+          return undefined;
+        }
+      };
+      var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+      for (var i=0; i<bibliorefs.length; i++) {
+        const ref = bibliorefs[i];
+        const citeInfo = findCites(ref);
+        if (citeInfo) {
+          tippyHover(citeInfo.el, function() {
+            var popup = window.document.createElement('div');
+            citeInfo.cites.forEach(function(cite) {
+              var citeDiv = window.document.createElement('div');
+              citeDiv.classList.add('hanging-indent');
+              citeDiv.classList.add('csl-entry');
+              var biblioDiv = window.document.getElementById('ref-' + cite);
+              if (biblioDiv) {
+                citeDiv.innerHTML = biblioDiv.innerHTML;
+              }
+              popup.appendChild(citeDiv);
+            });
+            return popup.innerHTML;
+          });
+        }
+      }
+    });
+    </script>
+    
+
+</body></html>
