@@ -1,0 +1,153 @@
+{
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "---\n",
+        "title: \"InfoSEDD: Information-theoretic Synergy/Redundancy Decomposition\"\n",
+        "author: \"Giulio Franzese\"\n",
+        "format:\n",
+        "  html:\n",
+        "    toc: true\n",
+        "    code-fold: true\n",
+        "    embed-resources: true\n",
+        "jupyter: python3\n",
+        "---\n",
+        "\n",
+        "\n",
+        "## Overview\n",
+        "\n",
+        "InfoSEDD provides a framework for decomposing the mutual information between a set of sources and a target into **unique**, **redundant**, and **synergistic** contributions. This lecture introduces the theoretical foundations and practical implementation using neural estimators.\n",
+        "\n",
+        "## Theory\n",
+        "\n",
+        "### Partial Information Decomposition (PID)\n",
+        "\n",
+        "Given two sources $X_1, X_2$ and a target $Y$, the total mutual information $I(X_1, X_2; Y)$ decomposes as:\n",
+        "\n",
+        "$$I(X_1, X_2; Y) = \\text{Unq}(X_1; Y) + \\text{Unq}(X_2; Y) + \\text{Red}(X_1, X_2; Y) + \\text{Syn}(X_1, X_2; Y)$$\n",
+        "\n",
+        "where:\n",
+        "\n",
+        "- $\\text{Unq}(X_i; Y)$: information about $Y$ carried **only** by $X_i$\n",
+        "- $\\text{Red}(X_1, X_2; Y)$: information about $Y$ carried **redundantly** by both sources\n",
+        "- $\\text{Syn}(X_1, X_2; Y)$: information about $Y$ that requires **both** sources jointly\n",
+        "\n",
+        "### The Redundancy Lattice\n",
+        "\n",
+        "The redundancy lattice defines a partial order over collections of sources. The key challenge is defining a self-consistent measure of redundancy $\\text{Red}$.\n",
+        "\n",
+        "### InfoSEDD Estimator\n",
+        "\n",
+        "InfoSEDD uses neural networks to estimate the components of the PID directly from data, bypassing explicit density estimation.\n",
+        "\n",
+        "## Implementation\n"
+      ],
+      "id": "1c05d81c"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "import torch\n",
+        "import torch.nn as nn\n",
+        "import numpy as np\n",
+        "import matplotlib.pyplot as plt"
+      ],
+      "id": "1aa5707c",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### Model Architecture\n"
+      ],
+      "id": "d3dbaac9"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "class InfoSEDDEstimator(nn.Module):\n",
+        "    def __init__(self, dim_x1, dim_x2, dim_y, hidden_dim=128):\n",
+        "        super().__init__()\n",
+        "        # TODO: implement encoder networks for each source and the target\n",
+        "        pass\n",
+        "\n",
+        "    def forward(self, x1, x2, y):\n",
+        "        # TODO: compute decomposed information components\n",
+        "        pass"
+      ],
+      "id": "af260239",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Experiments\n",
+        "\n",
+        "### Synthetic Benchmarks\n"
+      ],
+      "id": "93676ce0"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "# TODO: generate synthetic data with known PID ground truth\n",
+        "# e.g., AND/OR/XOR gates for discrete variables,\n",
+        "# Gaussian models for continuous variables\n",
+        "pass"
+      ],
+      "id": "866abe39",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### Biological Application\n"
+      ],
+      "id": "2b79ee85"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "# TODO: apply to single-cell multimodal data\n",
+        "# e.g., decompose information between two omics modalities and a cell-type label\n",
+        "pass"
+      ],
+      "id": "e2bafbb3",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## References\n",
+        "\n",
+        "- Williams & Beer (2010). Nonnegative decomposition of multivariate information.\n",
+        "- Bertschinger et al. (2014). Quantifying unique information.\n",
+        "- Venkatesh et al. (2024). InfoSEDD."
+      ],
+      "id": "b8a66f26"
+    }
+  ],
+  "metadata": {
+    "kernelspec": {
+      "display_name": "Python 3",
+      "language": "python",
+      "name": "python3"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 5
+}

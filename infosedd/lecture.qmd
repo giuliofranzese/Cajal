@@ -1,84 +1,154 @@
 ---
 title: "InfoSEDD: Information-theoretic Synergy/Redundancy Decomposition"
-author: "Giulio Franzese"
+author: "**Giulio Franzese** — Eurecom, Data Science Department"
+date: ""
 format:
-  html:
-    toc: true
-    code-fold: true
-    embed-resources: true
-jupyter: python3
+  revealjs:
+    theme: default
+    slide-number: true
+    scrollable: true
+    smaller: true
+    fig-align: center
+    transition: slide
+    controls: true
+    html-math-method:
+      method: mathjax
+      url: "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js"
+execute:
+  eval: false
+  echo: true
 ---
 
 ## Overview
 
-InfoSEDD provides a framework for decomposing the mutual information between a set of sources and a target into **unique**, **redundant**, and **synergistic** contributions. This lecture introduces the theoretical foundations and practical implementation using neural estimators.
+**InfoSEDD** decomposes the mutual information between a set of sources and a target into **unique**, **redundant**, and **synergistic** contributions.
 
-## Theory
+:::: {.columns}
+::: {.column width="50%"}
+**Motivation**
 
-### Partial Information Decomposition (PID)
+- In biological systems, multiple measurements can encode information in different ways
+- Standard MI tells us *how much* information is shared, but not *how*
+- InfoSEDD tells us the *structure* of that information
+:::
+::: {.column width="50%"}
+**Applications**
 
-Given two sources $X_1, X_2$ and a target $Y$, the total mutual information $I(X_1, X_2; Y)$ decomposes as:
+- Multimodal single-cell data (RNA + ATAC → cell type)
+- Gene co-regulation analysis
+- Neural population coding
+:::
+::::
 
-$$I(X_1, X_2; Y) = \text{Unq}(X_1; Y) + \text{Unq}(X_2; Y) + \text{Red}(X_1, X_2; Y) + \text{Syn}(X_1, X_2; Y)$$
+---
 
-where:
+## Partial Information Decomposition (PID)
 
-- $\text{Unq}(X_i; Y)$: information about $Y$ carried **only** by $X_i$
-- $\text{Red}(X_1, X_2; Y)$: information about $Y$ carried **redundantly** by both sources
-- $\text{Syn}(X_1, X_2; Y)$: information about $Y$ that requires **both** sources jointly
+Given two sources $X_1, X_2$ and a target $Y$, the **PID** decomposes the total MI:
 
-### The Redundancy Lattice
+$$I(X_1, X_2; Y) = \underbrace{\text{Unq}(X_1; Y)}_{\text{unique to } X_1} + \underbrace{\text{Unq}(X_2; Y)}_{\text{unique to } X_2} + \underbrace{\text{Red}(X_1, X_2; Y)}_{\text{redundant}} + \underbrace{\text{Syn}(X_1, X_2; Y)}_{\text{synergistic}}$$
 
-The redundancy lattice defines a partial order over collections of sources. The key challenge is defining a self-consistent measure of redundancy $\text{Red}$.
+. . .
 
-### InfoSEDD Estimator
+**Key challenge:** defining a self-consistent measure of redundancy $\text{Red}$.
 
-InfoSEDD uses neural networks to estimate the components of the PID directly from data, bypassing explicit density estimation.
+---
 
-## Implementation
+## The Redundancy Lattice
 
-```{python}
-import torch
-import torch.nn as nn
-import numpy as np
-import matplotlib.pyplot as plt
-```
+The **redundancy lattice** defines a partial order over collections of sources:
 
-### Model Architecture
+$$\alpha \leq \beta \iff \forall A \in \alpha, \exists B \in \beta : B \subseteq A$$
 
-```{python}
+Each node $\alpha$ in the lattice corresponds to a **partial information atom** $\Pi(\alpha; Y)$.
+
+The total MI decomposes as:
+$$I(X_1, \ldots, X_k; Y) = \sum_{\alpha} \Pi(\alpha; Y)$$
+
+---
+
+## InfoSEDD Estimator
+
+InfoSEDD uses neural networks to estimate PID components **directly from data**, bypassing explicit density estimation.
+
+**Architecture:**
+
+```python
 class InfoSEDDEstimator(nn.Module):
     def __init__(self, dim_x1, dim_x2, dim_y, hidden_dim=128):
         super().__init__()
-        # TODO: implement encoder networks for each source and the target
-        pass
-
-    def forward(self, x1, x2, y):
-        # TODO: compute decomposed information components
-        pass
+        self.enc_x1 = MLP(dim_x1, hidden_dim)
+        self.enc_x2 = MLP(dim_x2, hidden_dim)
+        self.enc_y  = MLP(dim_y,  hidden_dim)
+        # Critic heads for each PID atom
+        self.head_red  = nn.Linear(hidden_dim, 1)
+        self.head_syn  = nn.Linear(hidden_dim * 3, 1)
+        self.head_unq1 = nn.Linear(hidden_dim * 2, 1)
+        self.head_unq2 = nn.Linear(hidden_dim * 2, 1)
 ```
 
-## Experiments
+---
 
-### Synthetic Benchmarks
+## Discrete Benchmarks
 
-```{python}
-# TODO: generate synthetic data with known PID ground truth
-# e.g., AND/OR/XOR gates for discrete variables,
-# Gaussian models for continuous variables
-pass
+**Gate functions** provide ground-truth PID:
+
+| Gate | Red | Syn | Unq($X_1$) | Unq($X_2$) |
+|------|-----|-----|------------|------------|
+| AND  | 0.5 | 0.0 | 0.0        | 0.0        |
+| OR   | 0.5 | 0.0 | 0.0        | 0.0        |
+| XOR  | 0.0 | 1.0 | 0.0        | 0.0        |
+| COPY | 1.0 | 0.0 | 0.0        | 0.0        |
+
+. . .
+
+```python
+def generate_and_gate(n=1000):
+    x1 = np.random.randint(0, 2, n)
+    x2 = np.random.randint(0, 2, n)
+    y  = (x1 & x2).astype(int)
+    return x1, x2, y
 ```
 
-### Biological Application
+---
 
-```{python}
-# TODO: apply to single-cell multimodal data
-# e.g., decompose information between two omics modalities and a cell-type label
-pass
+## Training
+
+```python
+def train_infosedd(estimator, x1, x2, y, n_steps=2000, lr=1e-3):
+    optimizer = torch.optim.Adam(estimator.parameters(), lr=lr)
+    for step in range(n_steps):
+        optimizer.zero_grad()
+        loss = estimator.pid_loss(x1, x2, y)
+        loss.backward()
+        optimizer.step()
+    return estimator
 ```
 
-## References
+**Loss:** variational lower bound on each PID atom, with consistency constraints enforcing $\sum \Pi(\alpha) = I(X_1, X_2; Y)$.
 
-- Williams & Beer (2010). Nonnegative decomposition of multivariate information.
-- Bertschinger et al. (2014). Quantifying unique information.
-- Venkatesh et al. (2024). InfoSEDD.
+---
+
+## Biological Application
+
+**Single-cell multimodal data**
+
+$$\underbrace{\text{RNA}}_{\text{source } X_1}, \underbrace{\text{ATAC}}_{\text{source } X_2} \xrightarrow{\text{InfoSEDD}} \underbrace{\text{cell type}}_{\text{target } Y}$$
+
+- **Redundant information:** chromatin accessibility and gene expression agree on cell identity
+- **Unique information (RNA):** transcriptional programs not captured by chromatin
+- **Synergistic information:** cell identity only discernible from the joint measurement
+
+---
+
+## Summary
+
+- InfoSEDD provides a complete decomposition of multivariate MI into PID atoms
+- Neural estimator scales to high-dimensional continuous data
+- Interpretable results: which modality contributes uniquely vs. redundantly?
+
+**References:**
+
+- Williams & Beer (2010). *Nonnegative decomposition of multivariate information.*
+- Bertschinger et al. (2014). *Quantifying unique information.*
+- Venkatesh et al. (2024). *InfoSEDD.*

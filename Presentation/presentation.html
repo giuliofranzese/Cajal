@@ -726,6 +726,60 @@ Shared programs across independent lineages
 </div>
 </div>
 </section>
+<section id="minde-in-infinite-dimensions-trajectory-level-kl" class="slide level2">
+<h2>MINDE in Infinite Dimensions: Trajectory-Level KL</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><strong>The single-cell trajectory problem</strong></p>
+<p>scRNA-seq gives population <em>snapshots</em> at a few timepoints — but not trajectories. Trajectory inference methods reconstruct full paths <span class="math inline">\(X_{[0,1]}\)</span> from these snapshots.</p>
+<p><strong>The evaluation gap</strong>: standard metrics (W₂, MMD, EMD) compare <em>marginals</em> only — i.e., point clouds at each snapshot. Infinitely many path measures can produce identical marginals.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="figures/fkl_snapshots.png" style="width:100.0%"></p>
+<figcaption><strong>Snapshots</strong>: KL between distributions at individual timepoints is blind to how cells move between them.</figcaption>
+</figure>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="figures/fkl_trajectories.png" style="width:100.0%"></p>
+<figcaption><strong>Trajectories</strong>: KL between <em>path measures</em> <span class="math inline">\(\nu^A\)</span> and <span class="math inline">\(\nu^B\)</span> captures the full temporal coupling — how the population actually moves through state space.</figcaption>
+</figure>
+</div>
+<div class="callout callout-tip no-icon callout-style-simple">
+<div class="callout-body">
+<div class="callout-content">
+<p><strong>Key insight</strong>: extend MINDE to function spaces. The KL between two trajectory distributions reduces to an integral of squared velocity field differences: <span class="math display">\[\mathrm{KL}(\nu^A \| \nu^B) = \int_0^1 \!\int_H \frac{t}{1-t}\, \|v^A_t(x) - v^B_t(x)\|^2_{H_{\mu_0}}\, d\mu^A_t\, dt\]</span> where <span class="math inline">\(v^A_t, v^B_t\)</span> are the velocity fields of the two path measures — learnable via flow matching.</p>
+</div>
+</div>
+</div>
+</div></div>
+</section>
+<section id="trajectory-kl-exposes-what-marginal-metrics-miss" class="slide level2">
+<h2>Trajectory KL Exposes What Marginal Metrics Miss</h2>
+<div class="columns">
+<div class="column" style="width:48%;">
+<p><strong>The petal dataset</strong> — a synthetic trajectory benchmark mimicking cell differentiation (branching, merging).</p>
+<p>At <span class="math inline">\(\tau = 0.75\)</span>: MSBM and TIGON score nearly identically by Wasserstein distance (<span class="math inline">\(W_2 = 0.160\)</span> vs <span class="math inline">\(0.155\)</span>). Marginal metrics declare them equivalent.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="figures/fkl_petal_example.png" style="width:100.0%"></p>
+<figcaption>Same marginals at <span class="math inline">\(\tau=0.75\)</span>, but qualitatively different dynamics: MSBM (top) branches correctly; TIGON (bottom) generates a spiral through the same snapshot region.</figcaption>
+</figure>
+</div>
+</div><div class="column" style="width:52%;">
+<p><strong>FKL correctly separates them</strong> — and is validated against analytical ground truth on Gaussian path measures:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="figures/fkl_gm_validation.png" style="width:100.0%"></p>
+<figcaption>FKL estimates (markers) match closed-form analytical values (dashed lines) across 8 cases, for both forward and reverse KL.</figcaption>
+</figure>
+</div>
+<div style="font-size:0.82em; color:#444; margin-top:0.3em;">
+<p><strong>Forward KL</strong> penalises missing coverage; <strong>Reverse KL</strong> penalises hallucination. TIGON has forward ≈ reverse on petal (no hallucination) but both are high — it simply generates wrong dynamics. AM on the Repressilator has reverse KL <span class="math inline">\(= 435\)</span> vs forward <span class="math inline">\(= 27\)</span>: pure hallucination, invisible to marginal metrics.</p>
+</div>
+</div></div>
+</section>
 <section id="why-this-gap-an-intuition" class="slide level2">
 <h2>Why This Gap: an Intuition</h2>
 <div class="columns">

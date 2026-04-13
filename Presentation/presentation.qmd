@@ -517,6 +517,54 @@ First family, **MINDE-C**:
 
 ---
 
+## MINDE in Infinite Dimensions: Trajectory-Level KL
+
+::: {.columns}
+::: {.column width="50%"}
+**The single-cell trajectory problem**
+
+scRNA-seq gives population *snapshots* at a few timepoints — but not trajectories. Trajectory inference methods reconstruct full paths $X_{[0,1]}$ from these snapshots.
+
+**The evaluation gap**: standard metrics (W₂, MMD, EMD) compare *marginals* only — i.e., point clouds at each snapshot. Infinitely many path measures can produce identical marginals.
+
+![**Snapshots**: KL between distributions at individual timepoints is blind to how cells move between them.](figures/fkl_snapshots.png){width=100%}
+:::
+::: {.column width="50%"}
+![**Trajectories**: KL between *path measures* $\nu^A$ and $\nu^B$ captures the full temporal coupling — how the population actually moves through state space.](figures/fkl_trajectories.png){width=100%}
+
+::: {.callout-tip appearance="minimal"}
+**Key insight**: extend MINDE to function spaces. The KL between two trajectory distributions reduces to an integral of squared velocity field differences:
+$$\mathrm{KL}(\nu^A \| \nu^B) = \int_0^1 \!\int_H \frac{t}{1-t}\, \|v^A_t(x) - v^B_t(x)\|^2_{H_{\mu_0}}\, d\mu^A_t\, dt$$
+where $v^A_t, v^B_t$ are the velocity fields of the two path measures — learnable via flow matching.
+:::
+:::
+:::
+
+---
+
+## Trajectory KL Exposes What Marginal Metrics Miss
+
+::: {.columns}
+::: {.column width="48%"}
+**The petal dataset** — a synthetic trajectory benchmark mimicking cell differentiation (branching, merging).
+
+At $\tau = 0.75$: MSBM and TIGON score nearly identically by Wasserstein distance ($W_2 = 0.160$ vs $0.155$). Marginal metrics declare them equivalent.
+
+![Same marginals at $\tau=0.75$, but qualitatively different dynamics: MSBM (top) branches correctly; TIGON (bottom) generates a spiral through the same snapshot region.](figures/fkl_petal_example.png){width=100%}
+:::
+::: {.column width="52%"}
+**FKL correctly separates them** — and is validated against analytical ground truth on Gaussian path measures:
+
+![FKL estimates (markers) match closed-form analytical values (dashed lines) across 8 cases, for both forward and reverse KL.](figures/fkl_gm_validation.png){width=100%}
+
+::: {style="font-size:0.82em; color:#444; margin-top:0.3em;"}
+**Forward KL** penalises missing coverage; **Reverse KL** penalises hallucination. TIGON has forward ≈ reverse on petal (no hallucination) but both are high — it simply generates wrong dynamics. AM on the Repressilator has reverse KL $= 435$ vs forward $= 27$: pure hallucination, invisible to marginal metrics.
+:::
+:::
+:::
+
+---
+
 ## Why This Gap: an Intuition
 
 ::: {.columns}
