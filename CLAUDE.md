@@ -11,7 +11,6 @@ This repository contains several lecture/demo projects. Most subprojects include
 ### Main folders
 
 - `Presentation/`: presentation deck (`presentation.qmd`, `presentation.html`) and assets.
-- `ddmec/`: DDMEC lecture materials.
 - `functional_kl/`: Functional KL lecture + code, checkpoints, and datasets.
 - `infosedd/`: INFOSEDD lecture and notebook.
 - `soi/`: SOI lecture/slides and notebooks.
@@ -19,7 +18,6 @@ This repository contains several lecture/demo projects. Most subprojects include
 
 ## Notebook index
 
-- `ddmec/notebook.ipynb`
 - `infosedd/infosedd_lecture.ipynb`
 - `soi/notebook.ipynb`
 - `soi/notebook_soi_vbn.ipynb`
@@ -55,7 +53,6 @@ python3 -m http.server 8000
 Then click one of these direct links:
 
 - 🔘 [Open Presentation HTML](http://localhost:8000/Presentation/presentation.html)
-- 🔘 [Open DDMEC lecture](http://localhost:8000/ddmec/lecture.html)
 - 🔘 [Open Functional KL lecture](http://localhost:8000/functional_kl/lecture.html)
 - 🔘 [Open INFOSEDD lecture](http://localhost:8000/infosedd/lecture.html)
 - 🔘 [Open SOI lecture](http://localhost:8000/soi/lecture.html)
