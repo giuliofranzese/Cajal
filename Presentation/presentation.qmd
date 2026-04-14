@@ -21,6 +21,18 @@ format:
       data-background-position: "bottom 30px right 40px"
 include-in-header:
   text: |
+    <style>
+    .bio-conclusion {
+      background-color: #E8F4FD;
+      border-left: 3px solid #4A90D9;
+      color: #1a3a5c;
+      padding: 0.4em 0.8em;
+      border-radius: 4px;
+      margin: 0.4em 0;
+      font-size: 0.92em;
+    }
+    .bio-conclusion strong { color: #2c6fad; }
+    </style>
     <script>
     window.MathJax = {
       tex: {
@@ -200,7 +212,7 @@ The challenge: these quantities are **hard to estimate** from real data — nonl
 
 ## Information Theory Is Reshaping Biology
 
-These tools are not just theoretical — they are already the **primary measurement language** in several active research lines. Think of them as **software-defined instruments**: just as a microscope reveals spatial structure, MI/TE/O-Information reveal *statistical structure* inaccessible to classical statistics.
+These tools are not just theoretical — they are already an **established quantitative language** in several active research lines, offering capabilities that correlation-based methods cannot match. Think of them as **software-defined instruments**: just as a microscope reveals spatial structure, MI/TE/O-Information reveal *statistical structure* inaccessible to classical statistics.
 
 **Already in use across the organoid and single-cell field:**
 
@@ -270,8 +282,11 @@ The same definition holds when $X$ and $Y$ are stochastic processes.
 - In a communication system, MI measures how much information about a message is retained after transmission through a noisy channel.
 - **Neuroscience translation**: the stimulus is the "message", the neural response is the "received signal". $\textsc{I}(\text{stimulus};\text{response})$ directly quantifies the neuron's coding fidelity — in bits.
 - Applications in neuroscience: neural coding efficiency, information bottleneck in sensory hierarchies, functional connectivity, consciousness research.
-- **Cell fate prediction**: Weinreb et al. (*Science*, 2020) used MI between sister cells' transcriptomes to show that cell fate is governed by *hidden* biological states (epigenetic, metabolic) invisible to standard single-cell RNA-seq — MI between sisters increased over time beyond what transcriptomes alone predicted, revealing the hidden information.
-- **Gene regulatory networks**: MI between gene pairs underpins GRN inference (ARACNE, MRNET) — reconstructing which transcription factors regulate which targets in developing organoid tissue.
+
+::: {.bio-conclusion}
+- **Cell fate prediction**: Weinreb et al. (*Science*, 2020), studying mouse hematopoiesis, used MI between sister cells to provide evidence that cell fate is influenced by *hidden* biological states — likely epigenetic or metabolic in nature — not fully captured by single-cell RNA-seq snapshots.
+- **Gene regulatory networks**: MI between gene pairs underpins GRN inference methods (ARACNE, MRNET) — reconstructing transcription factor–target relationships — approaches applicable, in principle, to developing organoid tissue.
+:::
 
 ---
 
@@ -280,7 +295,7 @@ The same definition holds when $X$ and $Y$ are stochastic processes.
 Pearson correlation $\rho(X,Y) = \frac{\operatorname{Cov}(X,Y)}{\sigma_X \sigma_Y}$ is ubiquitous — but it fundamentally fails in neural data settings:
 
 ::: {.fragment}
-- **Nonlinearities**: neurons have sigmoidal transfer functions, threshold and saturation effects. A neuron can be maximally informative about a stimulus yet have *zero* linear correlation with it.
+- **Nonlinearities**: neurons have sigmoidal transfer functions, threshold and saturation effects. A neuron can be maximally informative about a stimulus yet have *zero* linear correlation with it — as occurs when the tuning curve is symmetric about the stimulus mean.
 :::
 
 ::: {.fragment}
@@ -296,11 +311,15 @@ Pearson correlation $\rho(X,Y) = \frac{\operatorname{Cov}(X,Y)}{\sigma_X \sigma_
 :::
 
 ::: {.fragment}
-- **Organoid evidence — hidden states**: Weinreb et al. (*Science*, 2020) showed that sister cells' transcriptomes had *zero* useful linear correlation for predicting differential fate — yet MI between sisters grew steadily, revealing hidden epigenetic states invisible to sequencing. Only MI detected this.
+::: {.bio-conclusion}
+- **Hidden-state evidence (hematopoiesis)**: Weinreb et al. (*Science*, 2020), studying hematopoietic differentiation, showed that early transcriptomic similarity between sister cells had low predictive power for differential fate outcomes — yet MI between sister-cell fate trajectories grew over time, consistent with hidden biological states shaping fate beyond what the transcriptome alone captures. MI provided a signal where linear methods were insufficient.
+:::
 :::
 
 ::: {.fragment}
-- **Beyond neurons**: Uthamacumaran et al. (2024) applied MI-based connectivity to *aneural* morphogenetic tissue (Xenopus epidermis), revealing organised information structures invisible to correlation — these tools generalise across all developing biological systems.
+::: {.bio-conclusion}
+- **Beyond neurons**: Uthamacumaran et al. (2024) applied MI-based connectivity to *aneural* morphogenetic tissue (Xenopus epidermis), revealing organised information structures invisible to correlation — these tools show promise beyond neural tissues, suggesting broader applicability across developing biological systems.
+:::
 :::
 
 ---
@@ -517,6 +536,23 @@ First family, **MINDE-C**:
 
 ---
 
+## The Route Matters, Not Just the Endpoints
+
+::: {.columns}
+::: {.column width="55%"}
+The Mississippi's source and mouth are fixed — yet its path meanders unpredictably across thousands of miles.
+
+In **trajectory inference**, we observe cell populations at a few snapshots. Standard metrics (W₂, MMD) compare those snapshots — but infinitely many paths connect the same marginals. **The route is invisible to marginal metrics.**
+
+We need a metric defined on *distributions over paths*, not distributions at individual timepoints.
+:::
+::: {.column width="45%"}
+![](figures/missisipi.jpg){width=100%}
+:::
+:::
+
+---
+
 ## MINDE in Infinite Dimensions: Trajectory-Level KL
 
 ::: {.columns}
@@ -525,9 +561,9 @@ First family, **MINDE-C**:
 
 scRNA-seq gives population *snapshots* at a few timepoints — but not trajectories. Trajectory inference methods reconstruct full paths $X_{[0,1]}$ from these snapshots.
 
-**The evaluation gap**: standard metrics (W₂, MMD, EMD) compare *marginals* only — i.e., point clouds at each snapshot. Infinitely many path measures can produce identical marginals.
+**The evaluation gap**: standard metrics compare *marginals* only. Infinitely many path measures produce identical marginals.
 
-![**Snapshots**: KL between distributions at individual timepoints is blind to how cells move between them.](figures/fkl_snapshots.png){width=100%}
+![**Snapshots** capture where cells are, not how they got there.](figures/fkl_snapshots.png){width=100%}
 :::
 ::: {.column width="50%"}
 ![**Trajectories**: KL between *path measures* $\nu^A$ and $\nu^B$ captures the full temporal coupling — how the population actually moves through state space.](figures/fkl_trajectories.png){width=100%}
@@ -694,7 +730,7 @@ The same principle applies to **organoid multi-omics**: aligning **ATAC-seq** (c
 :::
 
 ::: {style="font-size:0.85em; color:#444;"}
-*DDMEC applied to PBMC single-cell data. This methodology could directly enable joint chromatin + transcriptome analysis of differentiating organoids without the experimental cost of paired profiling.*
+*DDMEC demonstrated on PBMC single-cell data. Applied to organoids, this methodology could enable joint chromatin + transcriptome analysis without the experimental overhead of paired profiling — though biological validity of the MI-maximised coupling in this context would require validation.*
 :::
 
 # Multivariate Information Theory {.center}
@@ -812,8 +848,10 @@ The gradient decomposition is the key novel tool: applied to organoid recordings
 
 **Areas**: VISp (V1), VISl, VISal, VISrl, VISam, VISpm — 5 neurons × 6 areas = 30-dimensional joint response. Two conditions × 5 time bins after stimulus onset = 10 models.
 
-- **Novel stimulus ("change")** → $\Omega > 0$ (redundancy): each area independently sends the same alerting signal — reliability through independent copies
-- **Repeated stimulus ("non-change")** → $\Omega < 0$ (synergy): areas develop a compressed *joint* code not decodable from any single area alone — efficient coding emerges with familiarity
+::: {.bio-conclusion}
+- **Novel stimulus ("change")** → $\Omega > 0$ (redundancy): the joint response is statistically consistent with each area independently carrying overlapping information — one interpretation is redundant broadcast for reliability
+- **Repeated stimulus ("non-change")** → $\Omega < 0$ (synergy): the joint response is statistically consistent with a shared code that no single area fully carries — one interpretation is efficient joint coding emerging with familiarity
+:::
 
 **What this unlocks**: no previous estimator could compute O-information on 30-dimensional neural data. The score-based approach handles arbitrary distributions, revealing the redundancy→synergy transition that linear (Gaussian) estimators miss entirely.
 
@@ -841,7 +879,7 @@ The gradient decomposition is the key novel tool: applied to organoid recordings
 :::
 
 ::: {.callout-note appearance="minimal"}
-**Key finding**: novel stimuli elicit a broadcast, redundant response across all visual areas — reliability through independent copies. The effect holds consistently from 3 to 6 areas, suggesting it reflects a general property of the visual hierarchy rather than a local circuit artifact.
+**Key finding**: novel stimuli elicit a statistically redundant response across all visual areas. The effect holds consistently from 3 to 6 areas in this dataset, suggesting it is not a local circuit artifact — though replication across stimulus sets and recording configurations would be needed to establish it as a general property of the visual hierarchy.
 :::
 
 ---
@@ -878,17 +916,19 @@ $$\mathrm{TE}_{X\to Y} = I(Y_t;\, \mathbf{X}_{\text{past}} \mid \mathbf{Y}_{\tex
 
 ::: {.columns}
 ::: {.column width="60%"}
-**Key finding**: **Mutual Information was the primary metric** used to weight edges in the functional connectivity network — capturing nonlinear statistical dependencies between electrodes that reflect genuine neuronal communication, invisible to Pearson correlation.
+::: {.bio-conclusion}
+**Key finding**: **Mutual Information was used** to weight edges in the functional connectivity network — capturing nonlinear statistical dependencies between electrodes, including dependencies that Pearson correlation would miss.
+:::
 
-- Scale-free (critical) network dynamics emerge around week 8–10
-- Short-term potentiation develops alongside organised connectivity
+- Network dynamics with scale-free-like properties emerge around week 8–10
+- Short-term potentiation-like plasticity develops alongside organised connectivity
 - MI-weighted networks successfully distinguished responsive from non-responsive organoid batches
 
 **Transfer Entropy** extends this to directed connectivity:
 $$\mathrm{TE}_{i\to j} = I\!\left(X_t^{(j)};\, X_{\text{past}}^{(i)} \;\middle|\; X_{\text{past}}^{(j)}\right)$$
 tracking *which electrode drives which* as the circuit matures.
 
-**Uthamacumaran et al. (2024)**: MI-based functional connectivity applied to *aneural* Xenopus morphogenetic tissue — showing these tools generalise to any developing biological system.
+**Uthamacumaran et al. (2024)**: MI-based functional connectivity applied to *aneural* Xenopus morphogenetic tissue — suggesting these tools may extend beyond neural tissues to a wider range of developing biological systems.
 :::
 ::: {.column width="40%"}
 <div style="border: 1px solid #ccc; border-radius: 8px; padding: 1em; font-size: 0.85em; background: #f9f9f9; margin-top: 1em;">
@@ -940,7 +980,9 @@ $$\mathrm{TE}_{X\to Y}(k,\ell) = I\!\left(Y_t;\,\mathbf{X}_{t-k}\mid\mathbf{Y}_{
 :::
 ::: {.column width="50%"}
 ::: {.fragment}
-**What is recovered**: **respiratory sinus arrhythmia (RSA)** — breathing modulates heart rate more than the reverse. Respiration pacemaking in the brainstem overrides cardiac autonomic control, a nonlinear effect invisible to linear Granger causality.
+::: {.bio-conclusion}
+**What is recovered**: **respiratory sinus arrhythmia (RSA)** — breathing modulates heart rate more than the reverse. Respiration pacemaking in the brainstem dominates cardiac autonomic modulation — a well-characterised physiological coupling that linear Granger causality may underestimate or miss under non-stationary conditions.
+:::
 :::
 
 ::: {.fragment}
@@ -952,6 +994,29 @@ $$\mathrm{TE}_{X\to Y}(k,\ell) = I\!\left(Y_t;\,\mathbf{X}_{t-k}\mid\mathbf{Y}_{
 :::
 :::
 :::
+
+## Application: Mosaic Brain Organoids
+
+::: {.columns}
+::: {.column width="55%"}
+**Caporale et al.** (*Nature Methods*, 2024): multiplexing cortical brain organoids from multiple donors enables longitudinal dissection of developmental traits at single-cell resolution.
+
+::: {.bio-conclusion}
+Co-cultured clonal lineages may depart from independent single-lineage behaviour — SOI and TENDE would allow us to test whether non-additive interactions shape clonal dynamics in ways that pairwise correlation cannot detect.
+:::
+
+**SOI** and **TENDE** apply directly:
+
+- **SOI** — $\Omega(\text{lineage}_1, \ldots, \text{lineage}_N)$: when does clonal co-culture switch from *redundant* (independent expansion) to *synergistic* (non-additive coordination)? The sign change is a quantitative marker of emergent interaction.
+
+- **TENDE** — $\mathrm{TE}_{\text{lineage}_i \to \text{lineage}_j}(k)$: which lineage drives which, and when? Maps the causal structure of clonal dynamics as the mosaic matures.
+:::
+::: {.column width="45%"}
+![](figures/caporaleetal.png){width=100%}
+:::
+:::
+
+---
 
 # Conclusions
 
