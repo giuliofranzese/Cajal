@@ -565,23 +565,6 @@ At $\tau = 0.75$: MSBM and TIGON score nearly identically by Wasserstein distanc
 
 ---
 
-## Why This Gap: an Intuition
-
-::: {.columns}
-::: {.column width="50%"}
-![**Left**: score functions $\nabla \log p_t(x)$ are *smooth fields* defined everywhere — even in the tails. Learning them via denoising is stable and well-conditioned.](figures/pitfalls.jpg){width=100%}
-:::
-::: {.column width="50%"}
-![**Right**: the same score function at multiple noise levels forms a hierarchy of "zoom levels". Coarse levels capture global structure; fine levels capture local detail — together they tile all of density space reliably.](figures/multi_scale.jpg){width=100%}
-:::
-:::
-
-In contrast, discriminative estimators (MINE, InfoNCE) must compute $\log \mathbb{E}[\exp(T)]$ — a log-sum-exp that is dominated by rare tail events, making variance explode in high dimensions or heavy-tailed settings. Score-based estimation sidesteps this entirely.
-
-*Credit: Yang Song, [yang-song.net/blog/2021/score](https://yang-song.net/blog/2021/score/)*
-
----
-
 ## Continuous Time Markov Chains: Conquering Discrete Spaces
 
 - Consider a **discrete** random variable $A\in \chi = \{1,\hdots,N\}$ with probability measure $\mu^A$ (discrete state spaces, conflate with $p^A$)

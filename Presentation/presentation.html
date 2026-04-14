@@ -780,27 +780,6 @@ Shared programs across independent lineages
 </div>
 </div></div>
 </section>
-<section id="why-this-gap-an-intuition" class="slide level2">
-<h2>Why This Gap: an Intuition</h2>
-<div class="columns">
-<div class="column" style="width:50%;">
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><img data-src="figures/pitfalls.jpg" style="width:100.0%"></p>
-<figcaption><strong>Left</strong>: score functions <span class="math inline">\(\nabla \log p_t(x)\)</span> are <em>smooth fields</em> defined everywhere — even in the tails. Learning them via denoising is stable and well-conditioned.</figcaption>
-</figure>
-</div>
-</div><div class="column" style="width:50%;">
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><img data-src="figures/multi_scale.jpg" style="width:100.0%"></p>
-<figcaption><strong>Right</strong>: the same score function at multiple noise levels forms a hierarchy of “zoom levels”. Coarse levels capture global structure; fine levels capture local detail — together they tile all of density space reliably.</figcaption>
-</figure>
-</div>
-</div></div>
-<p>In contrast, discriminative estimators (MINE, InfoNCE) must compute <span class="math inline">\(\log \mathbb{E}[\exp(T)]\)</span> — a log-sum-exp that is dominated by rare tail events, making variance explode in high dimensions or heavy-tailed settings. Score-based estimation sidesteps this entirely.</p>
-<p><em>Credit: Yang Song, <a href="https://yang-song.net/blog/2021/score/">yang-song.net/blog/2021/score</a></em></p>
-</section>
 <section id="continuous-time-markov-chains-conquering-discrete-spaces" class="slide level2">
 <h2>Continuous Time Markov Chains: Conquering Discrete Spaces</h2>
 <ul>
