@@ -196,41 +196,17 @@ include-in-header:
 
 **Shannon's answer** (1948): use **Mutual Information** — the unique measure that quantifies statistical dependence in bits, regardless of the shape of the distribution.
 
-The same framework answers interconnected questions at every scale of neuroscience and organoid biology:
+The same framework answers interconnected questions at every scale of neuroscience:
 
 |  | Question | Scale | Tool |
 |--|---|---|---|
 | **1** | How much does a neuron's firing tell us about a stimulus? | Systems | MI |
 | **2** | Which brain area is *driving* which? | Circuits | Transfer Entropy |
 | **3** | Do populations code *redundantly* or *synergistically*? | Networks | O-Information |
-| **4** | How much does gene expression predict cell fate? *(Weinreb et al. 2020)* | Organoid / single-cell | MI |
-| **5** | What causal structure governs gene regulatory networks? *(Clonotrace 2025)* | Organoid / genomics | Transfer Entropy |
+| **4** | How much does gene expression predict cell fate? | Single-cell | MI |
+| **5** | What causal structure governs gene regulatory networks? | Genomics | Transfer Entropy |
 
 The challenge: these quantities are **hard to estimate** from real data — nonlinear distributions, high dimensions, mixed data types. We'll show how **diffusion processes** provide a unified solution.
-
----
-
-## Information Theory Is Reshaping Biology
-
-These tools are not just theoretical — they are already an **established quantitative language** in several active research lines, offering capabilities that correlation-based methods cannot match. Think of them as **software-defined instruments**: just as a microscope reveals spatial structure, MI/TE/O-Information reveal *statistical structure* inaccessible to classical statistics.
-
-**Already in use across the organoid and single-cell field:**
-
-<table style="font-size:0.78em; width:100%; border-collapse:collapse;">
-<tr style="background:#f0f4ff;"><th style="text-align:left; padding:4px 8px;">Paper</th><th style="text-align:left; padding:4px 8px;">What they measured</th><th style="text-align:left; padding:4px 8px;">Tool</th></tr>
-<tr><td style="padding:3px 8px;">Muccitri et al. 2024</td><td style="padding:3px 8px;">Functional connectivity in organoid HD-MEA</td><td style="padding:3px 8px;"><b>MI</b> as network edge weight</td></tr>
-<tr style="background:#f9f9f9;"><td style="padding:3px 8px;">Weinreb et al. 2020</td><td style="padding:3px 8px;">Hidden epigenetic fate determinants in sister cells</td><td style="padding:3px 8px;"><b>MI</b> between clonal pairs</td></tr>
-<tr><td style="padding:3px 8px;">Teschendorff 2017 (SCENT)</td><td style="padding:3px 8px;">Stem cell differentiation potency</td><td style="padding:3px 8px;">Signaling <b>entropy</b> rate</td></tr>
-<tr style="background:#f9f9f9;"><td style="padding:3px 8px;">Uthamacumaran et al. 2024</td><td style="padding:3px 8px;">Information integration in Xenobot morphogenesis</td><td style="padding:3px 8px;"><b>MI</b> functional connectivity</td></tr>
-<tr><td style="padding:3px 8px;">DeepTracing 2024</td><td style="padding:3px 8px;">Lineage vs cell-state disentanglement in scRNA-seq</td><td style="padding:3px 8px;"><b>Total Correlation</b> regulariser</td></tr>
-<tr style="background:#f9f9f9;"><td style="padding:3px 8px;">Clonotrace 2025</td><td style="padding:3px 8px;">Shared programs across independent lineages</td><td style="padding:3px 8px;"><b>MI</b> between clonal and transcriptomic identity</td></tr>
-</table>
-
-**The bottleneck**: existing estimators assume Gaussian data, low dimensions, or continuous variables — none of which hold for high-dimensional neural recordings, zero-inflated scRNA-seq, or nonlinear physiological signals.
-
-::: {.callout-important appearance="minimal"}
-The field has the **questions** and the **data** — it is missing scalable, nonparametric **estimators**. That is what this talk is about.
-:::
 
 ---
 
@@ -283,11 +259,6 @@ The same definition holds when $X$ and $Y$ are stochastic processes.
 - **Neuroscience translation**: the stimulus is the "message", the neural response is the "received signal". $\textsc{I}(\text{stimulus};\text{response})$ directly quantifies the neuron's coding fidelity — in bits.
 - Applications in neuroscience: neural coding efficiency, information bottleneck in sensory hierarchies, functional connectivity, consciousness research.
 
-::: {.bio-conclusion}
-- **Cell fate prediction**: Weinreb et al. (*Science*, 2020), studying mouse hematopoiesis, used MI between sister cells to provide evidence that cell fate is influenced by *hidden* biological states — likely epigenetic or metabolic in nature — not fully captured by single-cell RNA-seq snapshots.
-- **Gene regulatory networks**: MI between gene pairs underpins GRN inference methods (ARACNE, MRNET) — reconstructing transcription factor–target relationships — approaches applicable, in principle, to developing organoid tissue.
-:::
-
 ---
 
 ## Why Not Just Use Correlation?
@@ -308,18 +279,6 @@ Pearson correlation $\rho(X,Y) = \frac{\operatorname{Cov}(X,Y)}{\sigma_X \sigma_
 
 ::: {.fragment}
 - **scRNA-seq count data**: gene expression counts are discrete, zero-inflated, and heavily skewed. Pearson correlation on raw or log-normalised counts systematically misses nonlinear co-regulation. MI is defined directly on the count distribution, no normalisation required.
-:::
-
-::: {.fragment}
-::: {.bio-conclusion}
-- **Hidden-state evidence (hematopoiesis)**: Weinreb et al. (*Science*, 2020), studying hematopoietic differentiation, showed that early transcriptomic similarity between sister cells had low predictive power for differential fate outcomes — yet MI between sister-cell fate trajectories grew over time, consistent with hidden biological states shaping fate beyond what the transcriptome alone captures. MI provided a signal where linear methods were insufficient.
-:::
-:::
-
-::: {.fragment}
-::: {.bio-conclusion}
-- **Beyond neurons**: Uthamacumaran et al. (2024) applied MI-based connectivity to *aneural* morphogenetic tissue (Xenopus epidermis), revealing organised information structures invisible to correlation — these tools show promise beyond neural tissues, suggesting broader applicability across developing biological systems.
-:::
 :::
 
 ---
@@ -422,10 +381,6 @@ The gap between two denoisers encodes the KL divergence — and therefore the Mu
 - Build a simple SDE in $[0,T]$ with initial conditions $\sim \mu^A$:
 $$\begin{cases}\dd X_t=-X_t\,\dd t+\sqrt{2}\,\dd W_t,\\ X_0=A\sim \mu^A\end{cases}$$
 where $W_t$ is a Brownian motion. **Informally**, $\dd W_t\sim \mathcal{N}(0,\dd t)$
-
-- For engineers/physicists:
-$$\frac{\dd X_t}{\dd t}=-X_t+\sqrt{2}\underbrace{\frac{\dd W_t}{\dd t}}_{N_t,\,\text{White Noise}}$$
-(even simpler: $X_t=h_t\star N_t$). We need measure theory and stoch. integrals for nonlinear drifts, etc...
 
 - This SDE corresponds to a path measure $\mathbb{P}^{A}$ (**informally** events like $\text{Pr}(X_{0\leq t\leq T}\in \mathcal{S})$).
 
@@ -593,9 +548,6 @@ At $\tau = 0.75$: MSBM and TIGON score nearly identically by Wasserstein distanc
 
 ![FKL estimates (markers) match closed-form analytical values (dashed lines) across 8 cases, for both forward and reverse KL.](figures/fkl_gm_validation.png){width=100%}
 
-::: {style="font-size:0.82em; color:#444; margin-top:0.3em;"}
-**Forward KL** penalises missing coverage; **Reverse KL** penalises hallucination. TIGON has forward ≈ reverse on petal (no hallucination) but both are high — it simply generates wrong dynamics. AM on the Repressilator has reverse KL $= 435$ vs forward $= 27$: pure hallucination, invisible to marginal metrics.
-:::
 :::
 :::
 
@@ -603,10 +555,10 @@ At $\tau = 0.75$: MSBM and TIGON score nearly identically by Wasserstein distanc
 
 ## Continuous Time Markov Chains: Conquering Discrete Spaces
 
-- Consider a **discrete** random variable $A\in \chi = \{1,\hdots,N\}$ with probability measure $\mu^A$ (discrete state spaces, conflate with $p^A$)
+- Consider a **discrete** random variable $A\in \chi = \{1,\ldots,N\}$ with probability measure $\mu^A$ (discrete state spaces, conflate with $p^A$)
 - Build a CTMC in $[0,T]$ with initial conditions $\sim p^A$:
 $$\frac{d p^A_t(x)}{dt}=Q_t p^A_t(x)$$
-- The infinitesimal generator $Q_t$ is now a matrix, whereas it was a differential operator in $\mathbb{R}^N$. Think e.g. of Queuing Theory, Epidemic Models, or **scRNA-seq count data from organoids at successive developmental stages** — each gene expression level is a discrete state, and differentiation is a Markov transition between them.
+- The infinitesimal generator $Q_t$ is now a matrix, whereas it was a differential operator in $\mathbb{R}^N$. Think e.g. of Queuing Theory, Epidemic Models, or **scRNA-seq count data** — each gene expression level is a discrete state, and differentiation is a Markov transition between them.
 - We can adapt the previous calculations. Then $\KL{p_0}{q_0}=$
 $$\mathbb{E}\!\left[\int_0^T\sum_{x\neq X_t} Q_{t}(X_t,x)\!\left(K\!\left(\frac{p_t(x)}{p_t(X_t)}\right)+\frac{q_t(x)}{q_t(X_t)}-\frac{p_t(x)}{p_t(X_t)}\log\frac{q_t(x)}{q_t(X_t)}\right)dt\right]$$
 where $K(a)=a(\log(a)-1)$. The ratio $\frac{p_t(x)}{p_t(y)}$ is called the *discrete score* — approximated with a neural network.
@@ -623,37 +575,6 @@ where $K(a)=a(\log(a)-1)$. The ratio $\frac{p_t(x)}{p_t(y)}$ is called the *disc
 **What MI is computed**: $I(\text{Window}_{[i,i+6)};\, \text{Label})$ — the information that a 6-bp DNA window carries about whether the sequence is a promoter or not. The window slides from −200 bp to +51 bp relative to the TSS.
 
 ![*Arabidopsis thaliana* promoters (EPDnew) vs. random genomic background. The MI peak at ~−30 bp emerges with no motif labels, no sequence alignment — purely from the information profile.](figures/infosedd_tata_profile.png){width=100% style="object-fit:contain; max-height:300px;"}
-:::
-:::
-
----
-
-## INFO-SEDD Unlocks Discrete Biology
-
-Classical MI estimators assume continuous data — but biology is full of **discrete signals**. INFO-SEDD handles them natively:
-
-::: {.columns}
-::: {.column width="55%"}
-**DNA regulatory elements** *(right figure)*
-
-**Quantity**: $I(\underbrace{\text{6-bp window}}_{\text{discrete, }|\Sigma|=4},\;\underbrace{\text{promoter?}}_{\text{binary label}})$ estimated as the window slides −200 → +51 bp from the TSS.
-
-- Dataset: *Arabidopsis thaliana* promoters (EPDnew) vs. matched genomic background — 251-bp sequences, no motif labels provided
-- The TATA-box (−39 to −26 bp) emerges as the MI peak **without any supervision** — the model learns that this window is maximally informative about promoter identity
-- **What this unlocks**: unsupervised, sequence-only discovery of regulatory grammar. Apply the same scan to human neuronal enhancers or organoid ATAC-seq peaks to find which sequence motifs drive cell-type-specific chromatin accessibility.
-
-**scRNA-seq count data** *(potential application)*
-
-- Counts $\in \{0,1,2,\ldots\}$ are integer-valued — standard continuous MI estimators require continuous approximations that distort zero-inflation
-- INFO-SEDD computes $I(\text{gene}_i;\, \text{gene}_j)$ on raw integer counts, no log-normalisation needed
-- **What this unlocks**: nonparametric GRN inference from organoid single-cell atlases without Gaussian assumptions
-:::
-::: {.column width="45%"}
-![](figures/infosedd_tata_profile.png){width=100%}
-
-::: {style="font-size:0.8em; color:#444; margin-top:0.5em;"}
-MI ± 1σ across 80 batches of 16 sequences. Red band: known TATA-box region (−39 to −26 bp). Peak recovered with no motif labels.
-:::
 :::
 :::
 
@@ -679,7 +600,7 @@ Given two marginals $\mu^{X}$ and $\mu^{Y}$, find a joint distribution $\mu^{XY}
 
 **Why MI-maximisation, not just Optimal Transport?**
 
-Optimal Transport finds a *geometrically close* coupling — it minimises the cost of moving mass from $\mu^X$ to $\mu^Y$. But closeness in gene-expression space $\neq$ biological correspondence: a chromatin-open cell and an actively-transcribing cell may look distant by $L^2$ distance yet be the same cell state. MI-maximisation finds the coupling where knowing one modality maximally reduces uncertainty about the other — a **biological correspondence principle**, not a geometric one.
+Optimal Transport finds a *geometrically close* coupling — it minimises the cost of moving mass from $\mu^X$ to $\mu^Y$. But geometric closeness does not imply biological correspondence: two cells may look distant by $L^2$ distance yet be in the same functional state. MI-maximisation finds the coupling where knowing one modality maximally reduces uncertainty about the other — a **statistical correspondence principle**, not a geometric one.
 
 ---
 
@@ -718,7 +639,7 @@ DDMEC can pair any two unpaired distributions — demonstrated on image domains:
 
 ## Unpaired Data: Application to Single-Cell Multi-Omics
 
-The same principle applies to **organoid multi-omics**: aligning **ATAC-seq** (chromatin accessibility) with **RNA-seq** (gene expression) from the same organoid population — **without** paired single-cell measurements.
+**Application to single-cell multi-omics**: aligning **ATAC-seq** (chromatin accessibility) with **RNA-seq** (gene expression) from the same cell population — **without** paired measurements.
 
 ::: {.columns}
 ::: {.column width="47%"}
@@ -730,7 +651,7 @@ The same principle applies to **organoid multi-omics**: aligning **ATAC-seq** (c
 :::
 
 ::: {style="font-size:0.85em; color:#444;"}
-*DDMEC demonstrated on PBMC single-cell data. Applied to organoids, this methodology could enable joint chromatin + transcriptome analysis without the experimental overhead of paired profiling — though biological validity of the MI-maximised coupling in this context would require validation.*
+*DDMEC demonstrated on PBMC single-cell data: joint chromatin + transcriptome alignment without paired profiling.*
 :::
 
 # Multivariate Information Theory {.center}
@@ -745,16 +666,11 @@ MINDE → INFO-SEDD → DDMEC → **SOI** → **TENDE**
 
 ![](figures/info_pdf.png){width=55%}
 
-**Already used in organoid biology:**
-
-- **DeepTracing** (2024): uses *Total Correlation* — a key component of O-Information — as a regularization term to disentangle *heritable lineage constraints* from *intrinsic cell-state dynamics* in organoid scRNA-seq. TC penalises statistical dependence between latent variables, enforcing clean separation.
-- **SCENT** (Teschendorff et al. 2017): estimates *signaling entropy rate* from transcriptomic data integrated with a protein-protein interaction network. High entropy → pluripotent; low entropy → committed fate. A practical information-theoretic potency score for stem cells.
-
 ---
 
 ## Multimodal Information Theory (cont.)
 
-Applications: **Multimodal sensory** neuroscience — and increasingly, **organoid development**.
+Applications: **Multimodal sensory** neuroscience.
 
 ::: {.columns}
 ::: {.column width="50%"}
@@ -765,7 +681,6 @@ Applications: **Multimodal sensory** neuroscience — and increasingly, **organo
 :::
 :::
 
-**Organoid angle**: the same decomposition applied to multi-electrode or calcium imaging data during organoid maturation can reveal whether developing circuits build *redundant* (fault-tolerant) or *synergistic* (integrative) coding strategies.
 
 ---
 
@@ -794,7 +709,7 @@ Nice properties, but out of reach unless data are Gaussian (or "*simple*") and/o
 
 ::: {.columns}
 ::: {.column width="55%"}
-Real neural data — including organoid MEA recordings — does not follow a known parametric distribution. The marginal density of a single visual cortex area (right) is multimodal, skewed, and heavy-tailed.
+Real neural data does not follow a known parametric distribution. The marginal density of a single visual cortex area (right) is multimodal, skewed, and heavy-tailed.
 
 **Gaussian O-information estimators would be wrong by construction.** A nonparametric, score-based approach is the only option that does not require assuming a distribution family.
 :::
@@ -815,29 +730,6 @@ $$D(X) = \int p_t(x) \left\| \nabla \log p_t(x) - \sum_{i=1}^{N} \nabla \log p_t
 
 - With our implementation, all the ingredients are *amortized* within a *single* model.
 
-**Why this matters for organoids**: DeepTracing (2024) uses TC as a regulariser but must rely on a simplified surrogate — a closed-form Gaussian approximation. Our score-based estimator computes TC *exactly* for any distribution, making it directly applicable to the heavy-tailed, zero-inflated distributions of organoid scRNA-seq data at scale.
-
----
-
-## SOI: Synthetic Benchmark Results
-
-**Quantity**: $\Omega(X_1,\ldots,X_6)$ on two 6-variable Gaussian systems with known ground truth. Variables $X_0$–$X_2$ are coupled redundantly; $X_3$–$X_5$ synergistically. Coupling strength $\rho \in [0.05, 0.9]$.
-
-Also computed: gradient $\partial\Omega/\partial X_i$ — which variables drive the overall redundancy/synergy.
-
-::: {.columns}
-::: {.column width="50%"}
-![**Left**: $\Omega$ vs $\rho$. Redundancy task (positive Ω, circles) vs synergy task (negative Ω, squares). SOI correctly identifies the sign across all coupling strengths.](figures/soi_benchmark.png){width=100%}
-:::
-::: {.column width="50%"}
-![**Right**: $\partial\Omega/\partial X_i$ vs $\rho$. Redundant group ($x_0$–$x_2$, blue) and synergistic group ($x_3$–$x_5$, red) separate cleanly — enabling variable selection.](figures/soi_gradient.png){width=100%}
-:::
-:::
-
-::: {style="font-size:0.85em; color:#444; margin-top:0.3em;"}
-The gradient decomposition is the key novel tool: applied to organoid recordings it would tell you *which neurons or areas* drive the collective redundancy vs. synergy — not just whether it exists.
-:::
-
 ---
 
 ## Example: Analysis of Mice Brain Activity
@@ -855,7 +747,6 @@ The gradient decomposition is the key novel tool: applied to organoid recordings
 
 **What this unlocks**: no previous estimator could compute O-information on 30-dimensional neural data. The score-based approach handles arbitrary distributions, revealing the redundancy→synergy transition that linear (Gaussian) estimators miss entirely.
 
-**Organoid relevance**: apply the same analysis to maturing organoid MEA data to find *when* circuits switch from redundant (immature broadcast) to synergistic (mature integrated) coding — a functional maturity biomarker.
 :::
 ::: {.column width="40%"}
 ![](figures/mouse.JPG){width=80%}
@@ -867,13 +758,10 @@ The gradient decomposition is the key novel tool: applied to organoid recordings
 ## Mice Brain Activity Results
 
 ::: {.columns}
-::: {.column width="33%"}
-![O-information over time bins: **change** (blue) vs **non-change** (red) stimuli. Novel stimuli consistently produce higher Ω — more redundancy — across all time bins.](figures/soi_vbn_boxplot.png){width=100%}
-:::
-::: {.column width="33%"}
+::: {.column width="50%"}
 ![3 visual cortex areas](figures/new_vbn_setting_3_dim_25.png){width=100%}
 :::
-::: {.column width="33%"}
+::: {.column width="50%"}
 ![6 visual cortex areas](figures/new_vbn_setting_6_dim_25.png){width=100%}
 :::
 :::
@@ -910,37 +798,6 @@ $$\mathrm{TE}_{X\to Y} = I(Y_t;\, \mathbf{X}_{\text{past}} \mid \mathbf{Y}_{\tex
 
 ---
 
-## Emerging Connectivity in Brain Organoids
-
-**Muccitri et al.** (*Cell Reports*, 2024) coupled human iPSC-derived neural organoids to **high-density microelectrode arrays (HD-MEAs)** over 13 weeks of maturation, tracking the emergence of network structure and short-term potentiation — the building blocks of learning and memory.
-
-::: {.columns}
-::: {.column width="60%"}
-::: {.bio-conclusion}
-**Key finding**: **Mutual Information was used** to weight edges in the functional connectivity network — capturing nonlinear statistical dependencies between electrodes, including dependencies that Pearson correlation would miss.
-:::
-
-- Network dynamics with scale-free-like properties emerge around week 8–10
-- Short-term potentiation-like plasticity develops alongside organised connectivity
-- MI-weighted networks successfully distinguished responsive from non-responsive organoid batches
-
-**Transfer Entropy** extends this to directed connectivity:
-$$\mathrm{TE}_{i\to j} = I\!\left(X_t^{(j)};\, X_{\text{past}}^{(i)} \;\middle|\; X_{\text{past}}^{(j)}\right)$$
-tracking *which electrode drives which* as the circuit matures.
-
-**Uthamacumaran et al. (2024)**: MI-based functional connectivity applied to *aneural* Xenopus morphogenetic tissue — suggesting these tools may extend beyond neural tissues to a wider range of developing biological systems.
-:::
-::: {.column width="40%"}
-<div style="border: 1px solid #ccc; border-radius: 8px; padding: 1em; font-size: 0.85em; background: #f9f9f9; margin-top: 1em;">
-<strong>Why standard methods fail here:</strong><br><br>
-Granger causality assumes linear, Gaussian dynamics — calcium transients and MEA signals are neither.<br><br>
-TENDE estimates TE nonparametrically via score matching, handling the nonlinear, heavy-tailed dynamics of organoid electrical activity.
-</div>
-:::
-:::
-
----
-
 ## Transfer Entropy: Formulation
 
 - Let $\{X_t\}$ and $\{Y_t\}$ denote discrete time stochastic processes.
@@ -953,44 +810,21 @@ $$\mathrm{TE}_{X\to Y}(k,\ell) = I\!\left(Y_t;\,\mathbf{X}_{t-k}\mid\mathbf{Y}_{
 
 ---
 
-## Transfer Entropy: Example
+## TENDE: Example
 
 ::: {.columns}
-::: {.column width="50%"}
-**Synthetic validation**: coupled OU process with *known* unidirectional coupling ($Y\!\to\!X = 0.5$, $X\!\to\!Y = 0$). Quantity: $\mathrm{TE}_{Y\to X}(k,\ell) = I(X_t;\, Y_{t-k} \mid X_{t-\ell})$. TENDE recovers the correct asymmetry.
-
-![Simulated OU process — X (black) and Y (orange). Causal direction Y→X; no reverse coupling.](figures/tende_timeseries.png){width=100%}
-:::
 ::: {.column width="50%"}
 **Real physiological data**: 10-minute recording (~6000 samples at ~10 Hz), z-score standardised.
 
-**Quantity computed**: $\mathrm{TE}_{\text{resp}\to\text{HR}}(k, \ell{=}2)$ and $\mathrm{TE}_{\text{HR}\to\text{resp}}(k, \ell{=}2)$ for $k \in \{2,4,6,8,10\}$ seconds — how much does 2 steps of one signal's history reduce uncertainty about the other's next value, beyond the target's own history?
+**Quantity computed**: $\mathrm{TE}_{\text{resp}\to\text{HR}}$ and $\mathrm{TE}_{\text{HR}\to\text{resp}}$ for lags $k \in \{2,4,6,8,10\}$ seconds.
 
-![Heart rate (black) and respiration force (red), standardised. Coupling is bidirectional but asymmetric — the direction of dominance is not visible from the raw traces.](figures/tende_physio.png){width=100%}
-:::
-:::
-
----
-
-## TENDE Results
-
-::: {.columns}
-::: {.column width="50%"}
-![TE vs lag $k$ (s): $\mathrm{TE}_{\text{resp}\to\text{HR}}$ (black ★) > $\mathrm{TE}_{\text{HR}\to\text{resp}}$ (red ★) at all lags $k \in \{2,4,6,8,10\}$. Both decay with lag, but the asymmetry is stable — respiration is the driver.](figures/tende_te_lags.png){width=100%}
+![Heart rate (black) and respiration force (red), standardised. Coupling is bidirectional but asymmetric.](figures/tende_physio.png){width=100%}
 :::
 ::: {.column width="50%"}
-::: {.fragment}
+![TE vs lag $k$ (s): $\mathrm{TE}_{\text{resp}\to\text{HR}}$ (black ★) > $\mathrm{TE}_{\text{HR}\to\text{resp}}$ (red ★) at all lags. Asymmetry is stable — respiration is the driver.](figures/tende_te_lags.png){width=100%}
+
 ::: {.bio-conclusion}
-**What is recovered**: **respiratory sinus arrhythmia (RSA)** — breathing modulates heart rate more than the reverse. Respiration pacemaking in the brainstem dominates cardiac autonomic modulation — a well-characterised physiological coupling that linear Granger causality may underestimate or miss under non-stationary conditions.
-:::
-:::
-
-::: {.fragment}
-**Why previous methods failed**: Granger requires Gaussian residuals; KNN estimators need $O(n^2)$ computation in high dimensions. TENDE — score-based, sample-efficient — gives stable estimates at 6000 samples with 1000 MC iterations.
-:::
-
-::: {.fragment}
-**Organoid application**: applied to organoid MEA recordings, TENDE quantifies $\mathrm{TE}_{A\to B}$ between any electrode pair — mapping the *causal wiring diagram* of emerging circuits and tracking how it evolves over weeks of maturation.
+**What is recovered**: **respiratory sinus arrhythmia (RSA)** — breathing modulates heart rate more than the reverse.
 :::
 :::
 :::
@@ -1031,13 +865,6 @@ Co-cultured clonal lineages may depart from independent single-lineage behaviour
 | DDMEC | Max-MI coupling | ATAC-seq / RNA-seq alignment without paired cells |
 | SOI | Synergy & redundancy | Redundant→synergistic transition in visual cortex |
 | TENDE | Directed information flow | Causal architecture of developing neural circuits |
-
-**The organoid field is already using these metrics** — we provide the scalable estimators:
-
-- Muccitri et al. (2024): MI → organoid functional connectomes from HD-MEA
-- Weinreb et al. (2020): MI between sister cells → hidden fate determinants
-- DeepTracing (2024): Total Correlation → disentangling lineage from cell state
-- Clonotrace (2025): MI → joint lineage + transcriptomic analysis
 
 **Going deeper** (backup slides available):
 
@@ -1089,16 +916,12 @@ substitute the data-loading cell, adjust dimensions, run. The estimators make no
 6. Bounoua et al, *Learning to Match Unpaired Data with Minimum Entropy Coupling*, ICML 2025
 7. Franzese et al, *Continuous Time Functional Diffusion Processes*, NeurIPS 2024
 8. Franzese et al, *Generative diffusion models in infinite dimensions: a survey*, Philosophical Transactions A 2025
-9. Munoz et al, *TENDE: Transfer Entropy Neural Diffusion Estimation*, arXiv preprint
+9. Munoz et al, *TENDE: Transfer Entropy Neural Diffusion Estimation*, AISTATS 2025
 
-**Organoid & biology literature:**
+**Biology literature:**
 
-10. Muccitri et al, *Human neural organoid microphysiological systems show the building blocks necessary for basic learning and memory*, Cell Reports 2024
-11. Weinreb et al, *Lineage tracing on transcriptional landscapes links state to fate during differentiation*, Science 2020
-12. Teschendorff et al, *Single-cell entropy for quantifying differentiation potency (SCENT)*, Nature Protocols 2017/2021
-13. Uthamacumaran et al, *Revealing non-trivial information structures in aneural biological tissues via functional connectivity*, 2024
-14. DeepTracing: *A deep generative framework for disentangling intrinsic states from lineage constraints*, 2024/2025
-15. Clonotrace: *A framework for integrating lineage and transcriptomic information*, 2024/2025
+10. Caporale et al, *Multiplexing cortical brain organoids for the longitudinal dissection of developmental traits at single-cell resolution*, Nature Methods 2024
+
 
 # Backup
 
