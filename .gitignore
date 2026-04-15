@@ -1,2 +1,30 @@
 # Ignore quickstart helper directory
 quickstart/
+
+# Python virtualenvs and environment
+env/
+venv/
+.venv/
+soi/env/
+
+# Python cache and artifacts
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+pip-wheel-metadata/
+
+
+# Large data / archives
+ddmec/lectures.zip
+data/
+*/data/
+
+# Editor and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+

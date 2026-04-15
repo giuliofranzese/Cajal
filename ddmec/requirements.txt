@@ -1,0 +1,16 @@
+torch
+pytorch-lightning
+numpy
+pandas
+scikit-learn
+scipy
+scanpy
+anndata
+matplotlib
+seaborn
+torchvision
+opencv-python
+diffusers
+huggingface_hub
+requests
+tqdm
