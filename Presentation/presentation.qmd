@@ -220,7 +220,7 @@ The challenge: these quantities are **hard to estimate** from real data — nonl
 | **INFO-SEDD** *(ICLR 2025)* | $I(A;B)$ | **Discrete** | DNA promoter motif discovery (*Arabidopsis*) |
 | **DDMEC** *(ICML 2025)* | $\max_\pi I(X;Y)$ | Unpaired multimodal | PBMC ATAC-seq ↔ RNA-seq alignment |
 | **SOI** *(ICML 2024)* | $\Omega(X_1,\ldots,X_N)$ | Multivariate | VBN visual cortex (6 areas, Neuropixels) |
-| **TENDE** *(preprint)* | $\mathrm{TE}_{X\to Y}(k,\ell)$ | Time series | Respiratory sinus arrhythmia recovery |
+| **TENDE** *(preprint)* | $\mathrm{TE}_{X\to Y}(k,\ell)$ | Time series | Cardiorespiratory coupling |
 
 **The unifying insight**: replace intractable measure-theoretic integrals with learnable *score functions* trained via self-supervised denoising — the same machinery behind Stable Diffusion, repurposed for information theory.
 
@@ -834,7 +834,7 @@ $$\mathrm{TE}_{X\to Y}(k,\ell) = I\!\left(Y_t;\,\mathbf{X}_{t-k}\mid\mathbf{Y}_{
 ![TE vs lag $k$ (s): $\mathrm{TE}_{\text{resp}\to\text{HR}}$ (black ★) > $\mathrm{TE}_{\text{HR}\to\text{resp}}$ (red ★) at all lags. Asymmetry is stable — respiration is the driver.](figures/tende_te_lags.png){width=100%}
 
 ::: {.bio-conclusion}
-**What is recovered**: **respiratory sinus arrhythmia (RSA)** — breathing modulates heart rate more than the reverse.
+**What is recovered**: **cardiorespiratory coupling** — breathing modulates heart rate more than the reverse.
 :::
 :::
 :::
