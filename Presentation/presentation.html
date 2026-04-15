@@ -402,12 +402,53 @@
 </ul>
 <p>The same definition holds when <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span> are stochastic processes.</p>
 </section>
+<section id="a-glimpse-of-what-mi-can-reveal" class="slide level2">
+<h2>A Glimpse of What MI Can Reveal</h2>
+<div style="text-align:center; font-size:0.8em; color:#555; margin-bottom:0.6em;">
+<p>One formula — five biological questions.</p>
+</div>
+<div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:1em; align-items:center;">
+<div style="text-align:center;">
+<img data-src="figures/infosedd_tata_profile.png" style="width:100.0%">
+<div style="font-size:0.65em; color:#555; margin-top:0.3em;">
+DNA promoter motif discovery
+</div>
+</div>
+<div style="text-align:center;">
+<img data-src="figures/fkl_petal_example.png" style="width:100.0%">
+<div style="font-size:0.65em; color:#555; margin-top:0.3em;">
+Cell differentiation trajectories
+</div>
+</div>
+<div style="text-align:center;">
+<img data-src="figures/out_pbmc.png" style="width:100.0%">
+<div style="font-size:0.65em; color:#555; margin-top:0.3em;">
+ATAC-seq / RNA-seq alignment
+</div>
+</div>
+</div>
+<div style="display:grid; grid-template-columns: 1fr 1fr; gap:1em; align-items:center; margin-top:0.8em; width:66%; margin-left:auto; margin-right:auto;">
+<div style="text-align:center;">
+<img data-src="figures/new_vbn_setting_6_dim_25.png" style="width:100.0%">
+<div style="font-size:0.65em; color:#555; margin-top:0.3em;">
+Redundancy vs synergy in visual cortex
+</div>
+</div>
+<div style="text-align:center;">
+<img data-src="figures/caporaleetal.png" style="width:100.0%">
+<div style="font-size:0.65em; color:#555; margin-top:0.3em;">
+Mosaic brain organoids
+</div>
+</div>
+</div>
+</section>
 <section id="mutual-information-as-a-fundamental-measure" class="slide level2">
 <h2>Mutual Information as a Fundamental Measure</h2>
 <ul>
 <li>Mutual information is a fundamental measure of statistical dependence between random variables.</li>
 <li>Imagine an omnipotent Daemon observing streams of data: <strong>either</strong> from the joint distribution <span class="math inline">\(\mu^{X,Y}\)</span> <strong>or</strong> from the product of the marginals <span class="math inline">\(\mu^X \mu^Y\)</span>.</li>
-<li>Mutual information quantifies the rate at which the daemon can distinguish between these two cases.</li>
+<li>The daemon performs a <strong>Neyman–Pearson hypothesis test</strong> — <span class="math inline">\(H_0\)</span>: <span class="math inline">\(X \perp Y\)</span> (data from <span class="math inline">\(\mu^X \mu^Y\)</span>) vs <span class="math inline">\(H_1\)</span>: <span class="math inline">\(X \not\perp Y\)</span> (data from <span class="math inline">\(\mu^{X,Y}\)</span>). MI is the <strong>expected log-likelihood ratio</strong> under <span class="math inline">\(H_1\)</span>: the fundamental rate at which evidence against independence accumulates.</li>
+<li><strong>MI = 0 if and only if <span class="math inline">\(X \perp Y\)</span></strong> — exactly zero, not just small. Correlation = 0 is compatible with strong nonlinear dependence.</li>
 <li>In practical terms:
 <ul>
 <li>For discrete random variables, MI provides fundamental bounds on classification accuracy (e.g.&nbsp;how well can we decode a stimulus from a neural population response?).</li>
@@ -422,31 +463,13 @@
 <li>In a communication system, MI measures how much information about a message is retained after transmission through a noisy channel.</li>
 <li><strong>Neuroscience translation</strong>: the stimulus is the “message”, the neural response is the “received signal”. <span class="math inline">\(\textsc{I}(\text{stimulus};\text{response})\)</span> directly quantifies the neuron’s coding fidelity — in bits.</li>
 <li>Applications in neuroscience: neural coding efficiency, information bottleneck in sensory hierarchies, functional connectivity, consciousness research.</li>
-</ul>
-</section>
-<section id="why-not-just-use-correlation" class="slide level2">
-<h2>Why Not Just Use Correlation?</h2>
-<p>Pearson correlation <span class="math inline">\(\rho(X,Y) = \frac{\operatorname{Cov}(X,Y)}{\sigma_X \sigma_Y}\)</span> is ubiquitous — but it fundamentally fails in neural data settings:</p>
-<div class="fragment">
+<li><strong>Invariance to invertible transformations</strong>: for any invertible <span class="math inline">\(f\)</span>, <span class="math display">\[I(f(X);\, Y) = I(X;\, Y)\]</span>
 <ul>
-<li><strong>Nonlinearities</strong>: neurons have sigmoidal transfer functions, threshold and saturation effects. A neuron can be maximally informative about a stimulus yet have <em>zero</em> linear correlation with it — as occurs when the tuning curve is symmetric about the stimulus mean.</li>
+<li>Log-transforming spike rates leaves MI unchanged: <span class="math inline">\(I(\text{stimulus};\, r) = I(\text{stimulus};\, \log r)\)</span></li>
+<li>Whitening or z-scoring neural responses preserves MI: <span class="math inline">\(I(\text{stimulus};\, X) = I(\text{stimulus};\, (X-\mu)/\sigma)\)</span></li>
+<li>Pearson correlation <span class="math inline">\(\rho\)</span> does <em>not</em> share this property — it changes under nonlinear reparametrisations.</li>
+</ul></li>
 </ul>
-</div>
-<div class="fragment">
-<ul>
-<li><strong>The XOR problem</strong>: let <span class="math inline">\(X, Y\)</span> be independent fair coin flips, <span class="math inline">\(Z = X \oplus Y\)</span> (XOR). Then <span class="math inline">\(\rho(X,Z)=\rho(Y,Z)=0\)</span> — yet <span class="math inline">\(I(X;Z) &gt; 0\)</span>. This is precisely <em>synergistic coding</em>: the pair <span class="math inline">\((X,Y)\)</span> jointly encodes <span class="math inline">\(Z\)</span>, but neither alone does. This arises naturally in multi-neuron recordings.</li>
-</ul>
-</div>
-<div class="fragment">
-<ul>
-<li><strong>Mixed data types</strong>: neural recordings mix spike counts (discrete, Poisson-like), local field potentials (continuous), and behavioural variables (categorical). Correlation requires a common scale; MI is defined uniformly for <em>any</em> pair of measures.</li>
-</ul>
-</div>
-<div class="fragment">
-<ul>
-<li><strong>scRNA-seq count data</strong>: gene expression counts are discrete, zero-inflated, and heavily skewed. Pearson correlation on raw or log-normalised counts systematically misses nonlinear co-regulation. MI is defined directly on the count distribution, no normalisation required.</li>
-</ul>
-</div>
 </section>
 <section id="technical-simplification" class="slide level2">
 <h2>Technical Simplification</h2>
@@ -491,9 +514,7 @@
 <section>
 <section id="estimation-via-diffusion" class="title-slide slide level1 center">
 <h1>Estimation via Diffusion</h1>
-<div style="font-size:0.75em; color:#666; margin-top:0.5em;">
-<p><strong>MINDE</strong> → INFO-SEDD → DDMEC → SOI → TENDE</p>
-</div>
+
 </section>
 <section id="the-diffusion-idea-an-intuition" class="slide level2">
 <h2>The Diffusion Idea — An Intuition</h2>
@@ -833,9 +854,7 @@
 <section>
 <section id="multivariate-information-theory" class="title-slide slide level1 center">
 <h1>Multivariate Information Theory</h1>
-<div style="font-size:0.75em; color:#666; margin-top:0.5em;">
-<p>MINDE → INFO-SEDD → DDMEC → <strong>SOI</strong> → <strong>TENDE</strong></p>
-</div>
+
 </section>
 <section id="multimodal-information-theory" class="slide level2">
 <h2>Multimodal Information Theory</h2>
@@ -1080,58 +1099,13 @@ Transfer entropy is asymmetric by construction — it captures the <em>direction
 </tr>
 </tbody>
 </table>
-<p><strong>Going deeper</strong> (backup slides available):</p>
+<p><strong>Going deeper</strong> — <a href="backup.html">backup slides</a>:</p>
 <ul>
 <li>Formal measure-theoretic derivations and proof sketches</li>
 <li>Convergence analysis: sample complexity, model capacity requirements</li>
 <li>Extended numerical validation across additional benchmark families</li>
 <li>Thermodynamic integration / Feynman-Kac alternative derivation</li>
 </ul>
-</section>
-<section id="try-it-yourself" class="slide level2">
-<h2>Try It Yourself</h2>
-<p>All results shown in this talk were produced by Colab notebooks — <strong>runnable in your browser, no installation required</strong>.</p>
-<div class="columns">
-<div class="column" style="width:50%;">
-<p><strong>Available notebooks:</strong></p>
-<table class="caption-top">
-<thead>
-<tr class="header">
-<th>Method</th>
-<th>What you can run</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><strong>INFO-SEDD</strong></td>
-<td>TATA-box discovery on <em>Arabidopsis</em> promoters</td>
-</tr>
-<tr class="even">
-<td><strong>SOI</strong></td>
-<td>Synthetic redundancy/synergy benchmarks</td>
-</tr>
-<tr class="odd">
-<td><strong>SOI</strong></td>
-<td>VBN visual cortex O-information</td>
-</tr>
-<tr class="even">
-<td><strong>TENDE</strong></td>
-<td>TE on coupled OU + heart rate/respiration</td>
-</tr>
-</tbody>
-</table>
-<p>All notebooks load pretrained checkpoints — results in minutes, not hours.</p>
-</div><div class="column" style="width:50%;">
-<p><strong>Repository</strong>: <a href="https://github.com/giuliofranzese/Cajal">github.com/giuliofranzese/Cajal</a></p>
-<div class="callout callout-tip no-icon callout-style-simple">
-<div class="callout-body">
-<div class="callout-content">
-<p>The same notebooks can serve as <strong>templates</strong> for your own data: substitute the data-loading cell, adjust dimensions, run. The estimators make no assumption about your distribution.</p>
-</div>
-</div>
-</div>
-<p><em>Questions, issues, collaborations: <a href="mailto:giulio.franzese@eurecom.fr">giulio.franzese@eurecom.fr</a></em></p>
-</div></div>
 </section>
 <section id="references" class="slide level2 scrollable">
 <h2>References</h2>
@@ -1150,202 +1124,6 @@ Transfer entropy is asymmetric by construction — it captures the <em>direction
 <ol start="10" type="1">
 <li>Caporale et al, <em>Multiplexing cortical brain organoids for the longitudinal dissection of developmental traits at single-cell resolution</em>, Nature Methods 2024</li>
 </ol>
-</section></section>
-<section>
-<section id="backup" class="title-slide slide level1 center">
-<h1>Backup</h1>
-
-</section>
-<section id="an-informal-introduction" class="slide level2">
-<h2>An Informal Introduction</h2>
-<div style="font-size: 2em; text-align: center; margin-top: 2em;">
-<p>An <strong>informal</strong> introduction</p>
-</div>
-</section>
-<section id="probability-spaces" class="slide level2">
-<h2>Probability Spaces</h2>
-<ul>
-<li>A probability space <span class="math inline">\((\Omega, \mathcal{F}, \mathrm{P})\)</span> consists of:
-<ul>
-<li><span class="math inline">\(\Omega\)</span>: The sample space (set of all possible outcomes).</li>
-<li><span class="math inline">\(\mathcal{F}\)</span>: A <span class="math inline">\(\sigma\)</span>-algebra, a collection of subsets of <span class="math inline">\(\Omega\)</span> representing events.</li>
-<li><span class="math inline">\(\mathrm{P}\)</span>: A probability measure that assigns a number between 0 and 1 to each event in <span class="math inline">\(\mathcal{F}\)</span>.</li>
-</ul></li>
-</ul>
-</section>
-<section id="understanding-sigma-algebra-in-simple-terms" class="slide level2">
-<h2>Understanding <span class="math inline">\(\sigma\)</span>-Algebra in Simple Terms</h2>
-<ul>
-<li>A <span class="math inline">\(\sigma\)</span>-algebra can be understood as defining the <strong>granularity</strong> of information available.</li>
-<li>It must satisfy:
-<ul>
-<li>The whole sample space <span class="math inline">\(\Omega\)</span> is included.</li>
-<li>If an event is in <span class="math inline">\(\mathcal{F}\)</span>, its complement must also be in <span class="math inline">\(\mathcal{F}\)</span>.</li>
-<li>If a countable sequence of events is in <span class="math inline">\(\mathcal{F}\)</span>, their union must also be in <span class="math inline">\(\mathcal{F}\)</span>.</li>
-</ul></li>
-<li>Example: Rolling a dice.
-<ul>
-<li><span class="math inline">\(\Omega = \{1,2,3,4,5,6\}\)</span>.</li>
-<li>A possible <span class="math inline">\(\sigma\)</span>-algebra: <span class="math inline">\(\{\emptyset, \Omega, \{1,3,5\}, \{2,4,6\}\}\)</span> (representing even and odd outcomes).</li>
-</ul></li>
-</ul>
-</section>
-<section id="understanding-sigma-algebra-cont." class="slide level2">
-<h2>Understanding <span class="math inline">\(\sigma\)</span>-Algebra (cont.)</h2>
-
-<img data-src="figures/sigmaalg.png" style="width:50.0%" class="r-stretch quarto-figure-center"><p class="caption">Example of <span class="math inline">\(\sigma\)</span>-algebra</p></section>
-<section id="random-variables-as-mappings" class="slide level2">
-<h2>Random Variables as Mappings</h2>
-<ul>
-<li>A random variable <span class="math inline">\(X\)</span> is a function that maps outcomes from the sample space <span class="math inline">\(\Omega\)</span> to real numbers: <span class="math display">\[X: \Omega \to \mathbb{R}\]</span></li>
-<li>Example 1: Rolling a dice. If <span class="math inline">\(\omega\in\Omega=\{1,2,3,4,5,6\}\)</span>, then <span class="math inline">\(X(\omega)=\omega\)</span>.</li>
-<li>Example 2: Defining an odd/even variable. <span class="math inline">\(Y(\omega)=1\)</span> if <span class="math inline">\(\omega\)</span> is odd, <span class="math inline">\(Y(\omega)=0\)</span> if <span class="math inline">\(\omega\)</span> is even.</li>
-</ul>
-</section>
-<section id="random-variables-as-mappings-cont." class="slide level2">
-<h2>Random Variables as Mappings (cont.)</h2>
-<ul>
-<li>A random variable must be measurable with respect to a given <span class="math inline">\(\sigma\)</span>-algebra to be well-defined.</li>
-<li>Example:
-<ul>
-<li>With <span class="math inline">\(\sigma\)</span>-algebra <span class="math inline">\(\{\emptyset,\Omega,\{1,3,5\},\{2,4,6\}\}\)</span>, <span class="math inline">\(Y\)</span> (odd/even) is measurable.</li>
-<li>However, <span class="math inline">\(X\)</span> (exact roll outcome) is not measurable — a <strong>finer</strong> <span class="math inline">\(\sigma\)</span>-algebra is needed.</li>
-</ul></li>
-<li>Intuitive interpretation: <strong>Doob’s lemma</strong>: A random variable is measurable with respect to a <span class="math inline">\(\sigma\)</span>-algebra if and only if there exists a function that depends only on elements of the algebra.</li>
-</ul>
-</section>
-<section id="introduction-to-stochastic-processes" class="slide level2">
-<h2>Introduction to Stochastic Processes</h2>
-<ul>
-<li>A stochastic process is a collection of random variables indexed by time: <span class="math display">\[Y_t: \Omega \to \mathbb{R}, \quad t \geq 0\]</span></li>
-<li>It describes how a system evolves randomly over time.</li>
-<li>Examples:
-<ul>
-<li>Stock prices.</li>
-<li>Population dynamics.</li>
-<li>Temperature variations.</li>
-</ul></li>
-</ul>
-</section>
-<section id="filtration-and-adapted-processes" class="slide level2">
-<h2>Filtration and Adapted Processes</h2>
-<ul>
-<li>A filtration is a sequence of <span class="math inline">\(\sigma\)</span>-algebras representing growing information over time: <span class="math display">\[\mathcal{F}_0 \subseteq \mathcal{F}_1 \subseteq \mathcal{F}_2 \subseteq \dots\]</span></li>
-<li>Intuitively, it models the <strong>accumulation of knowledge</strong> as time progresses.</li>
-<li>A process is <em>adapted</em> if at each time instant it is measurable with respect to the filtration.</li>
-</ul>
-</section>
-<section id="probability-measure" class="slide level2">
-<h2>Probability Measure</h2>
-<p>(<strong>Informal, not complete</strong>) In the framework of measure theory, a probability measure <span class="math inline">\(\mu\)</span> is a mapping from <strong>subsets</strong> <span class="math inline">\(\{S_i\}_i\)</span> of a given sample space <span class="math inline">\(\Omega\)</span> such that:</p>
-<ul>
-<li>It is positive: <span class="math inline">\(\mu(S_i)\geq 0\)</span></li>
-<li>For disjoint sets <span class="math inline">\(S_i,S_j\)</span> (<span class="math inline">\(S_i\cap S_j=\emptyset\)</span>) it holds <span class="math inline">\(\mu(S_i\cup S_j)=\mu(S_i)+\mu(S_j)\)</span>.</li>
-<li>Its “integral” is equal to one: <span class="math inline">\(\mu(\Omega)=1\)</span>.</li>
-</ul>
-<p>Familiar examples:</p>
-<ul>
-<li><span class="math inline">\(\Omega=\mathbb{R}\)</span>, Gaussian probability <span class="math inline">\(\mu(dx)=p(x)dx=\frac{1}{\sqrt{2\pi}}\exp(-\frac{x^2}{2})dx\)</span></li>
-<li><span class="math inline">\(\Omega=\{0,1\}\)</span>, Bernoulli RV <span class="math inline">\(\mu(\{0\})=\mu(\{1\})=\frac{1}{2}\)</span></li>
-</ul>
-</section>
-<section id="definition-of-sdes" class="slide level2">
-<h2>Definition of SDEs</h2>
-<ul>
-<li>A stochastic differential equation (SDE) is a particular class of stochastic processes.</li>
-<li>A general diffusion process on a probability space <span class="math inline">\((\Omega,\mathcal{F},\mathrm{P})\)</span> is given by: <span class="math display">\[Y_t(\omega) = Y_0(\omega) + \int_0^t H(Y_s(\omega),t)\,ds + W_t(\omega)\]</span> where:
-<ul>
-<li><span class="math inline">\(Y_t\)</span> is the stochastic process.</li>
-<li><span class="math inline">\(H(Y_t(\omega),t)\)</span> is the drift term.</li>
-<li><span class="math inline">\(W_t\)</span> is a Brownian motion, representing Gaussian noise.</li>
-</ul></li>
-<li>It only makes sense when considered with respect to a <strong>filtration</strong> <span class="math inline">\((\mathcal{F}_t)_{t\geq 0}\)</span>, representing the available information over time.</li>
-</ul>
-</section>
-<section id="formal-minde-derivation" class="slide level2">
-<h2>Formal MINDE Derivation</h2>
-<ul>
-<li>Consider a probability space <span class="math inline">\((\Omega,\mathcal{F},\mathbb{P})\)</span>, together with a growing filtration <span class="math inline">\(\mathcal{F}_t\)</span></li>
-<li>Consider a generic random variable <span class="math inline">\(A\)</span> (<span class="math inline">\(\mathcal{F}_0\)</span>-measurable) with probability measure <span class="math inline">\(\mu^A(dx)\)</span></li>
-<li>Build a simple SDE in <span class="math inline">\([0,T]\)</span> with initial conditions <span class="math inline">\(\sim\mu^A\)</span>: <span class="math display">\[\begin{cases}\dd X_t=-X_t\,\dd t+\sqrt{2}\,\dd W_t,\\X_0=A\sim\mu^A\end{cases}\]</span> where <span class="math inline">\(W_t\)</span> is an <span class="math inline">\(\mathcal{F}_t\)</span> Brownian motion.</li>
-<li>This SDE corresponds to a path measure <span class="math inline">\(\mathbb{P}^{A}\)</span>.</li>
-<li>Two SDEs which differ only by initial conditions have KL divergence: <span class="math display">\[\KL{\mathbb{P}^{\mu^A}}{\mathbb{P}^{\mu^B}}=\E_{\mathbb{P}^{\mu^A}}\!\left[\log\frac{d\mathbb{P}^{\mu^A}}{d\mathbb{P}^{\mu^B}}\right]=\KL{\mu^A}{\mu^B}\]</span></li>
-</ul>
-</section>
-<section id="formal-minde-derivation-cont." class="slide level2">
-<h2>Formal MINDE Derivation (cont.)</h2>
-<p><strong>Time-reversal</strong> <span class="math inline">\(\hat{X}_t\defeq X_{T-t}\)</span>:</p>
-<ul>
-<li>KL is invariant to time-reversal: <span class="math inline">\(\KL{\mathbb{P}^{\mu^A}}{\mathbb{P}^{\mu^B}}=\KL{\hat{\mathbb{P}}^{\mu^A}}{\hat{\mathbb{P}}^{\mu^B}}\)</span></li>
-<li>Time reversal of SDE is again an SDE [Léonard 2014]</li>
-<li>Score function <span class="math inline">\(\leftrightarrow\)</span> Denoiser (same as before)</li>
-</ul>
-<p><strong>Girsanov theorem</strong>:</p>
-<p><span class="math display">\[\KL{\hat{\mathbb{P}}^{\mu^A}}{\hat{\mathbb{P}}^{\mu^B}}\simeq \E_{\mathbb{P}^{\mu^A}}\!\left[\int_0^T\norm{\nabla\log p^{A}_t(X_t)-\nabla\log p^{B}_t(X_t)}^2\dd t\right]\]</span></p>
-<ul>
-<li>Combining with time-reversal invariance → KL-estimator!</li>
-<li>Initial conditions <span class="math inline">\(\KL{\mu^A_T}{\mu^B_T}\)</span> should be negligible (Bakry-Emery condition / ergodicity [Collet, Malrieu 2008])</li>
-</ul>
-</section>
-<section id="experimental-results" class="slide level2">
-<h2>Experimental Results</h2>
-<p>MINDE variants:</p>
-<ul>
-<li>Consistently outperform all competitors on standard benchmarks.</li>
-<li>Are capable of accurately estimating MI in the challenging High MI benchmarks:</li>
-</ul>
-<div class="columns">
-<div class="column" style="width:30%;">
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><img data-src="figures/high_mi_multinormal.jpg" style="width:100.0%"></p>
-<figcaption>Sparse Normal</figcaption>
-</figure>
-</div>
-</div><div class="column" style="width:30%;">
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><img data-src="figures/Half-cube.jpg" style="width:100.0%"></p>
-<figcaption>Half-cube</figcaption>
-</figure>
-</div>
-</div><div class="column" style="width:30%;">
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><img data-src="figures/spiral.jpg" style="width:100.0%"></p>
-<figcaption>Spiral</figcaption>
-</figure>
-</div>
-</div></div>
-</section>
-<section id="experimental-results-cont." class="slide level2">
-<h2>Experimental Results (cont.)</h2>
-<p>Pass the self-consistency tests:</p>
-<div class="columns">
-<div class="column" style="width:33%;">
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><img data-src="figures/consistency.jpg" style="width:100.0%"></p>
-<figcaption>Baseline</figcaption>
-</figure>
-</div>
-</div><div class="column" style="width:33%;">
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><img data-src="figures/dataprocessing.jpg" style="width:100.0%"></p>
-<figcaption>Data Processing</figcaption>
-</figure>
-</div>
-</div><div class="column" style="width:33%;">
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><img data-src="figures/additivity.jpg" style="width:100.0%"></p>
-<figcaption>Additivity</figcaption>
-</figure>
-</div>
-</div></div>
-<p><img data-src="figures/consistency_tests.PNG" style="width:100.0%"></p>
-<p><img data-src="figures/minde_res.PNG" style="width:60.0%"></p>
 
 </section></section>
     </div>
