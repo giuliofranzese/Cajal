@@ -24,7 +24,7 @@ def load_pickle(path: str):
     with open(path, "rb") as f:
         return pickle.load(f)
 
-good_sessions = load_pickle(args.path)
+good_sessions = load_pickle("https://huggingface.co/buckets/mustabou/mybucket/resolve/good_sessions.pickle?download=true")
 
 class VBNDataset(Dataset):
     """Face Landmarks dataset."""
