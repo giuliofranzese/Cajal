@@ -1,0 +1,287 @@
+{
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "---\n",
+        "title: \"TENDE: Transfer Entropy Neural Data Estimator\"\n",
+        "author: \"Giulio Franzese\"\n",
+        "format:\n",
+        "  html:\n",
+        "    toc: true\n",
+        "    code-fold: true\n",
+        "    embed-resources: true\n",
+        "jupyter: python3\n",
+        "---\n",
+        "\n",
+        "\n",
+        "## Overview\n",
+        "\n",
+        "TENDE (Transfer Entropy Neural Data Estimator) provides a neural network-based framework for estimating transfer entropy — a measure of directed information flow between time series. This lecture covers the theory of transfer entropy, its connection to conditional mutual information, and practical neural estimation strategies for biological time series.\n",
+        "\n",
+        "## Theory\n",
+        "\n",
+        "### Transfer Entropy\n",
+        "\n",
+        "Transfer entropy from process $Y$ to process $X$ quantifies the reduction in uncertainty about the future of $X$ given knowledge of $Y$'s past, beyond what $X$'s own past already provides:\n",
+        "\n",
+        "$$TE_{Y \\to X}(\\tau) = I(X_{t+\\tau}; Y_{t}^{(k)} \\mid X_{t}^{(l)})$$\n",
+        "\n",
+        "where:\n",
+        "- $X_{t+\\tau}$: future state of $X$ at lag $\\tau$\n",
+        "- $Y_{t}^{(k)} = (Y_t, Y_{t-1}, \\ldots, Y_{t-k+1})$: $k$-step history of $Y$\n",
+        "- $X_{t}^{(l)} = (X_t, X_{t-1}, \\ldots, X_{t-l+1})$: $l$-step history of $X$\n",
+        "\n",
+        "### Connection to Conditional MI\n",
+        "\n",
+        "Transfer entropy is a conditional mutual information:\n",
+        "\n",
+        "$$TE_{Y \\to X} = I(X_{t+1}; Y_{\\leq t} \\mid X_{\\leq t})$$\n",
+        "\n",
+        "This makes it estimable via neural conditional MI estimators.\n",
+        "\n",
+        "### Asymmetry and Directionality\n",
+        "\n",
+        "Unlike mutual information, transfer entropy is asymmetric:\n",
+        "$$TE_{Y \\to X} \\neq TE_{X \\to Y}$$\n",
+        "\n",
+        "The difference $TE_{Y \\to X} - TE_{X \\to Y}$ characterizes the net direction of information flow.\n",
+        "\n",
+        "### Neural Estimation via TENDE\n",
+        "\n",
+        "TENDE parameterizes the conditional distribution $p(X_{t+\\tau} \\mid X_{t}^{(l)}, Y_{t}^{(k)})$ and $p(X_{t+\\tau} \\mid X_{t}^{(l)})$ using neural networks, and estimates TE as:\n",
+        "\n",
+        "$$TE_{Y \\to X} = \\mathbb{E}\\left[\\log \\frac{p_\\theta(X_{t+\\tau} \\mid X_{t}^{(l)}, Y_{t}^{(k)})}{p_\\phi(X_{t+\\tau} \\mid X_{t}^{(l)})}\\right]$$\n",
+        "\n",
+        "### Practical Considerations\n",
+        "\n",
+        "- **Lag selection**: choosing $\\tau$, $k$, $l$ requires domain knowledge or cross-validation\n",
+        "- **Non-stationarity**: biological time series are often non-stationary; windowed estimation helps\n",
+        "- **Sample size**: conditional estimators require more samples than marginal ones\n",
+        "\n",
+        "## Implementation\n"
+      ],
+      "id": "3be1e0a0"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "import torch\n",
+        "import torch.nn as nn\n",
+        "import numpy as np\n",
+        "import matplotlib.pyplot as plt"
+      ],
+      "id": "8837a690",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### Time Series Embedding\n"
+      ],
+      "id": "c8e9d49d"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "def embed_time_series(x, history_len):\n",
+        "    \"\"\"\n",
+        "    Create history embeddings from a time series.\n",
+        "\n",
+        "    Args:\n",
+        "        x: time series, shape (T,) or (T, d)\n",
+        "        history_len: number of past steps to include\n",
+        "\n",
+        "    Returns:\n",
+        "        embeddings: shape (T - history_len, history_len * d)\n",
+        "    \"\"\"\n",
+        "    if x.ndim == 1:\n",
+        "        x = x[:, None]\n",
+        "    T, d = x.shape\n",
+        "    embeddings = np.stack(\n",
+        "        [x[t : t + history_len].flatten() for t in range(T - history_len)],\n",
+        "        axis=0,\n",
+        "    )\n",
+        "    return embeddings"
+      ],
+      "id": "0dc1a815",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### Conditional Density Estimator\n"
+      ],
+      "id": "4e4fb4a5"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "class ConditionalDensityNetwork(nn.Module):\n",
+        "    \"\"\"\n",
+        "    Estimates log p(x_future | context) via a Gaussian head.\n",
+        "\n",
+        "    Args:\n",
+        "        context_dim: dimension of conditioning context\n",
+        "        target_dim: dimension of the future target variable\n",
+        "        hidden_dim: hidden layer size\n",
+        "    \"\"\"\n",
+        "\n",
+        "    def __init__(self, context_dim, target_dim, hidden_dim=128):\n",
+        "        super().__init__()\n",
+        "        self.encoder = nn.Sequential(\n",
+        "            nn.Linear(context_dim, hidden_dim), nn.ReLU(),\n",
+        "            nn.Linear(hidden_dim, hidden_dim), nn.ReLU(),\n",
+        "        )\n",
+        "        self.mu_head = nn.Linear(hidden_dim, target_dim)\n",
+        "        self.log_sigma_head = nn.Linear(hidden_dim, target_dim)\n",
+        "\n",
+        "    def log_prob(self, context, target):\n",
+        "        h = self.encoder(context)\n",
+        "        mu = self.mu_head(h)\n",
+        "        log_sigma = self.log_sigma_head(h).clamp(-5, 2)\n",
+        "        sigma = torch.exp(log_sigma)\n",
+        "        dist = torch.distributions.Normal(mu, sigma)\n",
+        "        return dist.log_prob(target).sum(-1)\n",
+        "\n",
+        "    def forward(self, context, target):\n",
+        "        return self.log_prob(context, target)"
+      ],
+      "id": "8684d85f",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### TENDE Estimator\n"
+      ],
+      "id": "a274981b"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "class TENDEEstimator:\n",
+        "    \"\"\"\n",
+        "    Transfer Entropy Neural Data Estimator.\n",
+        "\n",
+        "    Estimates TE_{Y->X}(tau) = I(X_{t+tau}; Y_history | X_history)\n",
+        "    \"\"\"\n",
+        "\n",
+        "    def __init__(self, x_history_dim, y_history_dim, target_dim, hidden_dim=128, lr=1e-3):\n",
+        "        full_context_dim = x_history_dim + y_history_dim\n",
+        "        self.full_model = ConditionalDensityNetwork(full_context_dim, target_dim, hidden_dim)\n",
+        "        self.reduced_model = ConditionalDensityNetwork(x_history_dim, target_dim, hidden_dim)\n",
+        "        self.optimizer = torch.optim.Adam(\n",
+        "            list(self.full_model.parameters()) + list(self.reduced_model.parameters()),\n",
+        "            lr=lr,\n",
+        "        )\n",
+        "\n",
+        "    def estimate(self, x_history, y_history, x_future):\n",
+        "        context_full = torch.cat([x_history, y_history], dim=-1)\n",
+        "        log_p_full = self.full_model.log_prob(context_full, x_future)\n",
+        "        log_p_reduced = self.reduced_model.log_prob(x_history, x_future)\n",
+        "        return (log_p_full - log_p_reduced).mean()\n",
+        "\n",
+        "    def train_step(self, x_history, y_history, x_future):\n",
+        "        self.optimizer.zero_grad()\n",
+        "        context_full = torch.cat([x_history, y_history], dim=-1)\n",
+        "        loss = (\n",
+        "            -self.full_model.log_prob(context_full, x_future).mean()\n",
+        "            - self.reduced_model.log_prob(x_history, x_future).mean()\n",
+        "        )\n",
+        "        loss.backward()\n",
+        "        self.optimizer.step()"
+      ],
+      "id": "caf01278",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Experiments\n",
+        "\n",
+        "### Coupled Ornstein-Uhlenbeck Process\n"
+      ],
+      "id": "613899ec"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "def simulate_coupled_ou(T=1000, coupling=0.3, dt=0.01, noise=0.1):\n",
+        "    \"\"\"\n",
+        "    Simulate coupled OU processes with unidirectional coupling Y -> X.\n",
+        "\n",
+        "    dX = -X dt + coupling * Y dt + noise * dW_X\n",
+        "    dY = -Y dt + noise * dW_Y\n",
+        "    \"\"\"\n",
+        "    X = np.zeros(T)\n",
+        "    Y = np.zeros(T)\n",
+        "    for t in range(1, T):\n",
+        "        X[t] = X[t-1] + dt * (-X[t-1] + coupling * Y[t-1]) + noise * np.sqrt(dt) * np.random.randn()\n",
+        "        Y[t] = Y[t-1] + dt * (-Y[t-1]) + noise * np.sqrt(dt) * np.random.randn()\n",
+        "    return X, Y\n",
+        "\n",
+        "X, Y = simulate_coupled_ou(coupling=0.5)\n",
+        "# TODO: estimate TE_{Y->X} and TE_{X->Y}, verify asymmetry"
+      ],
+      "id": "1cbdedec",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### Biological Time Series\n"
+      ],
+      "id": "30da767f"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "# TODO: apply TENDE to calcium imaging or gene expression time series\n",
+        "# to infer directed functional connectivity\n",
+        "pass"
+      ],
+      "id": "912a0a77",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## References\n",
+        "\n",
+        "- Schreiber (2000). Measuring Information Transfer.\n",
+        "- Bossomaier et al. (2016). An Introduction to Transfer Entropy.\n",
+        "- Franzese et al. (2024). TENDE."
+      ],
+      "id": "51cceb57"
+    }
+  ],
+  "metadata": {
+    "kernelspec": {
+      "display_name": "Python 3",
+      "language": "python",
+      "name": "python3"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 5
+}

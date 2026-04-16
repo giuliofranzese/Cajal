@@ -6,25 +6,42 @@ Contributors: WANG Chao, NEPOTE Luca, FRANZESE Giulio, MICHIARDI Pietro
 
 ## Setup
 
-### Create the conda environment
+### Create the conda environment (skip if you run the notebooks in colab)
 
 ```bash
 conda env create -f requirement.yaml
 conda activate fkl_muon
 ```
 
-## Notebooks
+## Notebooks (Colab)
+
+Tutorial notebooks with pretrained checkpoints are in `code/notebooks/`. Each one loads the checkpoint, compute the FKL estimation, and analyize the results.
+
+| Notebook | Dataset | Config | Data dir | Grid (M) | Dims (D) |
+|---|---|---|---|---|---|
+| `tutorial_gm_pretrained.ipynb` | Gaussian Mixture | `configs/gm.yaml` | `data/GM/` | 128 | 1 |
+| `tutorial_eb_pretrained.ipynb` | Embryoid Body | `configs/eb.yaml` | `data/EB/` | 101 | 5 |
+| `tutorial_hesc_pretrained.ipynb` | human Embryonic Stem Cell | `configs/hesc.yaml` | `data/HESC/` | 121 | 5 |
+
+**GM** compares two Gaussian Measures (A vs B).
+**EB and hESC** compare a reference method (`sbirr`) against five alternatives (`vsb`, `msbm`, `mfl`, `am`, `tigon`).
+
+To run them, open the corresponding noteboook in google colab, activate runtime with T4 gpu and follow the instructions.
+
+## Notebooks (end to end training)
 
 Tutorial notebooks are in `code/notebooks/`. Each one runs a full experiment end-to-end: visualization, training, KL estimation, and result inspection.
 
 | Notebook | Dataset | Config | Data dir | Grid (M) | Dims (D) |
 |---|---|---|---|---|---|
+| `tutorial_gm.ipynb` | Gaussian Mixture | `configs/gm.yaml` | `data/GM/` | 128 | 1 |
 | `tutorial_eb.ipynb` | Embryoid Body | `configs/eb.yaml` | `data/EB/` | 101 | 5 |
 | `tutorial_hesc.ipynb` | human Embryonic Stem Cell | `configs/hesc.yaml` | `data/HESC/` | 121 | 5 |
-| `tutorial_gm.ipynb` | Gaussian Mixture | `configs/gm.yaml` | `data/GM/` | 128 | 1 |
 
+**GM** compares two Gaussian Measures (A vs B).
 **EB and hESC** compare a reference method (`sbirr`) against five alternatives (`vsb`, `msbm`, `mfl`, `am`, `tigon`).
-**GM** compares two distributions (A vs B).
+
+To run them, open VSC and create the conda environment as specified above. You need to have access to GPUs to run end to end the method.
 
 ### Running a notebook
 
