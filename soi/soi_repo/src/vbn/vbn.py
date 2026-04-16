@@ -4,6 +4,13 @@ import torch
 from torch.utils.data import Dataset
 
 
+import os
+import pickle
+import torch
+from torch.utils.data import Dataset
+import urllib
+import io
+
 def read_session(session_id,path):
     file_path = os.path.join(path,str(session_id)) 
     file_path = os.path.join(file_path,'all_reg.pickle') 
@@ -12,11 +19,6 @@ def read_session(session_id,path):
     return b 
 
 
-step = 50
-size_bin = int(50/step)
-
-structures=  ['VISp', 'VISl', 'VISal']
-
 def load_pickle(path: str):
     if path.startswith(("http://", "https://")):
         with urllib.request.urlopen(path) as r:
@@ -24,8 +26,14 @@ def load_pickle(path: str):
     with open(path, "rb") as f:
         return pickle.load(f)
 
-good_sessions = load_pickle("https://huggingface.co/buckets/mustabou/mybucket/resolve/good_sessions.pickle?download=true")
 
+step = 50
+size_bin = int(50/step)
+
+structures=  ['VISp', 'VISl', 'VISal']
+
+
+good_sessions = load_pickle("https://huggingface.co/buckets/mustabou/mybucket/resolve/good_sessions.pickle?download=true")
 class VBNDataset(Dataset):
     """Face Landmarks dataset."""
 
