@@ -785,11 +785,11 @@ def get_noise_amp(x1_time_mean0, amp_way=None ):
         assert knrm.shape == spectrum_amplitudes.shape
         if amp_way == '*knrm':
             new_spectrum *=   knrm   #  * torch.tensor((       np.sqrt(knrm))).float()
-        elif amp_way == '*knrm_1d5': # for fucking AM on Repre
+        elif amp_way == '*knrm_1d5': 
             new_spectrum *=   (knrm.pow(1.5))
-        elif amp_way == '*knrm_2': # for fucking AM on Repre
+        elif amp_way == '*knrm_2': 
             new_spectrum *=   (knrm.pow(2))
-        elif amp_way == '*knrm_0.5': # for Petal which TI are similar
+        elif amp_way == '*knrm_0.5': 
             new_spectrum *=   (knrm.pow(0.5))
         elif amp_way == None: 
             new_spectrum = new_spectrum
@@ -811,79 +811,6 @@ def get_noise_amp(x1_time_mean0, amp_way=None ):
     assert noise_amp.shape[-1] == C
     return noise_amp
 
-
-
-
-# class noise_x0_class:
-#     def __init__(self, 
-#                  x1_time_mean0, 
-#                  noise_amp=None, 
-#                  white_noise = False, 
-#                  amp_way  =None,
-#                  ):
-
-#         B, N, C = x1_time_mean0.shape 
-#         self.N = N
-#         self.C = C
-
-#         self.device = "cuda:0" # x1_time_mean0.device
-#         self.dtype  = x1_time_mean0.dtype
-
-
-  
-#         if noise_amp is not None:
-#             print('use pre_saved noise_amp')
-#             self.noise_amp  = noise_amp 
-#         else:
-#             print('compute noise_amp now based on current x1_time_mean0')
-#             self.noise_amp = get_noise_amp(x1_time_mean0, amp_way = amp_way)
-        
-#         self.noise_amp = self.noise_amp.to(device = self.device, dtype = self.dtype)
-
-#         if  white_noise: # white noise,                        with amplitude = data_mode0's amplitude
-#             self.noise_amp = torch.ones_like(self.noise_amp) # * self.noise_amp[0:1, :] TODO
- 
-
-#         self.white_noise = white_noise
-
-
-#         self.lam_k = self.noise_amp **2
-#         self.Phi = None  
-
-        
-        
-
-#     def sample(self, n_samples, return_hat = False, upsample=1):
-#         B = n_samples
-#         N = self.N  
-#         C = self.C  
-
-
-#         # Complex Gaussian noise with E|z|^2 = 1
-#         noise = (     torch.randn(B, self.noise_amp.numel(), device=self.device, dtype=self.dtype) +
-#                 1j *  torch.randn(B, self.noise_amp.numel(), device=self.device, dtype=self.dtype)) / math.sqrt(2)
-#         # DC (and Nyquist if even N) must be real for irfft
-#         noise[:, 0] = torch.randn(B, device=self.device, dtype=self.dtype)
-#         if N % 2 == 0:
-#             noise[:, -1] = torch.randn(B, device=self.device, dtype=self.dtype)
-#         noise = noise.view(B, -1, C)  # (B, N//2+1, C)
-
-#         # print(noise.shape, self.noise_amp.shape) # torch.Size([50000, 195]) torch.Size([65, 3])
-
-#         Y = self.noise_amp * noise
-
-#         z0 = torch.fft.irfft(Y, n=N, dim=1, norm="ortho") 
-
-
-#         # print(z0.mean(), z0.std()) # tensor(1.1584e-05, device='cuda:0') tensor(0.9996, device='cuda:0')
-        
-
-#         if not return_hat:
-#             return z0
-#         else:
-#             return Y, z0
-        
-    
 
 
 class noise_x0_class:
@@ -942,7 +869,7 @@ class noise_x0_class:
             print(f'  full spectrum sum={lam_k_full.sum().item():.4f}, target={sigma2_K*M:.4f}')
 
         elif noise_type == 'empirical_decay':
-            # ------- Empirical low modes + power-law tail -------
+            # Empirical low modes + power-law tail
             if noise_params is None:
                 noise_params = {}
             n_empirical = noise_params.get('n_empirical', 32)
@@ -971,7 +898,7 @@ class noise_x0_class:
             print(f'  trace (sum lam_k) = {lam_hybrid.sum().item():.4f}')
 
         else:
-            # ------- Original data-driven noise -------
+            # Original data-driven noise
             if noise_amp is not None:
                 print('use pre_saved noise_amp')
                 self.noise_amp  = noise_amp 

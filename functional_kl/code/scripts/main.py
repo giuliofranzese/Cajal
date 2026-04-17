@@ -35,7 +35,7 @@ sys.path.append('../')
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import TensorDataset, DataLoader
-os.environ.setdefault("CUDA_VISIBLE_DEVICES", "6")# Set default GPU for data generation (can be overridden by individual scripts)
+os.environ.setdefault("CUDA_VISIBLE_DEVICES", "0")# Set default GPU for data generation (can be overridden by individual scripts)
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 

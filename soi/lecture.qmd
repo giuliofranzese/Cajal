@@ -1,0 +1,317 @@
+---
+title: 'S$\Omega$I: Score-based O-Information Estimation'
+author:
+  - name: Mustapha Bounoua
+    affiliations:
+      - EURECOM
+      - Ampere Software Technology, France
+  - name: Giulio Franzese
+    affiliations:
+      - EURECOM
+  - name: Pietro Michiardi
+    affiliations:
+      - EURECOM
+format:
+  revealjs:
+    theme: default
+    slide-number: true
+    scrollable: true
+    smaller: true
+    controls: true
+    transition: slide
+    html-math-method: mathjax
+bibliography: bibfile.bib
+---
+
+```{=html}
+<script>
+MathJax = {
+  tex: {
+    macros: {
+      cT:    "\\mathcal{T}",
+      cD:    "\\mathcal{D}",
+      cI:    "\\mathcal{I}",
+      norm:  ["\\left\\|#1\\right\\|", 1],
+      E:     "\\mathbb{E}",
+      indep: "\\perp\\!\\!\\!\\perp"
+    }
+  }
+};
+</script>
+```
+
+## Introduction
+
+- Complex systems are often described by **multivariate** information
+- Understanding the **relationships** among multiple random variables is crucial
+
+::::: columns
+::: {.column width="45%"}
+![Brain regions](assets/brain.png){width="70%"}
+:::
+
+::: {.column width="45%"}
+![Sensors](assets/car.png){width="80%"}
+:::
+:::::
+
+*How do the system components interact?*
+
+------------------------------------------------------------------------
+
+## Extensions of Shannon Mutual Information
+
+- Shannon Mutual information: $\mathcal{I}(X^1; X^2)$
+- Not interpretable for large systems $N>3$
+
+::::: columns
+::: {.column width="45%"}
+**PID** [@williams2010nonnegative]:
+
+- Requires a partition into sources and target
+- Not scalable
+:::
+
+::: {.column width="45%"}
+**O-information** [@Rosas2019QuantifyingHI]:
+
+- No partition needed
+- Scalable
+:::
+:::::
+
+. . .
+
+> *SOTA is limited to discrete or Gaussian distributions*
+
+- S$\Omega$I estimates O-information **without restrictions** on data type or **number** of variables
+
+------------------------------------------------------------------------
+
+## Multivariate Interactions
+
+::::: columns
+::: {.column width="45%"}
+***Redundancy***: The **shared** information between variables, recoverable from subsets
+:::
+
+::: {.column width="45%"}
+***Synergy***: Information arising from **jointly** observing all variables, inaccessible from individuals
+:::
+:::::
+
+![](assets/figures/venn.png){width="90%"}
+
+------------------------------------------------------------------------
+
+## High Dimensional Interaction Measures
+
+Let $X = \{X^1,\dots,X^N\}$, $X^{>i} = \{X^{i+1},\dots,X^N\}$, $X^{\setminus i} = X \setminus \{X^i\}$.
+
+**Total correlation:** $$\mathcal{T}(X) = \sum_{i=1}^{N} \mathcal{I}(X^i;\, X^{>i})$$ How much information $X^i$ **shares** with $X^{>i}$ — suggests *redundancy*
+
+**Dual total correlation:** $$\mathcal{D}(X) = \sum_{i=1}^{N} \mathcal{I}(X^i;\, X^{\setminus i} \mid X^{<i})$$ How much **additional** information $X^i$ carries — suggests *synergy*
+
+------------------------------------------------------------------------
+
+## O-Information
+
+$$\boxed{\Omega(X) = \mathcal{T}(X) - \mathcal{D}(X)} \qquad
+\begin{cases} \Omega(X)>0 & \text{Redundancy} \\ \Omega(X)<0 & \text{Synergy} \end{cases}$$
+
+::::: columns
+::: {.column width="65%"}
+**Gradient of O-information** [@Scagliarini23]: $$\boxed{\partial_i \Omega(X) = \Omega(X) - \Omega(X^{\setminus i})}$$ Captures the individual influence of each variable
+:::
+
+::: {.column width="32%"}
+:::
+:::::
+
+- Hard to estimate: **high dimensional** with arbitrary data **distribution**
+
+------------------------------------------------------------------------
+
+## Score-based KL Divergence Estimation
+
+Let ${\color{red}X_t} = {\color{green}X} + \sqrt{2t}\,{\color{red}W}$, $t\in[0,\infty)$. Using [@minde]:
+
+$$\mathrm{KL}(p \| q) = \int p(x)\log\frac{p(x)}{q(x)}\,\mathrm{d}x
+= \int p_t(x)\,\underbrace{\|\nabla\log p_t(x) - \nabla\log q_t(x)\|^2}_{\text{Difference of score functions}}\,\mathrm{d}x\,\mathrm{d}t$$
+
+- Learn $\nabla\log p_t(\cdot)$ by denoising ${\color{red}X_t}$: $$\nabla\log p_t(x) = \frac{1}{2t}\Bigl(\underbrace{\mathbb{E}[X\mid{\color{red}X_t}]}_{\text{Denoiser}} - {\color{green}x}\Bigr)$$
+
+------------------------------------------------------------------------
+
+## Score-based O-Information Estimation — TC
+
+$$\mathcal{T}(X) = \mathrm{KL}\!\left(p(x)\,\Big\|\,\prod_{i=1}^N p(x^i)\right)
+= \int \frac{1}{4t^2}\,\mathbb{E}\left\|
+\mathbb{E}[X\mid{\color{red}X_t}] - \begin{bmatrix}\mathbb{E}[X^i\mid{\color{red}X^i_t}]\end{bmatrix}_{i=1}^N
+\right\|^2\mathrm{d}t$$
+
+- Compare denoiser output: all variables **together** (*Joint*) vs **separately** (*Marginals*)
+
+------------------------------------------------------------------------
+
+## Score-based O-Information Estimation — DTC
+
+$$\mathcal{D}(X) = \int \frac{1}{4t^2}\,\mathbb{E}\left\|
+\mathbb{E}[X\mid{\color{red}X_t}] -
+\left[\mathbb{E}\!\left[X^i\mid{\color{red}X^i_t},\,{\color{green}X^{\setminus i}}\right]\right]_{i=1}^N
+\right\|^2\mathrm{d}t$$
+
+- Compare joint denoising vs individual denoising **conditioned** on remaining clean variables (*Conditionals*)
+
+$$\Omega(X) = \mathcal{T}(X) - \mathcal{D}(X)$$
+
+------------------------------------------------------------------------
+
+## Amortized Approach — Single Network
+
+![Architecture](assets/archi.png){fig-align="center" width="70%"}
+
+| Mode | Forward pass |
+|------------------------------------|------------------------------------|
+| **Joint** | $\epsilon_\theta([{\color{red}X_t^1,\dots,X_t^N}],\,t)$ |
+| **Conditional** | $\epsilon_\theta([{\color{green}X^1,..,}{\color{red}X_t^i}{\color{green},..,X^N}],\,t)$ |
+| **Marginal** | $\epsilon_\theta({\color{red}X_t^i},\,t)$ |
+
+$$\hat\Omega(X) =
+\underbrace{\frac{1}{4t^2}\left\|\epsilon(X_t)-[\epsilon(X_t^i)]_{i=1}^N\right\|^2}_{\hat{\mathcal{T}}(X)}
+-
+\underbrace{\frac{1}{4t^2}\left\|\epsilon(X_t)-[\epsilon(X_t^i\mid X^{\setminus i})]_{i=1}^N\right\|^2}_{\hat{\mathcal{D}}(X)}$$
+
+------------------------------------------------------------------------
+
+## Experimental Validation
+
+**Synthetic benchmark:**
+
+- Multivariate Gaussian with/without transformation
+- Redundancy, synergy, or a mix of both
+- Varying number of variables, per-variable dimension, and interaction strength
+
+**Baseline:** MI neural estimators
+
+**Implementation:**
+
+- *MLP* with skip connections — sufficient for simple settings
+- *Transformer* — needed for gradient of O-information
+
+**S**$\Omega$I efficiently estimates O-information across all challenging settings
+
+------------------------------------------------------------------------
+
+## Synthetic Benchmarks — $\Omega(X)$
+
+:::::: columns
+::: {.column width="42%"}
+**Redundancy:**\
+$R \sim \mathcal{N}(0,\mathbf{I})$
+
+$$X = \{R + \varepsilon_i\}_{i=1}^N,\quad \varepsilon_i \sim \mathcal{N}(0,\sigma\mathbf{I})$$
+
+**Synergy:**\
+$S \sim \mathcal{N}(0,\mathbf{I})$
+
+$$X^1 \sim \mathcal{N}(0,\mathbf{I}),\; X^2 = X^1+S,\; X^3 = S+\varepsilon$$
+
+$\varepsilon \sim \mathcal{N}(0,\sigma)$, $\;X^1 \perp X^3$
+:::
+
+:::: {.column width="55%"}
+![](assets/figures/exp_red/legend.PNG){width="65%" fig-align="center"}
+
+![](assets/figures/exp_red/plot_red_0_dim_20.jpg){width="65%" fig-align="center"}
+
+![](assets/figures/exp_red/plot_syn_0_dim_20.jpg){width="65%" fig-align="center"}
+
+::: {style="font-size:0.75em;text-align:center;color:#555;margin-top:0.3em;"}
+10 variables, dim=20. **Top:** Redundancy. **Bottom:** Synergy.
+:::
+::::
+::::::
+
+------------------------------------------------------------------------
+
+## Synthetic Benchmarks — $\partial\Omega(X)$
+
+::::: columns
+::: {.column width="48%"}
+![](assets/figures/grad/grad_tx_setting_0_dim_20.png){width="100%"}
+
+```{=html}
+<p style="text-align:center;font-size:0.8em;color:#555;margin-top:0.3em;">
+  6-variable mixed system
+  <span style="color:#4a90d9;">&#9632;</span> redundancy &nbsp;
+  <span style="color:#e07b3a;">&#9632;</span> synergy
+</p>
+```
+:::
+
+::: {.column width="48%"}
+![](assets/figures/grad/grad_tx_setting_1_dim_20.png){width="100%"}
+
+```{=html}
+<p style="text-align:center;font-size:0.8em;color:#555;margin-top:0.3em;">
+  10-variable mixed system
+  <span style="color:#4a90d9;">&#9632;</span> redundancy &nbsp;
+  <span style="color:#e07b3a;">&#9632;</span> synergy
+</p>
+```
+:::
+:::::
+
+::: {style="font-size:0.75em;color:#666;margin-top:0.8em;"}
+*Results with transformer-based architecture.*
+:::
+
+------------------------------------------------------------------------
+
+## O-Information in the Mice Brain [@venkatesh2024gaussian]
+
+::::: columns
+::: {.column width="42%"}
+![](assets/figures/vbn.png)
+
+Visual Behaviour Neuropixels (VBN). Spike recordings from 6 mouse brain regions. S$\Omega$I estimates O-information per 50 ms bin after stimulus flash.
+:::
+
+::: {.column width="55%"}
+![6 brain regions](assets/figures/vbn/new_vbn_setting_6_dim_25.png){width="90%"}
+
+Higher **redundant** information in visual cortex is transmitted after a flash with a new scene
+:::
+:::::
+
+------------------------------------------------------------------------
+
+## Conclusion
+
+- S$\Omega$I captures multivariate interactions for **any data distribution** and **large number of variables** — no restriction to discrete or Gaussian
+
+- The only required ingredient is **the score function** — extends to images, audio, fMRI, multimodal data, etc.
+
+- S$\Omega$I opens the door to many **scientific applications** *(open for collaboration!)*
+
+::: {style="text-align:right;margin-top:1.5em;"}
+[![Project repo](assets/qrcode.png){width="12%"}](https://mustaphabounoua.github.io/soi_o_inf/)\
+[mustaphabounoua.github.io/soi_o_inf](https://mustaphabounoua.github.io/soi_o_inf/)
+:::
+
+------------------------------------------------------------------------
+
+##  {.center}
+
+::: {style="text-align:center;font-size:2.2em;font-weight:bold;margin-top:1.5em;"}
+Thank you!
+:::
+
+::: {style="text-align:center;margin-top:2.5em;"}
+:::
+
+## References {.unnumbered}
+
+::: {#refs}
+:::

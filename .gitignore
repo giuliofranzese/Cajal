@@ -1,3 +1,11 @@
 # Ignore quickstart helper directory
 quickstart/
 
+.venv/
+
+# Editor / OS artifacts
+.vscode/
+.DS_Store
+__MACOSX/
+._*
+*.pth

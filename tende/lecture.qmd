@@ -1,194 +1,227 @@
 ---
 title: "TENDE: Transfer Entropy Neural Data Estimator"
-author: "Giulio Franzese"
+author: "**Giulio Franzese** — Eurecom, Data Science Department"
+date: ""
 format:
-  html:
-    toc: true
-    code-fold: true
-    embed-resources: true
-jupyter: python3
+  revealjs:
+    theme: default
+    slide-number: true
+    scrollable: true
+    smaller: true
+    fig-align: center
+    transition: slide
+    controls: true
+    html-math-method:
+      method: mathjax
+      url: "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js"
+execute:
+  eval: false
+  echo: true
 ---
 
 ## Overview
 
-TENDE (Transfer Entropy Neural Data Estimator) provides a neural network-based framework for estimating transfer entropy — a measure of directed information flow between time series. This lecture covers the theory of transfer entropy, its connection to conditional mutual information, and practical neural estimation strategies for biological time series.
+**TENDE** (Transfer Entropy Neural Data Estimator) quantifies **directed information flow** between time series using neural conditional density estimators.
 
-## Theory
+:::: {.columns}
+::: {.column width="50%"}
+**Transfer Entropy (TE)**
 
-### Transfer Entropy
+$$TE_{Y \to X}(\tau) = I(X_{t+\tau}; Y_t^{(k)} \mid X_t^{(l)})$$
 
-Transfer entropy from process $Y$ to process $X$ quantifies the reduction in uncertainty about the future of $X$ given knowledge of $Y$'s past, beyond what $X$'s own past already provides:
+Measures how much knowing $Y$'s past reduces uncertainty about $X$'s future, *beyond* what $X$'s own past provides.
+:::
+::: {.column width="50%"}
+**Biological applications**
 
-$$TE_{Y \to X}(\tau) = I(X_{t+\tau}; Y_{t}^{(k)} \mid X_{t}^{(l)})$$
+- Neural circuit connectivity
+- Gene regulatory networks
+- Cell signaling cascades
+- Calcium imaging
+:::
+::::
 
-where:
-- $X_{t+\tau}$: future state of $X$ at lag $\tau$
-- $Y_{t}^{(k)} = (Y_t, Y_{t-1}, \ldots, Y_{t-k+1})$: $k$-step history of $Y$
-- $X_{t}^{(l)} = (X_t, X_{t-1}, \ldots, X_{t-l+1})$: $l$-step history of $X$
+---
 
-### Connection to Conditional MI
+## Why Transfer Entropy?
 
-Transfer entropy is a conditional mutual information:
+**Standard MI is symmetric:** $I(X;Y) = I(Y;X)$ — cannot detect direction.
 
-$$TE_{Y \to X} = I(X_{t+1}; Y_{\leq t} \mid X_{\leq t})$$
+**Transfer entropy is asymmetric:**
 
-This makes it estimable via neural conditional MI estimators.
-
-### Asymmetry and Directionality
-
-Unlike mutual information, transfer entropy is asymmetric:
 $$TE_{Y \to X} \neq TE_{X \to Y}$$
 
-The difference $TE_{Y \to X} - TE_{X \to Y}$ characterizes the net direction of information flow.
+The **net information flow** from $Y$ to $X$:
 
-### Neural Estimation via TENDE
+$$\Delta TE = TE_{Y \to X} - TE_{X \to Y}$$
 
-TENDE parameterizes the conditional distribution $p(X_{t+\tau} \mid X_{t}^{(l)}, Y_{t}^{(k)})$ and $p(X_{t+\tau} \mid X_{t}^{(l)})$ using neural networks, and estimates TE as:
+- $\Delta TE > 0$: net flow $Y \to X$ (Y drives X)
+- $\Delta TE < 0$: net flow $X \to Y$ (X drives Y)
+- $\Delta TE \approx 0$: bidirectional / no coupling
 
-$$TE_{Y \to X} = \mathbb{E}\left[\log \frac{p_\theta(X_{t+\tau} \mid X_{t}^{(l)}, Y_{t}^{(k)})}{p_\phi(X_{t+\tau} \mid X_{t}^{(l)})}\right]$$
+---
 
-### Practical Considerations
+## TE as Conditional MI
 
-- **Lag selection**: choosing $\tau$, $k$, $l$ requires domain knowledge or cross-validation
-- **Non-stationarity**: biological time series are often non-stationary; windowed estimation helps
-- **Sample size**: conditional estimators require more samples than marginal ones
+$$TE_{Y \to X}(\tau) = I(X_{t+\tau}; Y_t^{(k)} \mid X_t^{(l)})$$
 
-## Implementation
+Expanding:
 
-```{python}
-import torch
-import torch.nn as nn
-import numpy as np
-import matplotlib.pyplot as plt
-```
+$$= H(X_{t+\tau} \mid X_t^{(l)}) - H(X_{t+\tau} \mid X_t^{(l)}, Y_t^{(k)})$$
 
-### Time Series Embedding
+Or equivalently (using log density ratios):
 
-```{python}
-def embed_time_series(x, history_len):
-    """
-    Create history embeddings from a time series.
+$$= \mathbb{E}\left[\log \frac{p(X_{t+\tau} \mid X_t^{(l)}, Y_t^{(k)})}{p(X_{t+\tau} \mid X_t^{(l)})}\right]$$
 
-    Args:
-        x: time series, shape (T,) or (T, d)
-        history_len: number of past steps to include
+This is a KL divergence between two conditional distributions — estimable with neural networks!
 
-    Returns:
-        embeddings: shape (T - history_len, history_len * d)
-    """
-    if x.ndim == 1:
-        x = x[:, None]
-    T, d = x.shape
-    embeddings = np.stack(
-        [x[t : t + history_len].flatten() for t in range(T - history_len)],
-        axis=0,
+---
+
+## Time Series Embedding
+
+Given discrete-time series $\{X_t\}$ and $\{Y_t\}$:
+
+```python
+def embed_series(x, history_len, tau=1):
+    """Embed time series into (history, future) pairs."""
+    T = len(x)
+    history = np.stack(
+        [x[t:t+history_len] for t in range(T - history_len - tau + 1)]
     )
-    return embeddings
+    future = x[history_len + tau - 1 : T - tau + history_len - tau + 1]
+    return history, future
+
+# Usage
+k, l, tau = 5, 5, 1
+x_hist, x_fut = embed_series(X, l, tau)
+y_hist, _     = embed_series(Y, k, tau)
 ```
 
-### Conditional Density Estimator
+**Lag selection:** domain knowledge, Takens' theorem, or cross-validation.
 
-```{python}
-class ConditionalDensityNetwork(nn.Module):
-    """
-    Estimates log p(x_future | context) via a Gaussian head.
+---
 
-    Args:
-        context_dim: dimension of conditioning context
-        target_dim: dimension of the future target variable
-        hidden_dim: hidden layer size
-    """
+## Neural Conditional Density Estimation
 
-    def __init__(self, context_dim, target_dim, hidden_dim=128):
+TENDE fits two conditional models:
+
+**Full model:** $p_\theta(X_{t+\tau} \mid X_t^{(l)}, Y_t^{(k)})$
+
+**Reduced model:** $p_\phi(X_{t+\tau} \mid X_t^{(l)})$
+
+```python
+class ConditionalGaussianNet(nn.Module):
+    def __init__(self, context_dim, target_dim, hidden=128):
         super().__init__()
-        self.encoder = nn.Sequential(
-            nn.Linear(context_dim, hidden_dim), nn.ReLU(),
-            nn.Linear(hidden_dim, hidden_dim), nn.ReLU(),
+        self.enc  = nn.Sequential(
+            nn.Linear(context_dim, hidden), nn.ReLU(),
+            nn.Linear(hidden, hidden), nn.ReLU()
         )
-        self.mu_head = nn.Linear(hidden_dim, target_dim)
-        self.log_sigma_head = nn.Linear(hidden_dim, target_dim)
+        self.mu_head    = nn.Linear(hidden, target_dim)
+        self.lsig_head  = nn.Linear(hidden, target_dim)
 
     def log_prob(self, context, target):
-        h = self.encoder(context)
-        mu = self.mu_head(h)
-        log_sigma = self.log_sigma_head(h).clamp(-5, 2)
-        sigma = torch.exp(log_sigma)
-        dist = torch.distributions.Normal(mu, sigma)
-        return dist.log_prob(target).sum(-1)
-
-    def forward(self, context, target):
-        return self.log_prob(context, target)
+        h = self.enc(context)
+        mu, lsig = self.mu_head(h), self.lsig_head(h).clamp(-5, 2)
+        return Normal(mu, lsig.exp()).log_prob(target).sum(-1)
 ```
 
-### TENDE Estimator
+---
 
-```{python}
-class TENDEEstimator:
-    """
-    Transfer Entropy Neural Data Estimator.
+## TENDE Estimator
 
-    Estimates TE_{Y->X}(tau) = I(X_{t+tau}; Y_history | X_history)
-    """
+```python
+class TENDE:
+    def __init__(self, x_hist_dim, y_hist_dim, x_dim, hidden=128):
+        full_dim    = x_hist_dim + y_hist_dim
+        self.full   = ConditionalGaussianNet(full_dim, x_dim, hidden)
+        self.reduced= ConditionalGaussianNet(x_hist_dim, x_dim, hidden)
+        self.opt    = Adam(list(self.full.parameters()) +
+                           list(self.reduced.parameters()))
 
-    def __init__(self, x_history_dim, y_history_dim, target_dim, hidden_dim=128, lr=1e-3):
-        full_context_dim = x_history_dim + y_history_dim
-        self.full_model = ConditionalDensityNetwork(full_context_dim, target_dim, hidden_dim)
-        self.reduced_model = ConditionalDensityNetwork(x_history_dim, target_dim, hidden_dim)
-        self.optimizer = torch.optim.Adam(
-            list(self.full_model.parameters()) + list(self.reduced_model.parameters()),
-            lr=lr,
-        )
+    def estimate_te(self, x_hist, y_hist, x_fut):
+        ctx_full = torch.cat([x_hist, y_hist], dim=-1)
+        lp_full  = self.full.log_prob(ctx_full, x_fut)
+        lp_red   = self.reduced.log_prob(x_hist,  x_fut)
+        return (lp_full - lp_red).mean()
 
-    def estimate(self, x_history, y_history, x_future):
-        context_full = torch.cat([x_history, y_history], dim=-1)
-        log_p_full = self.full_model.log_prob(context_full, x_future)
-        log_p_reduced = self.reduced_model.log_prob(x_history, x_future)
-        return (log_p_full - log_p_reduced).mean()
-
-    def train_step(self, x_history, y_history, x_future):
-        self.optimizer.zero_grad()
-        context_full = torch.cat([x_history, y_history], dim=-1)
-        loss = (
-            -self.full_model.log_prob(context_full, x_future).mean()
-            - self.reduced_model.log_prob(x_history, x_future).mean()
-        )
-        loss.backward()
-        self.optimizer.step()
+    def train_step(self, x_hist, y_hist, x_fut):
+        ctx_full = torch.cat([x_hist, y_hist], dim=-1)
+        loss = (-self.full.log_prob(ctx_full, x_fut).mean()
+                -self.reduced.log_prob(x_hist, x_fut).mean())
+        self.opt.zero_grad(); loss.backward(); self.opt.step()
 ```
 
-## Experiments
+---
 
-### Coupled Ornstein-Uhlenbeck Process
+## Benchmark: Coupled Ornstein-Uhlenbeck
 
-```{python}
-def simulate_coupled_ou(T=1000, coupling=0.3, dt=0.01, noise=0.1):
-    """
-    Simulate coupled OU processes with unidirectional coupling Y -> X.
+**Model with known ground-truth TE:**
 
-    dX = -X dt + coupling * Y dt + noise * dW_X
-    dY = -Y dt + noise * dW_Y
-    """
-    X = np.zeros(T)
-    Y = np.zeros(T)
+$$dX_t = -X_t\,dt + c\, Y_t\,dt + \sigma\,dW^X_t$$
+$$dY_t = -Y_t\,dt + \sigma\,dW^Y_t$$
+
+Only $Y \to X$ coupling (via $c$). Analytical TE:
+
+$$TE_{Y \to X} \propto c^2, \quad TE_{X \to Y} = 0$$
+
+```python
+def simulate_ou(T=2000, c=0.5, dt=0.01, sigma=0.1):
+    X, Y = np.zeros(T), np.zeros(T)
     for t in range(1, T):
-        X[t] = X[t-1] + dt * (-X[t-1] + coupling * Y[t-1]) + noise * np.sqrt(dt) * np.random.randn()
-        Y[t] = Y[t-1] + dt * (-Y[t-1]) + noise * np.sqrt(dt) * np.random.randn()
+        X[t] = X[t-1] + dt*(-X[t-1] + c*Y[t-1]) + sigma*np.sqrt(dt)*randn()
+        Y[t] = Y[t-1] + dt*(-Y[t-1])             + sigma*np.sqrt(dt)*randn()
     return X, Y
-
-X, Y = simulate_coupled_ou(coupling=0.5)
-# TODO: estimate TE_{Y->X} and TE_{X->Y}, verify asymmetry
 ```
 
-### Biological Time Series
+---
 
-```{python}
-# TODO: apply TENDE to calcium imaging or gene expression time series
-# to infer directed functional connectivity
-pass
+## Lag Sensitivity
+
+**TE as a function of lag $\tau$:**
+
+- Peak TE at $\tau^*$ indicates the dominant **information transmission delay**
+- Relevant for: synaptic delays (ms), gene regulation (hours), ecological cycles (seasons)
+
+```python
+lags = range(1, 20)
+te_yx = [tende.estimate_te_at_lag(X, Y, tau) for tau in lags]
+te_xy = [tende.estimate_te_at_lag(Y, X, tau) for tau in lags]
+
+plt.plot(lags, te_yx, label=r'$TE_{Y\to X}$')
+plt.plot(lags, te_xy, label=r'$TE_{X\to Y}$')
+plt.xlabel('Lag $\\tau$'); plt.ylabel('TE (nats)')
+plt.legend()
 ```
 
-## References
+---
 
-- Schreiber (2000). Measuring Information Transfer.
-- Bossomaier et al. (2016). An Introduction to Transfer Entropy.
-- Franzese et al. (2024). TENDE.
+## Application: Gene Regulatory Networks
+
+**Data:** scRNA-seq time course (cells sampled at $t = 0, 2, 4, 8, 24$ h after stimulation)
+
+**Pipeline:**
+
+1. Embed each gene's expression profile as a time series
+2. Estimate pairwise $TE_{i \to j}$ for all gene pairs $(i, j)$
+3. Threshold to infer directed regulatory edges
+4. Compare to known gold-standard networks
+
+. . .
+
+**Practical note:** With $n$ genes, this is $\mathcal{O}(n^2)$ estimations — parallelize!
+
+---
+
+## Summary
+
+- Transfer entropy = conditional MI between future of $X$ and past of $Y$ given past of $X$
+- TENDE: neural conditional density estimation → computationally scalable
+- Asymmetric by construction → detects directionality
+- Key hyperparameters: history length $k, l$, lag $\tau$, hidden size
+
+**References:**
+
+- Schreiber (2000). *Measuring Information Transfer.*
+- Bossomaier et al. (2016). *An Introduction to Transfer Entropy.*
+- Franzese et al. (2024). *TENDE.*
