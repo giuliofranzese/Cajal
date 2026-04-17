@@ -1,3 +1,6 @@
+# Ignore quickstart helper directory
+quickstart/
+
 .venv/
 
 # Editor / OS artifacts
