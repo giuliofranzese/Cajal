@@ -63,3 +63,11 @@ FKL/
   functional_fm.py  # Functional flow matching implementation
   functional_kl.py  # KL divergence estimation
 ```
+
+## References to train Trajectory Inference methods
+
+SBIRR and vSB: https://github.com/YunyiShen/SB-Iterative-Reference-Refinement
+MSBM: https://github.com/bw-park/MSBM
+MFL: https://github.com/zsteve/mfl
+AM: https://github.com/necludov/jam
+TIGON: https://github.com/yutongo/TIGON/
